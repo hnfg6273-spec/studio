@@ -101,22 +101,6 @@ export default function MainChart({ kpiKey, timeRange, setTimeRange, chartColor 
                         <p className="text-sm text-muted-foreground">{currentInfo.subtitle}</p>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <div className="flex items-center p-1 bg-zinc-800 rounded-lg">
-                            {(['Day', 'Week', 'Month'] as const).map((range) => (
-                                <button
-                                    key={range}
-                                    onClick={() => setTimeRange(range)}
-                                    className={cn(
-                                        "py-1 px-3 rounded-md text-xs font-semibold transition-all",
-                                        timeRange === range
-                                            ? "bg-zinc-700 text-white shadow-sm"
-                                            : "text-zinc-400 hover:bg-zinc-700/50"
-                                    )}
-                                >
-                                    {range}
-                                </button>
-                            ))}
-                        </div>
                         <button
                             onClick={() => setIsFullScreen(true)}
                             className="p-2 rounded-lg text-zinc-400 hover:bg-zinc-800 transition-colors"

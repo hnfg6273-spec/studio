@@ -12,6 +12,8 @@ import ChartModal from '@/components/app/ChartModal';
 type MainChartProps = {
     kpiKey: string;
     chartColor: string;
+    timeRange: string;
+    setTimeRange: (range: string) => void;
 };
 
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -30,27 +32,25 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     return null;
 };
 
-export default function MainChart({ kpiKey, chartColor }: MainChartProps) {
+export default function MainChart({ kpiKey, chartColor, timeRange, setTimeRange }: MainChartProps) {
     const [isFullScreen, setIsFullScreen] = React.useState(false);
     const activeChartColor = chartColor || '#3b82f6';
-
-    const timeRange = 'Month';
 
     const activeData = React.useMemo(() => {
         const dataSet = chartData[kpiKey as keyof typeof chartData];
         if (!dataSet) return [];
 
-        const dataForTimeRange = dataSet[timeRange];
+        const dataForTimeRange = dataSet[timeRange as keyof typeof dataSet];
         if (!dataForTimeRange) return [];
 
         if (kpiKey === 'trending') {
-            return dataForTimeRange.map((d: any) => ({
+            return (dataForTimeRange as any[]).map((d: any) => ({
                 name: d.name,
                 trending: d.crypto + d.shipping + d.userData,
             }));
         }
         
-        return dataForTimeRange.map((d: any) => ({ name: d.name, [kpiKey]: d[kpiKey] }));
+        return (dataForTimeRange as any[]).map((d: any) => ({ name: d.name, [kpiKey]: d[kpiKey] }));
     }, [kpiKey, timeRange]);
 
     const kpiInfo = {
@@ -108,6 +108,22 @@ export default function MainChart({ kpiKey, chartColor }: MainChartProps) {
                         <p className="text-sm text-muted-foreground">{currentInfo.subtitle}</p>
                     </div>
                     <div className="flex items-center space-x-2">
+                        <div className="bg-zinc-800/50 p-1 rounded-lg flex items-center space-x-1">
+                            {['Day', 'Week', 'Month'].map(range => (
+                                <button
+                                    key={range}
+                                    onClick={() => setTimeRange(range)}
+                                    className={cn(
+                                        "py-1 px-3 rounded-md text-xs font-semibold transition-all",
+                                        timeRange === range
+                                            ? 'bg-zinc-700 text-white shadow'
+                                            : 'text-zinc-400 hover:bg-zinc-700/50'
+                                    )}
+                                >
+                                    {range}
+                                </button>
+                            ))}
+                        </div>
                         <button
                             onClick={() => setIsFullScreen(true)}
                             className="p-2 rounded-lg text-zinc-400 hover:bg-zinc-800 transition-colors"

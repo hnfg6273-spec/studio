@@ -15,6 +15,7 @@ type DashboardViewProps = {
 
 export default function DashboardView({ allDatasets, toggleDatasetStatus, searchTerm }: DashboardViewProps) {
     const [activeKpi, setActiveKpi] = React.useState('requests');
+    const [timeRange, setTimeRange] = React.useState('Month');
     const trendingCount = React.useMemo(() => allDatasets.filter(ds => ds.status === 'Active').length, [allDatasets]);
 
     const kpiData = React.useMemo(() => ({
@@ -102,6 +103,8 @@ export default function DashboardView({ allDatasets, toggleDatasetStatus, search
                     <MainChart
                         kpiKey={activeKpi}
                         chartColor={activeChartColor}
+                        timeRange={timeRange}
+                        setTimeRange={setTimeRange}
                     />
                 </div>
 

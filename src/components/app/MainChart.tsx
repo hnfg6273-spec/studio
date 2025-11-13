@@ -11,8 +11,6 @@ import ChartModal from '@/components/app/ChartModal';
 
 type MainChartProps = {
     kpiKey: string;
-    timeRange: 'Day' | 'Week' | 'Month';
-    setTimeRange: (range: 'Day' | 'Week' | 'Month') => void;
     chartColor: string;
 };
 
@@ -32,9 +30,11 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     return null;
 };
 
-export default function MainChart({ kpiKey, timeRange, setTimeRange, chartColor }: MainChartProps) {
+export default function MainChart({ kpiKey, chartColor }: MainChartProps) {
     const [isFullScreen, setIsFullScreen] = React.useState(false);
     const activeChartColor = chartColor || '#3b82f6';
+
+    const timeRange = 'Month';
 
     const activeData = React.useMemo(() => {
         const dataSet = chartData[kpiKey as keyof typeof chartData];

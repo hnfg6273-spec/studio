@@ -13,7 +13,6 @@ export default function Home() {
   const [activePage, setActivePage] = React.useState('dashboard');
   const [datasets, setDatasets] = React.useState(mockDatasets);
   const [searchTerm, setSearchTerm] = React.useState('');
-  const [timeRange, setTimeRange] = React.useState('Month');
 
   const toggleDatasetStatus = (id: string, newStatus: string) => {
     setDatasets(currentDatasets =>
@@ -50,8 +49,6 @@ export default function Home() {
               >
                 {activePage === 'dashboard' ? (
                   <DashboardView
-                    timeRange={timeRange}
-                    setTimeRange={setTimeRange}
                     allDatasets={datasets}
                     toggleDatasetStatus={toggleDatasetStatus}
                     searchTerm={searchTerm}

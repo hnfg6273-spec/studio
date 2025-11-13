@@ -8,14 +8,12 @@ import { Zap, TrendingUp, Activity, Users } from 'lucide-react';
 import type { mockDatasets } from '@/lib/mock-data';
 
 type DashboardViewProps = {
-    timeRange: string;
-    setTimeRange: (range: string) => void;
     allDatasets: typeof mockDatasets;
     toggleDatasetStatus: (id: string, newStatus: string) => void;
     searchTerm: string;
 };
 
-export default function DashboardView({ timeRange, setTimeRange, allDatasets, toggleDatasetStatus, searchTerm }: DashboardViewProps) {
+export default function DashboardView({ allDatasets, toggleDatasetStatus, searchTerm }: DashboardViewProps) {
     const [activeKpi, setActiveKpi] = React.useState('requests');
     const trendingCount = React.useMemo(() => allDatasets.filter(ds => ds.status === 'Active').length, [allDatasets]);
 
@@ -103,8 +101,6 @@ export default function DashboardView({ timeRange, setTimeRange, allDatasets, to
                 <div className="lg:col-span-2">
                     <MainChart
                         kpiKey={activeKpi}
-                        timeRange={timeRange}
-                        setTimeRange={setTimeRange}
                         chartColor={activeChartColor}
                     />
                 </div>

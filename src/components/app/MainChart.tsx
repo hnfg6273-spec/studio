@@ -19,8 +19,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         return (
             <div className="rounded-lg p-3 shadow-lg bg-zinc-900 border border-zinc-700">
                 <p className="label text-sm font-bold mb-2 text-zinc-100">{label}</p>
-                {payload.map((p: any) => (
-                    <div key={p.name} style={{ color: p.color }} className="text-sm font-medium">
+                {payload.map((p: any, index: number) => (
+                    <div key={index} style={{ color: p.color }} className="text-sm font-medium">
                         {`${p.name}: ${p.value.toLocaleString()}`}
                     </div>
                 ))}
@@ -41,10 +41,13 @@ export default function MainChart({ kpiKey, chartColor }: MainChartProps) {
         if (kpiKey === 'trending' && dataSet && dataSet[timeRange]) {
             return dataSet[timeRange].map(d => ({
                 name: d.name,
-                trending: d.crypto + d.shipping + d.userData
+                crypto: d.crypto,
+                shipping: d.shipping,
+                userData: d.userData
             }));
         }
-        return dataSet ? dataSet[timeRange] : [];
+        const dataKey = kpiKey === 'trending' ? 'trending' : kpiKey;
+        return dataSet ? dataSet[timeRange].map((d: any) => ({ name: d.name, [dataKey]: d[dataKey] })) : [];
     }, [kpiKey, timeRange]);
 
     const kpiInfo = {
@@ -55,7 +58,7 @@ export default function MainChart({ kpiKey, chartColor }: MainChartProps) {
     };
 
     const currentInfo = kpiInfo[kpiKey as keyof typeof kpiInfo] || { title: "Chart", subtitle: "Chart details" };
-
+    
     const renderChart = (isModal = false) => (
         <ResponsiveContainer width="100%" height={isModal ? "90%" : 300}>
             <LineChart
@@ -77,28 +80,26 @@ export default function MainChart({ kpiKey, chartColor }: MainChartProps) {
                     tickFormatter={(value) => typeof value === 'number' ? value.toLocaleString() : value}
                 />
                 <Tooltip content={<CustomTooltip />} />
-                <Legend
-                    verticalAlign="top"
-                    align="right"
-                    height={36}
-                    content={
-                        <div className="flex justify-end space-x-6 pt-4">
-                            <div className="flex items-center space-x-2">
-                                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: activeChartColor }}></div>
-                                <span className="text-xs text-zinc-400">{currentInfo.title}</span>
-                            </div>
-                        </div>
-                    }
-                 />
-                <Line
-                    type="monotone"
-                    dataKey={kpiKey}
-                    name={currentInfo.title}
-                    stroke={activeChartColor}
-                    strokeWidth={2.5}
-                    dot={false}
-                    activeDot={{ r: 6, fill: activeChartColor, stroke: 'none' }}
-                />
+                
+                {kpiKey === 'trending' && <Legend verticalAlign="top" align="right" height={36} />}
+
+                {kpiKey === 'trending' ? (
+                    <>
+                        <Line type="monotone" dataKey="crypto" name="Crypto" stroke="#8884d8" strokeWidth={2.5} dot={false} />
+                        <Line type="monotone" dataKey="shipping" name="Shipping" stroke="#82ca9d" strokeWidth={2.5} dot={false} />
+                        <Line type="monotone" dataKey="userData" name="User Data" stroke="#ffc658" strokeWidth={2.5} dot={false} />
+                    </>
+                ) : (
+                    <Line
+                        type="monotone"
+                        dataKey={kpiKey}
+                        name={currentInfo.title}
+                        stroke={activeChartColor}
+                        strokeWidth={2.5}
+                        dot={false}
+                        activeDot={{ r: 6, fill: activeChartColor, stroke: 'none' }}
+                    />
+                )}
             </LineChart>
         </ResponsiveContainer>
     );

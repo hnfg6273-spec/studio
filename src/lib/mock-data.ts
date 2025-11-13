@@ -107,7 +107,6 @@ export const chartData = {
 export const donutData = [
   { name: 'Stream', value: 3, color: '#3b82f6' },   // blue
   { name: 'Database', value: 3, color: '#ec4899' }, // pink
-  { name: 'File', value: 1, color: '#14b8a6' },     // teal
   { name: 'Log', value: 1, color: '#f97316' },     // orange
   { name: 'Static', value: 2, color: '#a855f7' },  // purple
 ];

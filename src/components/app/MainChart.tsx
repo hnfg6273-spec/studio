@@ -38,16 +38,19 @@ export default function MainChart({ kpiKey, chartColor }: MainChartProps) {
 
     const activeData = React.useMemo(() => {
         const dataSet = chartData[kpiKey as keyof typeof chartData];
-        if (kpiKey === 'trending' && dataSet && dataSet[timeRange]) {
-            return dataSet[timeRange].map(d => ({
+        if (!dataSet) return [];
+
+        const dataForTimeRange = dataSet[timeRange];
+        if (!dataForTimeRange) return [];
+
+        if (kpiKey === 'trending') {
+            return dataForTimeRange.map((d: any) => ({
                 name: d.name,
-                crypto: d.crypto,
-                shipping: d.shipping,
-                userData: d.userData
+                trending: d.crypto + d.shipping + d.userData,
             }));
         }
-        const dataKey = kpiKey === 'trending' ? 'trending' : kpiKey;
-        return dataSet ? dataSet[timeRange].map((d: any) => ({ name: d.name, [dataKey]: d[dataKey] })) : [];
+        
+        return dataForTimeRange.map((d: any) => ({ name: d.name, [kpiKey]: d[kpiKey] }));
     }, [kpiKey, timeRange]);
 
     const kpiInfo = {
@@ -83,23 +86,15 @@ export default function MainChart({ kpiKey, chartColor }: MainChartProps) {
                 
                 {kpiKey === 'trending' && <Legend verticalAlign="top" align="right" height={36} />}
 
-                {kpiKey === 'trending' ? (
-                    <>
-                        <Line type="monotone" dataKey="crypto" name="Crypto" stroke="#8884d8" strokeWidth={2.5} dot={false} />
-                        <Line type="monotone" dataKey="shipping" name="Shipping" stroke="#82ca9d" strokeWidth={2.5} dot={false} />
-                        <Line type="monotone" dataKey="userData" name="User Data" stroke="#ffc658" strokeWidth={2.5} dot={false} />
-                    </>
-                ) : (
-                    <Line
-                        type="monotone"
-                        dataKey={kpiKey}
-                        name={currentInfo.title}
-                        stroke={activeChartColor}
-                        strokeWidth={2.5}
-                        dot={false}
-                        activeDot={{ r: 6, fill: activeChartColor, stroke: 'none' }}
-                    />
-                )}
+                <Line
+                    type="monotone"
+                    dataKey={kpiKey}
+                    name={currentInfo.title}
+                    stroke={activeChartColor}
+                    strokeWidth={2.5}
+                    dot={false}
+                    activeDot={{ r: 6, fill: activeChartColor, stroke: 'none' }}
+                />
             </LineChart>
         </ResponsiveContainer>
     );

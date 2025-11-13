@@ -53,14 +53,14 @@ export default function CategoryDonutChart() {
     const [timeRange, setTimeRange] = React.useState('Week');
 
     const renderChart = (isModal = false) => (
-        <ResponsiveContainer width="100%" height={isModal ? "90%" : 300}>
+        <ResponsiveContainer width="100%" height={isModal ? "90%" : 250}>
             <PieChart margin={{ top: 40, right: 60, bottom: 40, left: 60 }}>
                 <Pie
                     data={donutData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={isModal ? 120 : 80}
-                    outerRadius={isModal ? 180 : 120}
+                    innerRadius={isModal ? 120 : 60}
+                    outerRadius={isModal ? 180 : 90}
                     fill="#8884d8"
                     dataKey="value"
                     labelLine={false}
@@ -114,7 +114,7 @@ export default function CategoryDonutChart() {
                         </button>
                     </div>
                 </div>
-                <div className="h-[300px]">
+                <div className="h-[250px]">
                     {renderChart(false)}
                 </div>
             </div>

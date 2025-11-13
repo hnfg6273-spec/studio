@@ -66,7 +66,7 @@ export default function MainChart({ kpiKey, chartColor }: MainChartProps) {
         <ResponsiveContainer width="100%" height={isModal ? "90%" : 300}>
             <LineChart
                 data={activeData}
-                margin={{ top: 5, right: 20, left: -20, bottom: 0 }}
+                margin={{ top: 5, right: 20, left: -20, bottom: 5 }}
             >
                 <XAxis
                     dataKey="name"
@@ -84,7 +84,7 @@ export default function MainChart({ kpiKey, chartColor }: MainChartProps) {
                 />
                 <Tooltip content={<CustomTooltip />} />
                 
-                {kpiKey === 'trending' && <Legend verticalAlign="top" align="right" height={36} />}
+                {kpiKey === 'trending' && <Legend verticalAlign="bottom" wrapperStyle={{paddingTop: 10}} />}
 
                 <Line
                     type="monotone"

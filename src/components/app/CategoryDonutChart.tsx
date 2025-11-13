@@ -52,7 +52,7 @@ export default function CategoryDonutChart() {
     const [isFullScreen, setIsFullScreen] = React.useState(false);
 
     const renderChart = (isModal = false) => (
-        <ResponsiveContainer width="100%" height={isModal ? "90%" : 250}>
+        <ResponsiveContainer width="100%" height={isModal ? "90%" : 300}>
             <PieChart margin={{ top: 40, right: 60, bottom: 40, left: 60 }}>
                 <Pie
                     data={donutData}
@@ -97,7 +97,7 @@ export default function CategoryDonutChart() {
                         </button>
                     </div>
                 </div>
-                <div className="h-[250px]">
+                <div className="h-[300px]">
                     {renderChart(false)}
                 </div>
             </div>

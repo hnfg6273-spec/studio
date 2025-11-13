@@ -47,7 +47,6 @@ export default function MainChart({ kpiKey, chartColor }: MainChartProps) {
             return dataForTimeRange.map((d: any) => ({
                 name: d.name,
                 trending: d.crypto + d.shipping + d.userData,
-                crypto: d.crypto,
             }));
         }
         
@@ -87,38 +86,15 @@ export default function MainChart({ kpiKey, chartColor }: MainChartProps) {
                 
                 {kpiKey === 'trending' && <Legend verticalAlign="top" align="right" height={36} />}
 
-                {kpiKey === 'trending' ? (
-                    <>
-                        <Line
-                            type="monotone"
-                            dataKey="trending"
-                            name="Total Trending"
-                            stroke={activeChartColor}
-                            strokeWidth={2.5}
-                            dot={false}
-                            activeDot={{ r: 6, fill: activeChartColor, stroke: 'none' }}
-                        />
-                        <Line
-                            type="monotone"
-                            dataKey="crypto"
-                            name="Crypto"
-                            stroke="#82ca9d"
-                            strokeWidth={2}
-                            dot={false}
-                            activeDot={{ r: 6, stroke: 'none' }}
-                        />
-                    </>
-                ) : (
-                    <Line
-                        type="monotone"
-                        dataKey={kpiKey}
-                        name={currentInfo.title}
-                        stroke={activeChartColor}
-                        strokeWidth={2.5}
-                        dot={false}
-                        activeDot={{ r: 6, fill: activeChartColor, stroke: 'none' }}
-                    />
-                )}
+                <Line
+                    type="monotone"
+                    dataKey={kpiKey === 'trending' ? 'trending' : kpiKey}
+                    name={currentInfo.title}
+                    stroke={activeChartColor}
+                    strokeWidth={2.5}
+                    dot={false}
+                    activeDot={{ r: 6, fill: activeChartColor, stroke: 'none' }}
+                />
             </LineChart>
         </ResponsiveContainer>
     );

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import {
-    LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
+    LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
 import { Maximize2 } from 'lucide-react';
 import { chartData } from '@/lib/mock-data';
@@ -38,12 +38,18 @@ export default function MainChart({ kpiKey, chartColor }: MainChartProps) {
 
     const activeData = React.useMemo(() => {
         const dataSet = chartData[kpiKey as keyof typeof chartData];
+        if (kpiKey === 'trending' && dataSet && dataSet[timeRange]) {
+            return dataSet[timeRange].map(d => ({
+                name: d.name,
+                trending: d.crypto + d.shipping + d.userData
+            }));
+        }
         return dataSet ? dataSet[timeRange] : [];
     }, [kpiKey, timeRange]);
 
     const kpiInfo = {
         requests: { title: "Total Requests", subtitle: "Total API requests over time." },
-        trending: { title: "Top Dataset Trends", subtitle: "Performance of top 3 trending datasets." },
+        trending: { title: "Top Dataset Trends", subtitle: "Performance of top trending datasets." },
         latency: { title: "Average Response", subtitle: "Average API response latency over time." },
         users: { title: "Concurrent Users", subtitle: "Number of concurrent users on the platform." }
     };
@@ -71,23 +77,28 @@ export default function MainChart({ kpiKey, chartColor }: MainChartProps) {
                     tickFormatter={(value) => typeof value === 'number' ? value.toLocaleString() : value}
                 />
                 <Tooltip content={<CustomTooltip />} />
-                {kpiKey === 'trending' ? (
-                    <>
-                        <Line type="monotone" dataKey="crypto" name="Crypto Feeds" stroke="#3b82f6" strokeWidth={2.5} dot={false} activeDot={{ r: 6 }} />
-                        <Line type="monotone" dataKey="shipping" name="Shipping Logs" stroke="#14b8a6" strokeWidth={2.5} dot={false} activeDot={{ r: 6 }} />
-                        <Line type="monotone" dataKey="userData" name="User Data" stroke="#f472b6" strokeWidth={2.5} dot={false} activeDot={{ r: 6 }} />
-                    </>
-                ) : (
-                    <Line
-                        type="monotone"
-                        dataKey={kpiKey}
-                        name={currentInfo.title}
-                        stroke={activeChartColor}
-                        strokeWidth={2.5}
-                        dot={false}
-                        activeDot={{ r: 6, fill: activeChartColor, stroke: 'none' }}
-                    />
-                )}
+                <Legend
+                    verticalAlign="top"
+                    align="right"
+                    height={36}
+                    content={
+                        <div className="flex justify-end space-x-6 pt-4">
+                            <div className="flex items-center space-x-2">
+                                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: activeChartColor }}></div>
+                                <span className="text-xs text-zinc-400">{currentInfo.title}</span>
+                            </div>
+                        </div>
+                    }
+                 />
+                <Line
+                    type="monotone"
+                    dataKey={kpiKey}
+                    name={currentInfo.title}
+                    stroke={activeChartColor}
+                    strokeWidth={2.5}
+                    dot={false}
+                    activeDot={{ r: 6, fill: activeChartColor, stroke: 'none' }}
+                />
             </LineChart>
         </ResponsiveContainer>
     );
@@ -113,22 +124,6 @@ export default function MainChart({ kpiKey, chartColor }: MainChartProps) {
                 <div className="h-[300px]">
                     {renderChart(false)}
                 </div>
-                {kpiKey === 'trending' && (
-                    <div className="flex justify-center space-x-6 pt-4">
-                        <div className="flex items-center space-x-2">
-                            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                            <span className="text-xs text-zinc-400">Crypto Feeds</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <div className="w-3 h-3 rounded-full bg-teal-500"></div>
-                            <span className="text-xs text-zinc-400">Shipping Logs</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <div className="w-3 h-3 rounded-full bg-pink-400"></div>
-                            <span className="text-xs text-zinc-400">User Data</span>
-                        </div>
-                    </div>
-                )}
             </div>
             <ChartModal isOpen={isFullScreen} onClose={() => setIsFullScreen(false)} title={currentInfo.title}>
                 {renderChart(true)}

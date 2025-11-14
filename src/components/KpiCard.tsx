@@ -15,7 +15,6 @@ const KpiCard: React.FC<KpiCardProps> = ({
   data,
   isActive,
   onClick,
-  theme,
   isTrendingCard = false,
 }) => {
   const trendIcon = data.changeType === 'positive' ? 'TrendingUp' : 'TrendingDown';
@@ -35,23 +34,18 @@ const KpiCard: React.FC<KpiCardProps> = ({
     <div
       onClick={onClick}
       className={`relative p-6 rounded-2xl cursor-pointer transition-all duration-300 ease-in-out bg-zinc-900/50 border ${getBorderColor()} ${
-        isActive
-          ? 'shadow-lg'
-          : 'shadow-md hover:-translate-y-0.5'
-      }`}
+        isActive ? 'shadow-lg' : 'shadow-md hover:-translate-y-0.5'
+      } overflow-hidden`}
     >
       <div
-        className={`absolute top-0 left-0 right-0 h-1 rounded-t-xl`}
-        style={{
-          background: isActive
-            ? `radial-gradient(ellipse at top, ${data.color}20, transparent 70%)`
-            : 'transparent',
-        }}
-      ></div>
-
+        className="absolute top-0 left-0 right-0 h-1"
+        style={{ background: `linear-gradient(to right, ${data.color}30, ${data.color}90, ${data.color}30)` }}
+      />
       <div className="flex items-start justify-between">
         <span className="text-sm font-medium text-zinc-400">{data.title}</span>
-        <Icon name={data.icon} className="w-5 h-5" style={{ color: data.color }} />
+        <div className="p-1.5 rounded-full" style={{ backgroundColor: `${data.color}20` }}>
+          <Icon name={data.icon} className="w-5 h-5" style={{ color: data.color }} />
+        </div>
       </div>
 
       <div className="mt-4">

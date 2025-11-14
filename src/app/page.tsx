@@ -459,13 +459,13 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
   const pieInnerRadius = isModal ? 70 : 60;
   const pieOuterRadius = isModal ? 110 : 90;
 
-  const outerRadialOffset = isModal ? 20 : 10;
-  const lineSegmentLength = isModal ? 25 : 15;
-  const horizontalLineExtension = isModal ? 20 : 15;
+  const outerRadialOffset = isModal ? 10 : 10;
+  const lineSegmentLength = isModal ? 15 : 15;
+  const horizontalLineExtension = isModal ? 15 : 15;
   const labelBoxMargin = 8;
-  const labelRectWidth = isModal ? 140 : 130;
-  const labelRectHeight = isModal ? 70 : 65;
-  const verticalStackingOffset = isModal ? 35 : 30;
+  const labelRectWidth = isModal ? 130 : 120;
+  const labelRectHeight = isModal ? 65 : 60;
+  const verticalStackingOffset = isModal ? 30 : 25;
 
   const getVerticalStackOffset = useCallback((idx: number, total: number): number => {
     return (idx - (total - 1) / 2) * verticalStackingOffset;
@@ -513,7 +513,7 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
     return (
       <g>
         <path d={`M${sx},${sy}L${elbowX},${elbowY}L${ex},${finalEy}`} stroke="#a1a1aa" fill="none" strokeWidth={1} />
-        <foreignObject x={labelX} y={labelY} width={labelRectWidth} height={labelRectHeight} style={{ overflow: 'visible' }}>
+        <foreignObject x={labelX} y={labelY} width={labelRectWidth} height={labelRectHeight} style={{ overflow: 'hidden' }}>
           <div style={{
             background: 'transparent',
             border: 'none',
@@ -521,6 +521,9 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
             fontSize: isModal ? '14px' : '12px', 
             lineHeight: '1.3',
             textAlign: textAnchor === 'start' ? 'left' : 'right',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
           }}>
             <div style={{ color: entry.color, fontWeight: 600 }}>{entry.name}</div>
             <div>Count: {entry.value}</div>
@@ -1528,3 +1531,4 @@ export default function App() {
     </div>
   );
 };
+

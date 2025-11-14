@@ -495,14 +495,13 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
   const pieInnerRadius = isModal ? 70 : 60;
   const pieOuterRadius = isModal ? 110 : 90;
 
-  const outerRadialOffset = isModal ? 10 : 5;
-  const lineSegmentLength = isModal ? 15 : 10;
-  const horizontalLineExtension = isModal ? 20 : 15;
+  const outerRadialOffset = isModal ? 2 : 1; 
+  const lineSegmentLength = isModal ? 2 : 1;
+  const horizontalLineExtension = isModal ? 10 : 5;
   const labelBoxMargin = 8;
   const labelRectWidth = isModal ? 140 : 130;
   const labelRectHeight = isModal ? 70 : 65;
   const verticalStackingOffset = isModal ? 35 : 30;
-
 
   const getVerticalStackOffset = useCallback((idx: number, total: number): number => {
     return (idx - (total - 1) / 2) * verticalStackingOffset;
@@ -552,15 +551,15 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
         <path d={`M${sx},${sy}L${elbowX},${elbowY}L${ex},${finalEy}`} stroke="#a1a1aa" fill="none" strokeWidth={1} />
         <foreignObject x={labelX} y={labelY} width={labelRectWidth} height={labelRectHeight} style={{ overflow: 'visible' }}>
           <div style={{
-            backgroundColor: 'rgba(30, 41, 59, 0.9)', 
-            border: `1.5px solid #475569`, 
+            backgroundColor: theme.modal, 
+            border: `1.5px solid #3f3f46`, 
             borderRadius: '8px',
             padding: '6px 8px',
-            color: '#f1f5f9', 
+            color: '#d4d4d8', 
             fontSize: isModal ? '14px' : '12px', 
             lineHeight: '1.3',
             textAlign: textAnchor === 'start' ? 'left' : 'right',
-            boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           }}>
             <div style={{ color: entry.color, fontWeight: 600 }}>{entry.name}</div>
             <div>Count: {entry.value}</div>
@@ -569,7 +568,7 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
         </foreignObject>
       </g>
     );
-  }, [data, outerRadialOffset, lineSegmentLength, horizontalLineExtension, labelBoxMargin, labelRectWidth, labelRectHeight, getVerticalStackOffset, isModal]);
+  }, [data, theme, outerRadialOffset, lineSegmentLength, horizontalLineExtension, labelBoxMargin, labelRectWidth, labelRectHeight, getVerticalStackOffset, isModal]);
 
 
   return (
@@ -850,7 +849,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
                 </button>
               </div>
             </div>
-            <div className="h-[350px]">
+            <div className="h-[300px]">
               <ChartRenderer id="mainChart" chartType="line" data={mainChartDataAndOptions.data} options={mainChartDataAndOptions.options} />
             </div>
           </div>
@@ -863,7 +862,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
                 <Icon name="Maximize2" className="w-5 h-5" />
               </button>
             </div>
-            <div className="h-[350px]">
+            <div className="h-[300px]">
               <DonutChartRecharts data={DONUT_DATA} theme={theme} />
             </div>
           </div>
@@ -946,7 +945,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
         </div>
         <div className="lg:w-1/2 flex justify-center lg:justify-end">
           {/* Placeholder for illustration */}
-          <img src="https://assets-global.website-files.com/653063fcd0c776097d40f28e/653229b139031c54e0c81d8a_image.webp" alt="Data illustration" className="max-w-full h-auto w-[600px] object-contain" />
+          <img data-ai-hint="data pipeline" src="https://picsum.photos/seed/1/600/400" alt="Data illustration" className="max-w-full h-auto w-[600px] object-contain" />
         </div>
       </div>
     </section>
@@ -1336,5 +1335,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
-    

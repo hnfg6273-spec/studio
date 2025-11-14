@@ -50,6 +50,7 @@ export enum ThemeKey {
   DAY = 'day',
   SUNSET = 'sunset',
   FOREST = 'forest',
+  GRADIENT_DARK = 'gradient_dark',
 }
 
 export interface Dataset {
@@ -336,7 +337,34 @@ export const THEMES: Themes = {
     sectionBg: 'bg-green-900',
     neutralBg: 'bg-[#0d2a21]',
     highlightText: 'text-green-300',
-  }
+  },
+  [ThemeKey.GRADIENT_DARK]: {
+    app: 'bg-gradient-to-br from-gray-900 via-purple-900 to-black',
+    text: 'text-zinc-100',
+    sidebar: 'bg-gray-900',
+    sidebarBorder: 'border-purple-800/50',
+    sidebarActive: 'bg-gradient-to-br from-purple-700 to-purple-800 text-white',
+    sidebarHover: 'hover:bg-purple-900/50',
+    topbar: 'bg-gray-900/50',
+    topbarBorder: 'border-purple-800/50',
+    title: 'text-white',
+    searchBg: 'bg-gray-900/80',
+    searchBorder: 'border-purple-700/50',
+    table: 'bg-[#1a1a2e]/90 border-purple-800/50',
+    tableCell: 'text-white',
+    tableCellSubtle: 'text-zinc-400',
+    kpiCard: 'bg-[#1a1a2e]/90 border-purple-800/50',
+    kpiCardValue: 'text-white',
+    chartBg: 'bg-[#1a1a2e]/90',
+    chartTitle: 'text-white',
+    modal: 'bg-zinc-900',
+    heroBg: 'bg-gray-900',
+    cardBg: 'bg-[#1a1a2e]',
+    cardBorder: 'border-purple-800/50',
+    sectionBg: 'bg-black',
+    neutralBg: 'bg-gray-900',
+    highlightText: 'text-purple-400',
+  },
 };
 
 // utils.ts

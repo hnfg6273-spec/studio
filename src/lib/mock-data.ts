@@ -1,3 +1,4 @@
+
 import {
   Dataset,
   DatasetStatus,
@@ -119,13 +120,13 @@ export const THEMES: Themes = {
     highlightText: 'text-teal-400', // Highlight color for "AI & Big Data"
   },
   [ThemeKey.DAY]: {
-    app: 'bg-gradient-to-br from-white to-blue-50',
+    app: 'bg-zinc-50',
     text: 'text-zinc-900',
-    sidebar: 'bg-zinc-100',
+    sidebar: 'bg-white',
     sidebarBorder: 'border-zinc-200',
-    sidebarActive: 'bg-gradient-to-br from-[#126C86] to-[#2198AC] text-white',
-    sidebarHover: 'hover:bg-zinc-200',
-    topbar: 'bg-zinc-100/50',
+    sidebarActive: 'bg-blue-600 text-white',
+    sidebarHover: 'hover:bg-zinc-100',
+    topbar: 'bg-white/80 backdrop-blur-sm',
     topbarBorder: 'border-zinc-200',
     title: 'text-zinc-900',
     searchBg: 'bg-white',
@@ -138,7 +139,6 @@ export const THEMES: Themes = {
     chartBg: 'bg-white',
     chartTitle: 'text-zinc-900',
     modal: 'bg-white',
-    // New properties for Datasets page
     heroBg: 'bg-blue-600',
     cardBg: 'bg-white',
     cardBorder: 'border-zinc-200',

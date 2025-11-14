@@ -67,6 +67,14 @@ export interface Dataset {
   sensitivity: string;
 }
 
+export interface MarketplaceDataset {
+  id: string;
+  title: string;
+  description: string;
+  views: string;
+  downloads: string;
+}
+
 export interface Instructor {
   id: string;
   name: string;
@@ -168,6 +176,51 @@ export const MOCK_DATASETS: Dataset[] = [
   { id: 'ds_001', name: 'Real-time User Activity', type: DatasetType.STREAM, status: DatasetStatus.ACTIVE, trend: '+12.5%', records: '2.5M', size: '1.2TB', created: '2023-01-15', lastUpdate: 'Live', owner: 'Alex Moran', sensitivity: 'High' },
 ];
 
+
+export const MOCK_MARKETPLACE_DATASETS: MarketplaceDataset[] = [
+    {
+        id: 'mp_001',
+        title: 'LinkedIn people profiles',
+        description: 'ID, Name, City, Country code, Position, About, Posts, Current company, and more.',
+        views: '68.3K+',
+        downloads: '6.7K+'
+    },
+    {
+        id: 'mp_002',
+        title: 'Amazon products',
+        description: 'Title, Seller name, Brand, Description, Initial price, Currency, Availability, Reviews count, and more.',
+        views: '21.3K+',
+        downloads: '3K+'
+    },
+    {
+        id: 'mp_003',
+        title: 'LinkedIn company information',
+        description: 'ID, Name, Country code, Locations, Followers, Employees in linkedin, About, Specialties, and more.',
+        views: '20.1K+',
+        downloads: '2.4K+'
+    },
+    {
+        id: 'mp_004',
+        title: 'Instagram - Profiles',
+        description: 'Account, Fbid, ID, Followers, Posts count, Is business account, Is professional account, Is verified, and more.',
+        views: '12.6K+',
+        downloads: '1.5K+'
+    },
+    {
+        id: 'mp_005',
+        title: 'Crunchbase companies information',
+        description: 'Name, URL, ID, Cb rank, Region, About, Industries, Operating status, and more.',
+        views: '10.3K+',
+        downloads: '1.1K+'
+    },
+    {
+        id: 'mp_006',
+        title: 'Linkedin job listings information',
+        description: 'URL, Job posting id, Job title, Company name, Company id, Job location, Job summary, Job seniority level, and more.',
+        views: '9.6K+',
+        downloads: '1.5K+'
+    }
+];
 export const TRENDING_DATA_SERIES: TrendingChartSeries = {
   Month: [
     { label: 'Total', data: [0.7, 0.6, 0.8, 0.75, 0.9, 0.85, 0.95, 0.8, 0.7, 0.75, 0.8, 0.9], color: '#c084fc' }, // purple-400
@@ -515,7 +568,7 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
           <div style={{
             background: 'transparent',
             border: 'none',
-            color: theme.tableCellSubtle.includes('zinc-400') ? '#d4d4d8' : '#52525b', 
+            color: theme.tableCellSubtle.includes('zinc-400') || theme.app.includes('white') ? '#a1a1aa' : '#52525b', 
             fontSize: isModal ? '14px' : '12px', 
             lineHeight: '1.3',
             textAlign: textAnchor === 'start' ? 'left' : 'right',
@@ -604,23 +657,36 @@ interface TopbarProps {
   setSearchTerm: (term: string) => void;
   cycleTheme: () => void;
   theme: Theme;
+  activePage: Page;
 }
 
-const Topbar: React.FC<TopbarProps> = ({ searchTerm, setSearchTerm, cycleTheme, theme }) => {
+const Topbar: React.FC<TopbarProps> = ({ searchTerm, setSearchTerm, cycleTheme, theme, activePage }) => {
+  const pageTitles: Record<Page, string> = {
+    [Page.DASHBOARD]: 'Dashboard',
+    [Page.DATASETS]: 'Datasets',
+    [Page.ANALYTICS]: 'Analytics',
+    [Page.SETTINGS]: 'Settings',
+  };
+
+  const showSearch = activePage === Page.DASHBOARD;
+
+
   return (
     <header className={`h-20 flex items-center justify-between px-8 border-b backdrop-blur-sm z-10 ${theme.topbar} ${theme.topbarBorder}`}>
       <div className="flex items-center space-x-6">
-        <h1 className={`text-2xl font-bold ${theme.title}`}>Dashboard</h1>
-        <div className="relative">
-          <Icon name="Search" className="w-5 h-5 text-zinc-400 absolute top-1/2 left-3 -translate-y-1/2" />
-          <input
-            type="text"
-            placeholder="Search datasets..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className={`pl-10 pr-4 py-2 w-72 rounded-lg border focus:outline-none focus:ring-2 focus:border-transparent transition-all ${theme.searchBg} ${theme.searchBorder} focus:ring-blue-500`}
-          />
-        </div>
+        <h1 className={`text-2xl font-bold ${theme.title}`}>{pageTitles[activePage]}</h1>
+        {showSearch && (
+          <div className="relative">
+            <Icon name="Search" className="w-5 h-5 text-zinc-400 absolute top-1/2 left-3 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Search datasets..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={`pl-10 pr-4 py-2 w-72 rounded-lg border focus:outline-none focus:ring-2 focus:border-transparent transition-all ${theme.searchBg} ${theme.searchBorder} focus:ring-blue-500`}
+            />
+          </div>
+        )}
       </div>
       <div className="flex items-center space-x-5">
         <button onClick={cycleTheme} className="p-2 rounded-full text-zinc-400 hover:bg-zinc-800">
@@ -1052,64 +1118,70 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
   );
 };
 
-// components/DatasetsPage.tsx
-const DatasetsDashboard: React.FC = () => {
-  return (
-    <div className="flex-1 overflow-y-auto p-8" style={{ background: '#081429' }}>
-      <div className="container mx-auto text-white">
-        <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-12">
-          <div className="flex flex-col gap-6">
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2">
-                <Icon name="Star" className="w-5 h-5 text-green-400" />
-                <span className="font-semibold">Trustpilot</span>
-                <div className="flex">
-                  {[...Array(5)].map((_, i) => <Icon key={i} name="Star" className="w-5 h-5 text-green-400 fill-current" />)}
+// components/DatasetCard.tsx
+interface DatasetCardProps {
+    dataset: MarketplaceDataset;
+}
+
+const DatasetCard: React.FC<DatasetCardProps> = ({ dataset }) => {
+    return (
+        <div className="bg-[#132644] p-6 rounded-lg border border-blue-900/50 flex flex-col h-full shadow-lg">
+            <h3 className="font-bold text-white text-lg mb-2">{dataset.title}</h3>
+            <p className="text-gray-400 text-sm flex-grow mb-4">{dataset.description}</p>
+            <div className="flex items-center text-gray-400 text-sm mb-4">
+                <div className="flex items-center mr-6">
+                    <Icon name="Eye" className="w-4 h-4 mr-2" />
+                    <span>{dataset.views}</span>
                 </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="font-bold text-lg text-red-500">G</span>
-                <span className="font-semibold">G2</span>
-                <div className="flex">
-                  {[...Array(4)].map((_, i) => <Icon key={`g2-full-${i}`} name="Star" className="w-5 h-5 text-red-400 fill-current" />)}
-                  <Icon name="Star" className="w-5 h-5 text-red-400" />
+                <div className="flex items-center">
+                    <Icon name="Download" className="w-4 h-4 mr-2" />
+                    <span>{dataset.downloads}</span>
                 </div>
-              </div>
             </div>
-            <h1 className="text-5xl font-bold leading-tight">
-              Get fresh datasets from popular websites
-            </h1>
-            <p className="text-lg text-gray-400">
-              No more maintaining scrapers or bypassing blocks – just structured and validated data tailored to your business needs.
-            </p>
-            <div className="flex items-center gap-4 mt-4">
-              <button className="px-6 py-3 rounded-full border border-gray-600 text-white font-semibold hover:bg-gray-800 transition-colors flex items-center gap-2">
-                Contact sales <Icon name="ChevronRight" className="w-4 h-4" />
-              </button>
-              <button className="px-6 py-3 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors flex items-center gap-2">
-                <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.792 4.792 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.702 3.702 0 0 0 1.599-2.431H8v-3.08h7.545z" />
-                  </svg>
-                </div>
-                Buy dataset
-              </button>
-            </div>
-          </div>
-          <div className="relative">
-            {/* Placeholder for the complex image */}
-            <div className="w-full h-full bg-[#132644] rounded-lg p-8 border border-gray-700 flex items-center justify-center">
-              <p className="text-gray-500">Decorative Image Area</p>
-            </div>
-          </div>
+            <button className="mt-auto bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors w-full flex items-center justify-center">
+                Buy Now
+                <Icon name="ChevronRight" className="w-4 h-4 ml-1" />
+            </button>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
+
+// components/DatasetsPage.tsx
 const DatasetsPage: React.FC = () => {
-  return <DatasetsDashboard />;
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const filteredDatasets = useMemo(() => {
+        if (!searchTerm) {
+            return MOCK_MARKETPLACE_DATASETS;
+        }
+        return MOCK_MARKETPLACE_DATASETS.filter(dataset =>
+            dataset.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            dataset.description.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [searchTerm]);
+
+    return (
+        <div className="flex-1 overflow-y-auto p-8" style={{ background: '#081429' }}>
+            <div className="container mx-auto">
+                <div className="relative mb-8 max-w-lg mx-auto">
+                    <input
+                        type="text"
+                        placeholder="Search for a dataset"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full bg-[#132644] text-white placeholder-gray-500 border border-blue-900/50 rounded-lg py-3 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <Icon name="Search" className="w-5 h-5 text-gray-500 absolute top-1/2 right-4 -translate-y-1/2" />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredDatasets.map(dataset => (
+                        <DatasetCard key={dataset.id} dataset={dataset} />
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
 };
 
 
@@ -1333,6 +1405,7 @@ export default function App() {
           setSearchTerm={setSearchTerm} 
           cycleTheme={cycleTheme}
           theme={currentTheme}
+          activePage={activePage}
         />
         {renderMainContent}
       </div>

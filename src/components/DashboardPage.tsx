@@ -77,13 +77,34 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
 
   const mainChartDataAndOptions = useMemo(() => {
     let mainChartDatasets: ChartData<'line'>['datasets'] = [];
+    const isDark = theme.text !== 'text-zinc-900';
+    const textColor = isDark ? '#a1a1aa' : '#52525b';
+
     let mainChartOptions: ChartOptions<'line'> = {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          enabled: true,
+          mode: 'index',
+          intersect: false,
+          backgroundColor: isDark ? '#18181b' : '#ffffff',
+          titleColor: textColor,
+          bodyColor: textColor,
+          borderColor: isDark ? '#3f3f46' : '#e4e4e7',
+          borderWidth: 1,
+          padding: 12,
+          boxPadding: 8,
+        },
+      },
+      interaction: {
+        mode: 'index',
+        intersect: false,
+      },
       scales: {
-        x: { grid: { display: false }, ticks: { color: theme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa' } },
-        y: { grid: { display: false }, ticks: { color: theme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa', callback: (v) => (v as number).toLocaleString() } }
+        x: { grid: { display: false }, ticks: { color: textColor } },
+        y: { grid: { display: false }, ticks: { color: textColor, callback: (v) => (v as number).toLocaleString() } }
       }
     };
 
@@ -105,17 +126,18 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
       mainChartOptions = {
         ...mainChartOptions,
         plugins: {
+          ...mainChartOptions.plugins,
           legend: {
             display: true,
             position: 'bottom',
-            labels: { color: theme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa' }
+            labels: { color: textColor }
           }
         },
         scales: {
-          x: { grid: { display: false }, ticks: { color: theme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa' } },
+          x: { grid: { display: false }, ticks: { color: textColor } },
           y: {
             grid: { display: false },
-            ticks: { color: theme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa', stepSize: 0.1 },
+            ticks: { color: textColor, stepSize: 0.1 },
             beginAtZero: true,
             min: 0,
             max: 1,

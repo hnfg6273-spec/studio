@@ -62,7 +62,7 @@ interface DatasetCardProps {
 
 const DatasetCard: React.FC<DatasetCardProps> = ({ dataset, theme }) => {
   const isDark = theme.text !== 'text-zinc-900';
-  const cardBg = isDark ? 'bg-slate-800/60' : 'bg-white/80';
+  const cardBg = isDark ? 'bg-slate-800/80' : 'bg-white';
   const cardBorder = isDark ? 'border-slate-700/80' : 'border-gray-200/80';
   const textColor = isDark ? 'text-slate-100' : 'text-slate-800';
   const subtleTextColor = isDark ? 'text-slate-400' : 'text-slate-500';

@@ -459,21 +459,19 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
   const pieInnerRadius = isModal ? 70 : 60;
   const pieOuterRadius = isModal ? 110 : 90;
 
-  const outerRadialOffset = 5;
-  const lineSegmentLength = 8;
-  const horizontalLineExtension = 5;
-  const labelBoxMargin = 8;
-  const labelRectWidth = 120;
-  const labelRectHeight = 60;
-  const verticalStackingOffset = 28;
-
   const getVerticalStackOffset = useCallback((idx: number, total: number): number => {
+    const verticalStackingOffset = 28;
     return (idx - (total - 1) / 2) * verticalStackingOffset;
-  }, [verticalStackingOffset]);
+  }, []);
 
   const renderCustomizedLabel = useCallback((props: any) => {
     const { cx, cy, midAngle, outerRadius, percent, index } = props;
     const entry = data[index]; 
+
+    const outerRadialOffset = 5;
+    const lineSegmentLength = 8;
+    const horizontalLineExtension = 5;
+    const labelBoxMargin = 8;
 
     const angleInRad = -RADIAN * midAngle;
     const cos = Math.cos(angleInRad);
@@ -504,16 +502,16 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
     if (textAnchor === 'start') {
       labelX = ex + labelBoxMargin;
     } else {
-      labelX = ex - labelRectWidth - labelBoxMargin;
+      labelX = ex - (100 + labelBoxMargin); // 100 is width
     }
-    const labelY = finalEy - (labelRectHeight / 2);
+    const labelY = finalEy - (40 / 2); // 40 is height
 
     const percentValue = (percent * 100).toFixed(0);
 
     return (
       <g>
         <path d={`M${sx},${sy}L${elbowX},${elbowY}L${ex},${finalEy}`} stroke="#a1a1aa" fill="none" strokeWidth={1} />
-        <foreignObject x={labelX} y={labelY} width={labelRectWidth} height={labelRectHeight} style={{ overflow: 'visible' }}>
+        <foreignObject x={labelX} y={labelY} width={100} height={40} style={{ overflow: 'visible' }}>
           <div style={{
             background: 'transparent',
             border: 'none',
@@ -522,16 +520,15 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
             lineHeight: '1.3',
             textAlign: textAnchor === 'start' ? 'left' : 'right',
             whiteSpace: 'nowrap',
-            textOverflow: 'ellipsis',
           }}>
-            <div style={{ color: entry.color, fontWeight: 600 }}>{entry.name}</div>
+            <div style={{ color: entry.color, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis' }}>{entry.name}</div>
             <div style={{ color: theme.text === 'text-zinc-900' ? '#52525b' : '#d4d4d8' }}>Count: {entry.value}</div>
             <div style={{ color: theme.text === 'text-zinc-900' ? '#52525b' : '#d4d4d8' }}>{percentValue}%</div>
           </div>
         </foreignObject>
       </g>
     );
-  }, [data, theme, outerRadialOffset, lineSegmentLength, horizontalLineExtension, labelBoxMargin, labelRectWidth, labelRectHeight, getVerticalStackOffset, isModal]);
+  }, [data, theme, getVerticalStackOffset, isModal]);
 
 
   return (
@@ -1057,93 +1054,54 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
 
 // components/DatasetsPage.tsx
 const DatasetsPage: React.FC = () => {
-  const features = [
-    {
-      icon: (
-        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="18" y="26" width="4" height="8" fill="#FDBA74"/>
-          <rect x="26" y="22" width="4" height="12" fill="#FDBA74"/>
-          <rect x="34" y="18" width="4" height="16" fill="#FDBA74"/>
-          <path d="M47 38L42 34L47 30" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M51 42L56 38L51 34" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M49 46L53 42" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M40.24,54.79l-4.41-4.41c-1.15-1.15-1.77-2.6-1.77-4.11V44.5c0-3.27,2.65-5.91,5.91-5.91h0c3.27,0,5.91,2.65,5.91,5.91v1.77c0,1.51-0.62,2.96-1.77,4.11l-4.41,4.41C40.42,54.97,40.33,54.88,40.24,54.79z" fill="#34D399"/>
-          <path d="M12,52.09c0-2.91,2.36-5.27,5.27-5.27h7.47c2.91,0,5.27,2.36,5.27,5.27v0c0,2.91-2.36,5.27-5.27,5.27h-7.47C14.36,57.35,12,55,12,52.09z" fill="#3B82F6"/>
-          <path d="M8,42.24c0-2.31,1.87-4.18,4.18-4.18h13.64c2.31,0,4.18,1.87,4.18,4.18v0c0,2.31-1.87,4.18-4.18,4.18H12.18C9.87,46.42,8,44.55,8,42.24z" fill="#60A5FA"/>
-        </svg>
-      ),
-      title: 'Departments',
-      description: 'Lorem ipsum dolor sit am adipisc elit, sed do eiusmod. Lorem ipsum dolor sit adipiscing elit.',
-    },
-    {
-      icon: (
-        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M18.5,54.09h27c1.65,0,3-1.35,3-3v-1.18c0-1.65-1.35-3-3-3h-27c-1.65,0-3,1.35-3,3v1.18C15.5,52.75,16.85,54.09,18.5,54.09z" fill="#FBBF24"/>
-          <path d="M37.7,46.91l-14.86,0L20.4,26.5l4.87-14.86,14.86,0,2.44,14.86L37.7,46.91z" fill="#10B981"/>
-          <path d="M29.5,41.91h-7l-1-6h9Z" fill="#34D399"/>
-          <path d="M25.33,14.09l4.5,2.5,4.5-2.5-2-4.5h-5Z" fill="#10B981"/>
-          <path d="M43,26.5l-3,9.5h-5.5l2-9.5,2-2.5Z" fill="#34D399"/>
-        </svg>
-      ),
-      title: 'Industries',
-      description: 'Lorem ipsum dolor sit am adipisc elit, sed do eiusmod. Lorem ipsum dolor sit adipiscing elit.',
-    },
-    {
-      icon: (
-        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="14" y="14" width="16" height="16" rx="3" fill="#2DD4BF"/>
-          <rect x="34" y="14" width="16" height="16" rx="3" fill="#2DD4BF"/>
-          <rect x="14" y="34" width="16" height="16" rx="3" fill="#2DD4BF"/>
-          <rect x="34" y="34" width="16" height="16" rx="3" fill="#2DD4BF"/>
-          <circle cx="22" cy="22" r="4" fill="#3B82F6"/>
-          <circle cx="42" cy="22" r="4" fill="#3B82F6"/>
-          <circle cx="22" cy="42" r="4" fill="#3B82F6"/>
-          <circle cx="42" cy="42" r="4" fill="#3B82F6"/>
-          <path d="M26 22h12M26 42h12M22 26v12M42 26v12" stroke="#A7F3D0" strokeWidth="2"/>
-        </svg>
-      ),
-      title: 'Technology',
-      description: 'Lorem ipsum dolor sit am adipisc elit, sed do eiusmod. Lorem ipsum dolor sit adipiscing elit.',
-    },
-    {
-      icon: (
-        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M22,54h20v-4H22V54z M26,22h-4v-4c0-2.21,1.79-4,4-4h8c2.21,0,4,1.79,4,4v4h-4v-4h-8V22z" fill="#FBBF24"/>
-          <path d="M40.5,50H23.5c-1.93,0-3.5-1.57-3.5-3.5V30h24v16.5C44,48.43,42.43,50,40.5,50z" fill="#A78BFA"/>
-          <path d="M20,34h24v-4H20V34z" fill="#C4B5FD"/>
-          <path d="M28,42H24c-1.1,0-2-0.9-2-2v-4h8v4C30,41.1,29.1,42,28,42z" fill="#818CF8"/>
-          <path d="M40,42h-4c-1.1,0-2-0.9-2-2v-4h8v4C42,41.1,41.1,42,40,42z" fill="#818CF8"/>
-        </svg>
-      ),
-      title: 'Business',
-      description: 'Lorem ipsum dolor sit am adipisc elit, sed do eiusmod. Lorem ipsum dolor sit adipiscing elit.',
-    },
-  ];
-
   return (
-    <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-      <div className="container mx-auto px-4 py-16 text-center">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">
-          Endless Possibilities With <span className="text-teal-500">AI & Big Data</span>
-          <br />
-          Computer Vision
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-12">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit dolore magna aliqua
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {features.map((feature, index) => (
-            <div key={index} className="bg-white dark:bg-gray-800/50 p-8 rounded-lg shadow-sm hover:shadow-lg transition-shadow">
-              <div className="flex justify-center items-center mb-6 h-16">
-                {feature.icon}
-              </div>
-              <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">
-                {feature.description}
-              </p>
+    <div className="flex-1 overflow-y-auto bg-gray-900 text-gray-200">
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center max-w-4xl mx-auto">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-blue-500">
+            Next-Gen Data Solutions
+          </h1>
+          <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-8">
+            Unlock the full potential of your data with our cutting-edge AI-powered platform. From computer vision to predictive analytics, we provide the tools you need to stay ahead.
+          </p>
+          <div className="flex justify-center gap-4 mb-12">
+            <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition-transform transform hover:scale-105 shadow-lg">
+              Buy Now
+            </button>
+            <button className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-full transition-transform transform hover:scale-105 shadow-lg">
+              Contact Sales
+            </button>
+          </div>
+          <div className="flex justify-center items-center space-x-4 text-gray-400">
+            <span className="font-semibold">Trustpilot</span>
+            <div className="flex">
+              {[...Array(5)].map((_, i) => <Icon key={i} name="Star" className="w-5 h-5 text-green-400 fill-current" />)}
             </div>
-          ))}
+          </div>
+        </div>
+
+        <div className="relative mt-16">
+          <div className="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-blue-500/10 blur-3xl rounded-full"></div>
+          <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { title: 'Computer Vision', icon: 'Eye' },
+              { title: 'NLP & Text Analytics', icon: 'FileText' },
+              { title: 'Predictive Modeling', icon: 'TrendingUp' },
+              { title: 'Anomaly Detection', icon: 'ShieldAlert' },
+            ].map((feature, index) => (
+              <div key={index} className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-gray-700/50 hover:border-teal-400/50 transition-all transform hover:-translate-y-2">
+                <div className="flex justify-center items-center mb-6 h-16">
+                  <div className="p-4 bg-gray-700/50 rounded-full">
+                    <Icon name={feature.icon} className="w-8 h-8 text-teal-400" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold mb-2 text-white">{feature.title}</h3>
+                <p className="text-gray-400 text-sm">
+                  Lorem ipsum dolor sit am adipisc elit, sed do eiusmod. Lorem ipsum dolor sit adipiscing elit.
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

@@ -55,65 +55,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
   );
 };
 
-interface EndlessPossibilitiesSectionProps {
-  theme: Theme;
-}
-
-const EndlessPossibilitiesSection: React.FC<EndlessPossibilitiesSectionProps> = ({ theme }) => {
-  const featureCards = [
-    {
-      icon: <img src="https://storage.googleapis.com/aifire.appspot.com/images/icon-departments.webp" alt="Departments Icon" className="w-16 h-16 mb-4" />,
-      title: "Departments",
-      description: "Enhance operational efficiency and decision-making within various departments using specialized datasets.",
-    },
-    {
-      icon: <img src="https://storage.googleapis.com/aifire.appspot.com/images/icon-industries.webp" alt="Industries Icon" className="w-16 h-16 mb-4" />,
-      title: "Industries",
-      description: "Tailored datasets providing deep insights into specific industry trends, market analysis, and competitive landscapes.",
-    },
-    {
-      icon: <img src="https://storage.googleapis.com/aifire.appspot.com/images/icon-technology.webp" alt="Technology Icon" className="w-16 h-16 mb-4" />,
-      title: "Technology & Innovation",
-      description: "Leverage data for product development, AI model training, and advancing technological capabilities.",
-    },
-    {
-      icon: <img src="https://storage.googleapis.com/aifire.appspot.com/images/icon-business.webp" alt="Business Icon" className="w-16 h-16 mb-4" />,
-      title: "Business Growth",
-      description: "Drive marketing strategies, improve customer understanding, and identify new market opportunities with rich business data.",
-    },
-  ];
-
-  const textColorClass = theme.text === 'text-zinc-900' ? 'text-zinc-900' : 'text-zinc-100';
-  const cardBgClass = theme.text === 'text-zinc-900' ? 'bg-white' : 'bg-[#1A3459] border-[#2A497A]';
-  const descriptionTextColor = theme.text === 'text-zinc-900' ? 'text-zinc-600' : 'text-zinc-400';
-
-  return (
-    <section className={`py-20 px-8 ${theme.neutralBg || 'bg-white'} ${textColorClass}`}>
-      <div className="max-w-7xl mx-auto text-center">
-        <h2 className="text-4xl font-extrabold mb-4">
-          Unlock Business Potential with <span className={theme.highlightText}>Powerful Datasets and AI Insights</span>
-        </h2>
-        <p className={`text-lg mb-12 ${descriptionTextColor}`}>
-          Discover how comprehensive datasets fuel innovation, drive strategic decisions, and unlock new growth opportunities across various domains.
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {featureCards.map((card, index) => (
-            <div key={index} className={`rounded-xl shadow-lg p-6 ${cardBgClass}`}>
-              <div className="flex justify-center mb-4">
-                {card.icon}
-              </div>
-              <h3 className={`text-xl font-semibold mb-2 ${textColorClass}`}>{card.title}</h3>
-              <p className={`text-sm ${descriptionTextColor}`}>{card.description}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-
 interface DatasetCardProps {
   dataset: Dataset;
   theme: Theme;
@@ -167,7 +108,6 @@ const DatasetsPageContent: React.FC<DatasetsPageContentProps> = ({
   return (
     <div className={`flex-1 overflow-y-auto ${theme.sectionBg} ${theme.text}`}>
       <HeroSection theme={theme} />
-      <EndlessPossibilitiesSection theme={theme} />
       
       <DatasetTypeSelector theme={theme} />
 

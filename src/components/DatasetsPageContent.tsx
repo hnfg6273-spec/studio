@@ -61,26 +61,44 @@ interface DatasetCardProps {
 }
 
 const DatasetCard: React.FC<DatasetCardProps> = ({ dataset, theme }) => {
+  const isDark = theme.text !== 'text-zinc-900';
+  const cardBg = isDark ? 'bg-slate-800/60' : 'bg-white/80';
+  const cardBorder = isDark ? 'border-slate-700/80' : 'border-gray-200/80';
+  const textColor = isDark ? 'text-slate-100' : 'text-slate-800';
+  const subtleTextColor = isDark ? 'text-slate-400' : 'text-slate-500';
+
   return (
-    <div className={`rounded-xl p-6 shadow-lg ${theme.cardBg} ${theme.cardBorder ? `border ${theme.cardBorder}` : ''} ${theme.text}`}>
-      <h3 className="text-xl font-bold mb-2">{dataset.name}</h3>
-      <p className={`text-sm mb-4 ${theme.tableCellSubtle} truncate`}>{dataset.description}</p>
-      <div className="flex items-center space-x-4 mb-6 text-zinc-400">
-        <div className="flex items-center space-x-1">
-          <Icon name="Eye" className="w-4 h-4" />
-          <span>{dataset.records}</span>
-        </div>
-        <div className="flex items-center space-x-1">
-          <Icon name="Download" className="w-4 h-4" />
-          <span>{dataset.downloads}</span>
+    <div
+      className={`relative rounded-2xl p-6 backdrop-blur-md shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${cardBg} border ${cardBorder}`}
+    >
+      <div className="flex items-start justify-between mb-4">
+        <h3 className={`text-xl font-bold ${textColor}`}>{dataset.name}</h3>
+        <div className={`p-2 rounded-lg ${isDark ? 'bg-slate-700/50' : 'bg-gray-100'}`}>
+          <Icon name={getIcon(dataset.type)} className={`w-5 h-5 ${isDark ? 'text-cyan-400' : 'text-blue-600'}`} />
         </div>
       </div>
-      <button className="flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors">
-        Buy Now <Icon name="ArrowRight" className="w-4 h-4 ml-2" />
+      <p className={`text-sm mb-6 h-10 ${subtleTextColor} text-ellipsis overflow-hidden`}>
+        {dataset.description}
+      </p>
+
+      <div className="flex items-center justify-between mb-6 text-sm">
+        <div className="flex items-center space-x-2">
+          <Icon name="Database" className={`w-4 h-4 ${subtleTextColor}`} />
+          <span className={subtleTextColor}>{dataset.records} records</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Icon name="DownloadCloud" className={`w-4 h-4 ${subtleTextColor}`} />
+          <span className={subtleTextColor}>{dataset.downloads} downloads</span>
+        </div>
+      </div>
+
+      <button className="w-full py-3 font-semibold text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+        View Dataset
       </button>
     </div>
   );
 };
+
 
 interface DatasetsPageContentProps {
   datasets: Dataset[];

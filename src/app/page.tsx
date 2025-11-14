@@ -459,9 +459,9 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
   const pieInnerRadius = isModal ? 70 : 60;
   const pieOuterRadius = isModal ? 110 : 90;
 
-  const outerRadialOffset = isModal ? 10 : 10;
-  const lineSegmentLength = isModal ? 15 : 15;
-  const horizontalLineExtension = isModal ? 15 : 15;
+  const outerRadialOffset = isModal ? 1 : 1;
+  const lineSegmentLength = isModal ? 1 : 1;
+  const horizontalLineExtension = isModal ? 1 : 1;
   const labelBoxMargin = 8;
   const labelRectWidth = isModal ? 130 : 120;
   const labelRectHeight = isModal ? 65 : 60;
@@ -522,12 +522,11 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
             lineHeight: '1.3',
             textAlign: textAnchor === 'start' ? 'left' : 'right',
             whiteSpace: 'nowrap',
-            overflow: 'hidden',
             textOverflow: 'ellipsis',
           }}>
             <div style={{ color: entry.color, fontWeight: 600 }}>{entry.name}</div>
-            <div>Count: {entry.value}</div>
-            <div>{percentValue}%</div>
+            <div style={{ color: theme.text === 'text-zinc-900' ? '#52525b' : '#d4d4d8' }}>Count: {entry.value}</div>
+            <div style={{ color: theme.text === 'text-zinc-900' ? '#52525b' : '#d4d4d8' }}>{percentValue}%</div>
           </div>
         </foreignObject>
       </g>

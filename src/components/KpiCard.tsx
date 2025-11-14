@@ -26,7 +26,10 @@ const KpiCard: React.FC<KpiCardProps> = ({
   const isDarkTheme = theme.text !== 'text-zinc-900';
 
   const getBorderColor = () => {
-    if (!isActive) return isDarkTheme ? 'border-zinc-800' : 'border-zinc-200';
+    if (!isDarkTheme) {
+      return isActive ? 'border-blue-500' : 'border-zinc-200';
+    }
+    if (!isActive) return 'border-zinc-800';
     if (data.title === 'Total Requests') return 'border-cyan-400';
     if (data.title === 'Trending Datasets') return 'border-purple-500';
     if (data.title === 'Avg. Response') return 'border-teal-400';
@@ -43,8 +46,8 @@ const KpiCard: React.FC<KpiCardProps> = ({
     <div
       onClick={onClick}
       className={`relative p-6 rounded-2xl cursor-pointer transition-all duration-300 ease-in-out ${kpiCardBg} border ${getBorderColor()} ${
-        isActive ? 'shadow-lg' : 'shadow-md hover:-translate-y-0.5'
-      } overflow-hidden`}
+        isActive && isDarkTheme ? 'shadow-lg' : 'shadow-md hover:-translate-y-0.5'
+      } ${isActive && !isDarkTheme ? 'ring-2 ring-blue-500' : ''} overflow-hidden`}
     >
       <div
         className="absolute top-0 left-0 right-0 h-1"

@@ -18,6 +18,12 @@ import ChartRenderer from './ChartRenderer';
 import DonutChartRecharts from './DonutChartRecharts';
 import Icon from './Icon';
 import { ChartData, ChartOptions } from 'chart.js';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface DashboardPageProps {
   datasets: Dataset[];
@@ -213,6 +219,32 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
     });
   }, [datasets, sortState, dashboardSearchTerm]);
 
+  const handleSort = (key: keyof Dataset) => {
+    if (sortState.key === key) {
+      setSortState({ key, asc: !sortState.asc });
+    } else {
+      setSortState({ key, asc: false });
+    }
+  };
+
+  const getSortLabel = (key: keyof Dataset, label: string) => {
+    if (sortState.key === key) {
+      return `${label} ${sortState.asc ? '↑' : '↓'}`;
+    }
+    return label;
+  };
+
+  const sortOptions: { key: keyof Dataset; label: string }[] = [
+    { key: 'name', label: 'Name' },
+    { key: 'type', label: 'Type' },
+    { key: 'status', label: 'Status' },
+    { key: 'records', label: 'Records' },
+    { key: 'size', label: 'Size' },
+    { key: 'lastUpdate', label: 'Last Updated' },
+  ];
+  
+  const currentSortLabel = sortOptions.find(o => o.key === sortState.key)?.label || 'Sort By';
+
   return (
     <div className={`flex-1 overflow-y-auto p-8 ${theme.app} ${theme.text}`}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -293,7 +325,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 h-full">
           <div
-            className={`rounded-2xl p-6 shadow-sm border h-full ${theme.kpiCard} border-zinc-800`}
+            className={`rounded-2xl p-6 shadow-sm border h-full ${theme.kpiCard} ${theme.cardBorder || 'border-zinc-800'}`}
           >
             <div className="flex justify-between items-center mb-6">
               <h2 className={`text-xl font-bold ${theme.title}`}>New Datasets</h2>
@@ -312,10 +344,21 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
                   />
                 </div>
                 <div className="relative">
-                  <button className="flex items-center space-x-2 text-sm font-medium rounded-lg px-4 py-2 transition-colors bg-blue-600 text-white hover:bg-blue-700">
-                    <span>Sort By: Last Updated ↓</span>
-                    <Icon name="ChevronDown" className="w-4 h-4" />
-                  </button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="flex items-center space-x-2 text-sm font-medium rounded-lg px-4 py-2 transition-colors bg-blue-600 text-white hover:bg-blue-700">
+                        <span>Sort By: {getSortLabel(sortState.key, currentSortLabel).replace(sortState.key, '')}</span>
+                        <Icon name="ChevronDown" className="w-4 h-4" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className={`w-48 ${theme.modal}`}>
+                      {sortOptions.map(opt => (
+                        <DropdownMenuItem key={opt.key} onSelect={() => handleSort(opt.key as keyof Dataset)}>
+                          {opt.label}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
             </div>
@@ -323,21 +366,33 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
               <table className="min-w-full divide-y border-zinc-800">
                 <thead className={`${theme.table}/50`}>
                   <tr>
-                    {['Name', 'Type', 'Status', 'Records', 'Size', 'Last Updated'].map(
-                      (header) => (
-                        <th
-                          key={header}
-                          className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400"
-                        >
-                          {header}
-                        </th>
-                      )
+                    {(['Name', 'Type', 'Status', 'Records', 'Size', 'Last Updated'] as const).map(
+                      (header) => {
+                        const headerKeyMap = {
+                          'Name': 'name',
+                          'Type': 'type',
+                          'Status': 'status',
+                          'Records': 'records',
+                          'Size': 'size',
+                          'Last Updated': 'lastUpdate'
+                        } as const;
+                        const key = headerKeyMap[header];
+                        return (
+                          <th
+                            key={header}
+                            onClick={() => handleSort(key)}
+                            className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-400 cursor-pointer"
+                          >
+                            {getSortLabel(key, header)}
+                          </th>
+                        );
+                      }
                     )}
                   </tr>
                 </thead>
                 <tbody
                   className={`${theme.table.replace(
-                    'border-[#126C86]/50',
+                    /border-\[#126C86\]\/50|border-zinc-200/,
                     ''
                   )} divide-y border-zinc-800`}
                 >
@@ -401,7 +456,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
           </div>
         </div>
         <div className="lg:col-span-1 h-full">
-          <div className={`rounded-2xl p-6 shadow-sm border h-full ${theme.kpiCard}`}>
+          <div className={`rounded-2xl p-6 shadow-sm border h-full ${theme.kpiCard} ${theme.cardBorder || 'border-zinc-800'}`}>
             <h3 className={`text-xl font-bold mb-6 ${theme.title}`}>
               Trending Datasets
             </h3>
@@ -409,7 +464,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
               {trendingDatasets.length > 0 ? (
                 trendingDatasets.map((ds) => (
                   <div key={ds.id} className="flex items-center space-x-4">
-                    <div className="p-2 rounded-full bg-blue-50 text-blue-600">
+                    <div className="p-2 rounded-full bg-blue-500/10 text-blue-400">
                       <Icon name={getIcon(ds.type)} className="w-5 h-5" />
                     </div>
                     <div className="flex-1">
@@ -419,7 +474,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
                       <div className={`text-xs ${theme.tableCellSubtle}`}>{ds.type}</div>
                     </div>
                     <div className="text-right">
-                      <div className={`text-sm font-medium text-green-600`}>
+                      <div className={`text-sm font-medium text-green-500`}>
                         {ds.trend}
                       </div>
                       <div className={`text-xs ${theme.tableCellSubtle}`}>

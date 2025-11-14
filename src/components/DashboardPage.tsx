@@ -48,7 +48,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
 
   const kpiData: Record<KpiKey, KpiDataItem> = {
     [KpiKey.REQUESTS]: { title: 'Total Requests', value: '2.5M', change: '+12.5%', changeType: 'positive', icon: 'Zap', color: '#22d3ee' },
-    [KpiKey.TRENDING]: { title: 'Trending Datasets', value: '7', change: 'Top 3 Active', changeType: 'positive', icon: 'TrendingUp', color: '#c084fc' },
+    [KpiKey.TRENDING]: { title: 'Trending Datasets', value: '8', change: '+66.7%', changeType: 'positive', icon: 'TrendingUp', color: '#c084fc' },
     [KpiKey.LATENCY]: { title: 'Avg. Response', value: '24ms', change: '-2.4%', changeType: 'negative', icon: 'Activity', color: '#2dd4bf' },
     [KpiKey.USERS]: { title: 'Concurrent Users', value: '842', change: '+4.3%', changeType: 'positive', icon: 'Users', color: '#fb923c' }
   };

@@ -21,44 +21,49 @@ const KpiCard: React.FC<KpiCardProps> = ({
   const trendIcon = data.changeType === 'positive' ? 'TrendingUp' : 'TrendingDown';
   const trendColorClass =
     data.changeType === 'positive' ? 'text-green-500' : 'text-red-500';
-  const trendRotationClass = data.changeType === 'negative' ? 'rotate-180' : '';
+
+  const getBorderColor = () => {
+    if (!isActive) return 'border-zinc-800';
+    if (data.title === 'Total Requests') return 'border-cyan-400';
+    if (data.title === 'Trending Datasets') return 'border-purple-500';
+    if (data.title === 'Avg. Response') return 'border-teal-400';
+    if (data.title === 'Concurrent Users') return 'border-orange-400';
+    return 'border-blue-500/70';
+  };
 
   return (
     <div
       onClick={onClick}
-      className={`relative p-4 rounded-2xl cursor-pointer transition-all overflow-hidden ${
-        theme.kpiCard
-      } ${
+      className={`relative p-6 rounded-2xl cursor-pointer transition-all duration-300 ease-in-out bg-zinc-900/50 border ${getBorderColor()} ${
         isActive
-          ? 'ring-2 ring-blue-500/70 shadow-[0_0_15px_rgba(6,182,212,0.3)]'
+          ? 'shadow-lg'
           : 'shadow-md hover:-translate-y-0.5'
       }`}
     >
       <div
-        className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 to-blue-500"
-        style={{ opacity: isActive ? 1 : 0.7 }}
+        className={`absolute top-0 left-0 right-0 h-1 rounded-t-xl`}
+        style={{
+          background: isActive
+            ? `radial-gradient(ellipse at top, ${data.color}20, transparent 70%)`
+            : 'transparent',
+        }}
       ></div>
-      <div className="flex items-start justify-between pt-2">
-        <div className="flex items-center space-x-2">
-          <div className="p-2 rounded-full bg-cyan-500/10">
-            <Icon
-              name={data.icon}
-              className="w-4 h-4 text-sm"
-              style={{ color: data.color }}
-            />
-          </div>
-          <span className="text-sm font-medium text-zinc-400">{data.title}</span>
-        </div>
+
+      <div className="flex items-start justify-between">
+        <span className="text-sm font-medium text-zinc-400">{data.title}</span>
+        <Icon name={data.icon} className="w-5 h-5" style={{ color: data.color }} />
       </div>
-      <div className="mt-2">
-        <h2 className={`text-2xl font-bold ${theme.kpiCardValue}`}>{data.value}</h2>
-        <div className="flex items-center text-xs mt-1 space-x-1">
-          <div className={`flex items-center space-x-1 ${trendColorClass}`}>
-            <Icon name={trendIcon} className={`w-3.5 h-3.5 ${trendRotationClass}`} />
-            <span>{data.change}</span>
-          </div>
-          {!isTrendingCard && <span className="text-zinc-400">vs last month</span>}
+
+      <div className="mt-4">
+        <h2 className="text-4xl font-bold text-white">{data.value}</h2>
+      </div>
+
+      <div className="flex items-center text-xs mt-4 space-x-1">
+        <div className={`flex items-center space-x-1 ${trendColorClass}`}>
+          <Icon name={trendIcon} className="w-3.5 h-3.5" />
+          <span>{data.change}</span>
         </div>
+        <span className="text-zinc-400">{isTrendingCard ? 'of all datasets' : 'vs last month'}</span>
       </div>
     </div>
   );

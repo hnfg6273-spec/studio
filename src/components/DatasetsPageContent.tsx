@@ -50,13 +50,6 @@ const HeroSection: React.FC<{ theme: Theme }> = ({ theme }) => {
             />
           </div>
         </div>
-
-        <div className={`mt-12 pt-8 border-t ${isDark ? 'border-slate-700/50' : 'border-gray-200'} flex flex-wrap items-center space-x-6 ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
-            <CheckCircle size={20} className="text-green-500" />
-            <span className="text-sm font-medium">CCPA Compliant</span>
-            <span className="text-sm font-medium">GDPR Ready</span>
-            <span className="text-sm font-medium">ISO Certified</span>
-        </div>
       </div>
     </section>
   );

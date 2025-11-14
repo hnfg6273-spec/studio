@@ -2,6 +2,7 @@
 import React, { useMemo } from 'react';
 import { Dataset, Theme } from '@/lib/types';
 import Icon from './Icon';
+import DatasetTypeSelector from './DatasetTypeSelector';
 
 interface HeroSectionProps {
   theme: Theme;
@@ -167,6 +168,8 @@ const DatasetsPageContent: React.FC<DatasetsPageContentProps> = ({
     <div className={`flex-1 overflow-y-auto ${theme.sectionBg} ${theme.text}`}>
       <HeroSection theme={theme} />
       <EndlessPossibilitiesSection theme={theme} />
+      
+      <DatasetTypeSelector theme={theme} />
 
       <div className="max-w-7xl mx-auto px-8 py-16">
         <div className="relative mb-8 max-w-2xl mx-auto">

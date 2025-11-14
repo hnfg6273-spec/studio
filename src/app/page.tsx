@@ -764,6 +764,102 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
     [KpiKey.USERS]: { title: "Concurrent Users", value: "842", change: "+4.3%", changeType: "positive", icon: "Users", color: "#fb923c" }
   };
 
+  const kpiTitle: Record<KpiKey, string> = {
+    [KpiKey.REQUESTS]: 'Total Requests',
+    [KpiKey.TRENDING]: 'Top Dataset Trends',
+    [KpiKey.LATENCY]: 'Average Response',
+    [KpiKey.USERS]: 'Concurrent Users',
+  };
+
+  const kpiDescription: Record<KpiKey, string> = {
+    [KpiKey.REQUESTS]: 'Total API requests over time.',
+    [KpiKey.TRENDING]: 'Performance of top 3 trending datasets.',
+    [KpiKey.LATENCY]: 'Average API response latency over time.',
+    [KpiKey.USERS]: 'Number of concurrent users on the platform.',
+  };
+  
+  const getLabels = useCallback((range: TimeRange): string[] => {
+    switch (range) {
+      case TimeRange.MONTH: return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      case TimeRange.WEEK: return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      case TimeRange.DAY: return ['00:00', '02:00', '04:00', '06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'];
+    }
+  }, []);
+
+  const mainChartDataAndOptions = useMemo(() => {
+    let mainChartDatasets: ChartData<'line'>['datasets'] = [];
+    let mainChartOptions: ChartOptions<'line'> = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: theme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa' } },
+        y: { grid: { display: false }, ticks: { color: theme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa', callback: (v) => (v as number).toLocaleString() } }
+      }
+    };
+
+    if (activeKpi === KpiKey.TRENDING) {
+      const trendingData = (CHART_DATA[KpiKey.TRENDING] as TrendingChartSeries | undefined)?.[timeRange];
+      if (trendingData) {
+        mainChartDatasets = trendingData.map(series => ({
+          label: series.label,
+          data: series.data,
+          borderColor: series.color,
+          backgroundColor: 'transparent',
+          borderWidth: 2.5,
+          pointRadius: 0,
+          pointHoverRadius: 6,
+          fill: false,
+          tension: 0.2
+        }));
+      }
+      mainChartOptions = {
+        ...mainChartOptions,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'bottom',
+            labels: { color: theme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa' }
+          }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: theme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa' } },
+          y: {
+            grid: { display: false },
+            ticks: { color: theme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa', stepSize: 0.1 },
+            beginAtZero: true,
+            min: 0,
+            max: 1,
+          }
+        }
+      };
+    } else {
+      const currentChartData = CHART_DATA[activeKpi] as BaseChartSeries | undefined;
+      const dataForChart = currentChartData ? currentChartData[timeRange] : [];
+      mainChartDatasets = [{
+        label: kpiTitle[activeKpi],
+        data: dataForChart,
+        borderColor: activeKpi === KpiKey.REQUESTS ? '#22d3ee' : activeKpi === KpiKey.LATENCY ? '#2dd4bf' : '#fb923c',
+        backgroundColor: 'transparent',
+        borderWidth: 2.5,
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        fill: false,
+        tension: 0.2
+      }];
+    }
+
+    const labels = getLabels(timeRange).slice(0, (mainChartDatasets[0]?.data.length || 0));
+
+    return {
+      data: {
+        labels: labels,
+        datasets: mainChartDatasets
+      },
+      options: mainChartOptions
+    };
+  }, [activeKpi, timeRange, theme, getLabels, kpiTitle]);
+
   const trendingDatasets = useMemo(() => {
     return datasets
       .filter(ds => ds.status === DatasetStatus.ACTIVE && ds.trend.startsWith('+'))
@@ -815,6 +911,53 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
         ))}
       </div>
       
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div className="lg:col-span-2">
+          <div className={`rounded-2xl p-6 shadow-sm ${theme.chartBg}`}>
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h3 className={`text-xl font-bold ${theme.chartTitle}`}>{kpiTitle[activeKpi]}</h3>
+                <p className="text-sm text-zinc-400">{kpiDescription[activeKpi]}</p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="flex items-center p-1 rounded-lg bg-zinc-800">
+                  {Object.values(TimeRange).map(range => (
+                    <button
+                      key={range}
+                      onClick={() => setTimeRange(range)}
+                      className={`py-1 px-3 rounded-md text-xs font-semibold transition-all ${
+                        timeRange === range ? 'bg-zinc-700 text-white' : 'text-zinc-400 hover:bg-zinc-700/50'
+                      }`}
+                    >
+                      {range}
+                    </button>
+                  ))}
+                </div>
+                <button onClick={() => openChartModal('line', kpiTitle[activeKpi], activeKpi)} className="p-2 rounded-lg text-zinc-400 hover:bg-zinc-800">
+                  <Icon name="Maximize2" className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+            <div className="h-[300px]">
+              <ChartRenderer id="mainChart" chartType="line" data={mainChartDataAndOptions.data} options={mainChartDataAndOptions.options} />
+            </div>
+          </div>
+        </div>
+        <div className="lg:col-span-1">
+          <div className={`rounded-2xl p-6 shadow-sm ${theme.chartBg}`}>
+            <div className="flex justify-between items-start mb-6">
+              <h3 className={`text-xl font-bold ${theme.chartTitle}`}>Datasets by Category</h3>
+              <button onClick={() => openChartModal('pie', 'Datasets by Category')} className="p-2 rounded-lg text-zinc-400 hover:bg-zinc-800">
+                <Icon name="Maximize2" className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="h-[300px]">
+              <DonutChartRecharts data={DONUT_DATA} theme={theme} />
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 h-full">
             <div className={`rounded-2xl p-6 shadow-sm border h-full ${theme.kpiCard} border-zinc-800`}>

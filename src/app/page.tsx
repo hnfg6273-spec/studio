@@ -459,13 +459,13 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
   const pieInnerRadius = isModal ? 70 : 60;
   const pieOuterRadius = isModal ? 110 : 90;
 
-  const outerRadialOffset = isModal ? 10 : 1;
-  const lineSegmentLength = isModal ? 10 : 5;
+  const outerRadialOffset = isModal ? 10 : 5;
+  const lineSegmentLength = isModal ? 10 : 8;
   const horizontalLineExtension = isModal ? 10 : 5;
   const labelBoxMargin = 8;
   const labelRectWidth = isModal ? 130 : 120;
   const labelRectHeight = isModal ? 65 : 60;
-  const verticalStackingOffset = isModal ? 30 : 25;
+  const verticalStackingOffset = isModal ? 30 : 28;
 
   const getVerticalStackOffset = useCallback((idx: number, total: number): number => {
     return (idx - (total - 1) / 2) * verticalStackingOffset;
@@ -967,7 +967,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
         <div className="lg:col-span-2">
-          <div className={`rounded-2xl p-6 shadow-sm ${theme.chartBg}`}>
+          <div className={`rounded-2xl p-6 shadow-sm ${theme.chartBg} h-[350px]`}>
             <div className="flex justify-between items-start mb-6">
               <div>
                 <h3 className={`text-xl font-bold ${theme.chartTitle}`}>{kpiTitle[activeKpi]}</h3>
@@ -992,20 +992,20 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
                 </button>
               </div>
             </div>
-            <div className="h-[300px]">
+            <div className="h-[250px]">
               <ChartRenderer id="mainChart" chartType="line" data={mainChartDataAndOptions.data} options={mainChartDataAndOptions.options} />
             </div>
           </div>
         </div>
         <div className="lg:col-span-1">
-          <div className={`rounded-2xl p-6 shadow-sm ${theme.chartBg}`}>
+          <div className={`rounded-2xl p-6 shadow-sm ${theme.chartBg} h-[350px]`}>
             <div className="flex justify-between items-start mb-6">
               <h3 className={`text-xl font-bold ${theme.chartTitle}`}>Datasets by Category</h3>
               <button onClick={() => openChartModal('pie', 'Datasets by Category')} className="p-2 rounded-lg text-zinc-400 hover:bg-zinc-800">
                 <Icon name="Maximize2" className="w-5 h-5" />
               </button>
             </div>
-            <div className="h-[300px]">
+            <div className="h-[250px]">
               <DonutChartRecharts data={DONUT_DATA} theme={theme} />
             </div>
           </div>
@@ -1051,230 +1051,134 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
 };
 
 // components/DatasetsDashboard.tsx
-interface DatasetsDashboardProps {
-  datasets: Dataset[];
-  searchTerm: string;
-  setSearchTerm: (term: string) => void;
-  filter: DatasetStatus | 'All';
-  setFilter: (f: DatasetStatus | 'All') => void;
-  sort: SortState;
-  handleSort: (key: keyof Dataset) => void;
-  theme: Theme;
-  setActivePage: (page: Page) => void; 
-}
+const DatasetsDashboard: React.FC = () => {
+  const StarIcon = ({ className }: { className: string }) => (
+    <svg
+      className={className}
+      fill="currentColor"
+      viewBox="0 0 20 20"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+    </svg>
+  );
 
-const DatasetsDashboard: React.FC<DatasetsDashboardProps> = ({
-  datasets,
-  searchTerm,
-  setSearchTerm,
-  filter,
-  setFilter,
-  sort,
-  handleSort,
-  theme,
-  setActivePage, 
-}) => {
-  const statuses: (DatasetStatus | 'All')[] = ['All', DatasetStatus.ACTIVE, DatasetStatus.PAUSED, DatasetStatus.ARCHIVED, DatasetStatus.ERROR];
+  const Rating = ({
+    name,
+    stars,
+    icon,
+    iconBg,
+  }: {
+    name: string;
+    stars: number;
+    icon?: React.ReactNode;
+    iconBg?: string;
+  }) => (
+    <div className="flex items-center space-x-2">
+      {icon && (
+        <div className={`w-6 h-6 rounded-md flex items-center justify-center ${iconBg}`}>
+          {icon}
+        </div>
+      )}
+      <span className="font-semibold text-white">{name}</span>
+      <div className="flex">
+        {[...Array(5)].map((_, i) => (
+          <StarIcon
+            key={i}
+            className={`w-5 h-5 ${
+              i < stars ? 'text-yellow-400' : 'text-gray-600'
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
 
-  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
-  const [isSortMenuOpen, setIsSortMenuOpen] = useState(false); 
-
-  const processedDatasets = useMemo(() => {
-    let filtered = datasets.filter(ds => {
-      const matchesFilter = filter === 'All' || ds.status === filter;
-      const matchesSearch = ds.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            ds.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            ds.owner.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesFilter && matchesSearch;
-    });
-
-    filtered.sort((a, b) => {
-      let valA: any = a[sort.key];
-      let valB: any = b[sort.key];
-
-      if (sort.key === 'lastUpdate' || sort.key === 'created') {
-        if (valA === 'Live') return sort.asc ? 1 : -1;
-        if (valB === 'Live') return sort.asc ? -1 : 1;
-        if (!valA) return sort.asc ? 1 : -1;
-        if (!valB) return sort.asc ? -1 : 1;
-        valA = new Date(valA); valB = new Date(valB);
-      } else if (sort.key === 'size' || sort.key === 'records') {
-        valA = parseMetric(valA); valB = parseMetric(valB);
-      } else if (typeof valA === 'string' && typeof valB === 'string') {
-        valA = valA.toLowerCase(); valB = valB.toLowerCase();
-      } else if (valA == null || valA === 'N/A') return 1;
-      else if (valB == null || valB === 'N/A') return -1;
-
-      if (valA < valB) return sort.asc ? -1 : 1;
-      if (valA > valB) return sort.asc ? 1 : -1;
-      return 0;
-    });
-    return filtered;
-  }, [datasets, searchTerm, filter, sort]);
-
-  const trendingDatasets = useMemo(() => {
-    return datasets
-      .filter(ds => ds.status === DatasetStatus.ACTIVE && ds.trend.startsWith('+'))
-      .slice(0, 7); 
-  }, [datasets]);
-
-  const headers: (keyof Dataset)[] = ['name', 'status', 'type', 'records', 'size', 'lastUpdate', 'owner'];
-  const sortOptions: { key: keyof Dataset; label: string }[] = [
-    { key: 'name', label: 'Name' },
-    { key: 'type', label: 'Type' },
-    { key: 'status', label: 'Status' },
-    { key: 'records', label: 'Records' },
-    { key: 'size', label: 'Size' },
-    { key: 'lastUpdate', label: 'Last Updated' },
-    { key: 'owner', label: 'Owner' },
-  ];
-
-  const getSortLabel = (key: keyof Dataset) => {
-    switch (key) {
-      case 'lastUpdate': return 'Last Updated';
-      default: return key.charAt(0).toUpperCase() + key.slice(1);
-    }
-  };
+  const TrustpilotIcon = () => (
+    <svg
+      className="w-5 h-5 text-white"
+      fill="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M12 17.27l-5.18 3.73 1.64-6.03-4.54-3.95 6.13-.53L12 5.27l2.95 5.22 6.13.53-4.54 3.95 1.64 6.03L12 17.27z" />
+      <path d="M0 0h24v24H0z" fill="none" />
+      <path
+        d="M20.89 8.24l-6.13-.53L12 2.27 9.24 7.71l-6.13.53 4.54 3.95-1.64 6.03L12 13.73l5.18 3.73 1.64-6.03 4.54-3.95z"
+        fill="#00B67A"
+      />
+      <path d="M12 5.27l-2.95 5.22-6.13.53 4.54 3.95-1.64 6.03L12 17.27V5.27z" fill="#00B67A" />
+      <polygon points="12 5.27 14.95 10.49 21.08 11.02 16.54 14.97 18.18 21 12 17.27" fill="#009A66" />
+    </svg>
+  );
 
   return (
-    <div className={`flex-1 overflow-y-auto p-8 ${theme.app} ${theme.text}`}>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className={`text-3xl font-bold ${theme.title}`}>Datasets</h2>
-        <div className="flex items-center space-x-4">
-          <div className="relative">
-            <Icon name="Search" className="w-4 h-4 text-zinc-400 absolute top-1/2 left-3 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search datasets..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={`pl-8 pr-4 py-2 w-48 rounded-lg border focus:outline-none focus:ring-1 focus:border-blue-500 ${theme.searchBg} ${theme.searchBorder} ${theme.tableCell}`}
-            />
+    <div className="flex-1 overflow-y-auto bg-[#0A1A3E] text-white p-8 lg:p-16">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center space-x-8 mb-12">
+          <div className="flex items-center space-x-2">
+            <Icon name="Star" className="w-5 h-5 text-green-400" />
+            <span className="font-semibold">Trustpilot</span>
+            <div className="flex">
+              {[...Array(5)].map((i) => <Icon key={i} name="Star" className="w-5 h-5 text-green-400 fill-current" />)}
+            </div>
           </div>
-          <div className="relative">
-            <button
-              className="flex items-center space-x-2 text-sm font-medium rounded-lg px-4 py-2 transition-colors bg-zinc-800 border-zinc-700 text-zinc-300 hover:bg-zinc-700"
-              onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
-            >
-              <Icon name="Filter" className="w-4 h-4" />
-              <span>Filter: {filter}</span>
-              <Icon name="ChevronDown" className="w-4 h-4" />
-            </button>
-            {isFilterMenuOpen && (
-              <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-lg shadow-lg bg-zinc-900 divide-y divide-zinc-800 z-10">
-                {statuses.map(status => (
-                  <button
-                    key={status}
-                    onClick={() => { setFilter(status); setIsFilterMenuOpen(false); }}
-                    className="block w-full text-left px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800"
-                  >
-                    {status}
-                  </button>
-                ))}
-              </div>
-            )}
+          <div className="flex items-center space-x-2">
+            <span className="font-bold text-lg text-red-500">G</span>
+            <span className="font-semibold text-white">G2</span>
+            <div className="flex">
+              {[...Array(5)].map((i) => <Icon key={i} name="Star" className="w-5 h-5 text-red-400 fill-current" />)}
+            </div>
           </div>
-          <div className="relative">
-            <button
-              onClick={() => setIsSortMenuOpen(!isSortMenuOpen)}
-              className="flex items-center space-x-2 text-sm font-medium rounded-lg px-4 py-2 transition-colors bg-blue-600 text-white hover:bg-blue-700"
-            >
-              <span>Sort By{sort.key ? `: ${getSortLabel(sort.key)}${sort.asc ? ' ↑' : ' ↓'}` : ''}</span>
-              <Icon name="ChevronDown" className="w-4 h-4" />
-            </button>
-            {isSortMenuOpen && (
-              <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-lg shadow-lg bg-zinc-900 divide-y divide-zinc-800 z-10">
-                {sortOptions.map(option => (
-                  <button
-                    key={option.key as string}
-                    onClick={() => {
-                      handleSort(option.key);
-                      setIsSortMenuOpen(false);
-                    }}
-                    className="block w-full text-left px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800"
-                  >
-                    {option.label}
-                    {sort.key === option.key && (sort.asc ? ' ↑' : ' ↓')}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <button className="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg px-4 py-2 transition-colors shadow-sm">
-            Add New Dataset
-          </button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
-          <div className={`rounded-2xl shadow-sm overflow-hidden border ${theme.table}`}>
-            <table className={`min-w-full divide-y ${theme.table}`}>
-              <thead className="bg-zinc-900/50 divide-zinc-800">
-                <tr>
-                  {headers.map(key => (
-                    <th
-                      key={key}
-                      className="px-6 py-4 text-xs font-semibold uppercase tracking-wider cursor-pointer text-left text-zinc-400"
-                      onClick={() => handleSort(key)}
-                    >
-                      {getSortLabel(key)}
-                      {sort.key === key ? (sort.asc ? ' ↑' : ' ↓') : ''}
-                    </th>
-                  ))}
-                  <th className="px-6 py-3"></th>
-                </tr>
-              </thead>
-              <tbody className={`divide-y ${theme.table}`}>
-                {processedDatasets.map(ds => (
-                  <tr key={ds.id} className="hover:bg-zinc-800/20 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center space-x-3">
-                        <Icon name={getIcon(ds.type)} className="w-4 h-4 text-blue-400" />
-                        <span className={`text-sm font-medium ${theme.tableCell}`}>{ds.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`px-3 py-1 text-xs font-medium text-white rounded-full ${getStatusClass(ds.status)}`}>{ds.status}</span>
-                    </td>
-                    <td className={`px-6 py-4 text-sm ${theme.tableCellSubtle}`}>{ds.type}</td>
-                    <td className={`px-6 py-4 text-sm text-right ${theme.tableCell}`}>{ds.records}</td>
-                    <td className={`px-6 py-4 text-sm text-right ${theme.tableCell}`}>{ds.size}</td>
-                    <td className={`px-6 py-4 text-sm ${theme.tableCellSubtle}`}>{formatDate(ds.lastUpdate)}</td>
-                    <td className={`px-6 py-4 text-sm ${theme.tableCellSubtle}`}>{ds.owner}</td>
-                    <td className="px-6 py-4 text-right text-sm font-medium">
-                      <button className="text-blue-500 hover:text-blue-400 transition-colors">Details</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="flex items-center space-x-2">
+            <Icon name="Zap" className="w-5 h-5 text-yellow-500" />
+            <span className="font-semibold text-white">Capterra</span>
+            <div className="flex">
+              {[...Array(5)].map((i) => <Icon key={i} name="Star" className="w-5 h-5 text-yellow-400 fill-current" />)}
+            </div>
           </div>
         </div>
 
-        <div className="lg:col-span-1 h-full">
-          <div className={`rounded-2xl p-6 shadow-sm border h-full ${theme.kpiCard}`}>
-            <h3 className={`text-xl font-bold mb-6 ${theme.title}`}>Trending Datasets</h3>
-            <div className="space-y-4">
-              {trendingDatasets.length > 0 ? (
-                trendingDatasets.map(ds => (
-                  <div key={ds.id} className="flex items-center space-x-4">
-                    <div className="p-2 rounded-full bg-blue-50 text-blue-600">
-                      <Icon name={getIcon(ds.type)} className="w-5 h-5" />
-                    </div>
-                    <div className="flex-1">
-                      <div className={`text-sm font-semibold ${theme.tableCell}`}>{ds.name}</div>
-                      <div className={`text-xs ${theme.tableCellSubtle}`}>{ds.type}</div>
-                    </div>
-                    <div className="text-right">
-                      <div className={`text-sm font-medium text-green-600`}>{ds.trend}</div>
-                      <div className={`text-xs ${theme.tableCellSubtle}`}>{ds.status}</div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className={`text-sm ${theme.tableCellSubtle} text-center py-4`}>No trending datasets found.</div>
-              )}
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div>
+            <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6">
+              Get fresh datasets <br /> from popular websites
+            </h1>
+            <p className="text-lg text-gray-300 mb-10">
+              No more maintaining scrapers or bypassing blocks – just
+              structured and validated data tailored to your business needs.
+            </p>
+            <div className="flex items-center space-x-4">
+              <button className="px-6 py-3 border border-white rounded-full flex items-center space-x-2 hover:bg-white hover:text-black transition-colors">
+                <span>Contact sales</span>
+                <Icon name="ArrowRight" className="w-4 h-4" />
+              </button>
+              <button className="px-6 py-3 bg-blue-600 rounded-full flex items-center space-x-2 hover:bg-blue-700 transition-colors">
+                <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
+                  <svg
+                    className="w-4 h-4"
+                    role="img"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <title>Google</title>
+                    <path
+                      d="M12.48 10.92v3.28h7.84c-.24 1.84-.85 3.18-1.73 4.1-1.05 1.05-2.86 2.25-5.12 2.25-6.16 0-9.28-4.75-9.28-9.28s3.12-9.28 9.28-9.28c3.58 0 5.82 1.55 7.15 2.78l2.6-2.6C19.43 1.34 16.27 0 12.48 0 5.88 0 .01 5.88.01 12.5s5.87 12.5 12.47 12.5c7.05 0 12.18-4.93 12.18-12.5 0-1.02-.1-1.82-.22-2.58H12.48z"
+                      fill="#4285F4"
+                    />
+                  </svg>
+                </div>
+                <span>Buy dataset</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="relative">
+            {/* Placeholder for complex image */}
+            <div className="bg-blue-900/50 rounded-2xl p-8 border border-blue-700/50 shadow-2xl backdrop-blur-lg">
+              <div className="flex justify-center items-center h-80 text-gray-400">
+                <Icon name="Image" className="w-24 h-24 opacity-50" />
+              </div>
             </div>
           </div>
         </div>
@@ -1282,6 +1186,7 @@ const DatasetsDashboard: React.FC<DatasetsDashboardProps> = ({
     </div>
   );
 };
+
 
 // components/Modal.tsx
 interface ModalProps {
@@ -1479,17 +1384,7 @@ export default function App() {
         );
       case Page.DATASETS:
         return (
-          <DatasetsDashboard 
-            datasets={datasets}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            filter={filter}
-            setFilter={setFilter}
-            sort={sort}
-            handleSort={handleDatasetSort}
-            theme={currentTheme}
-            setActivePage={setActivePage} 
-          />
+          <DatasetsDashboard />
         );
       case Page.ANALYTICS:
       case Page.SETTINGS:
@@ -1503,7 +1398,7 @@ export default function App() {
       default:
         return null;
     }
-  }, [activePage, datasets, activeKpi, setActiveKpi, timeRange, setTimeRange, currentTheme, openChartModal, searchTerm, setSearchTerm, filter, setFilter, sort, handleDatasetSort, setActivePage, kpiData]);
+  }, [activePage, datasets, activeKpi, setActiveKpi, timeRange, setTimeRange, currentTheme, openChartModal, searchTerm, filter, sort, handleDatasetSort, setActivePage, kpiData]);
 
   return (
     <div className={`flex flex-1 h-screen ${currentTheme.app} ${currentTheme.text}`}>

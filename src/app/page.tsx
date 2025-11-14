@@ -1120,21 +1120,21 @@ const DatasetsDashboard: React.FC = () => {
             <Icon name="Star" className="w-5 h-5 text-green-400" />
             <span className="font-semibold">Trustpilot</span>
             <div className="flex">
-              {[...Array(5)].map((i) => <Icon key={i} name="Star" className="w-5 h-5 text-green-400 fill-current" />)}
+              {[...Array(5)].map((_, i) => <Icon key={i} name="Star" className="w-5 h-5 text-green-400 fill-current" />)}
             </div>
           </div>
           <div className="flex items-center space-x-2">
             <span className="font-bold text-lg text-red-500">G</span>
             <span className="font-semibold text-white">G2</span>
             <div className="flex">
-              {[...Array(5)].map((i) => <Icon key={i} name="Star" className="w-5 h-5 text-red-400 fill-current" />)}
+              {[...Array(5)].map((_, i) => <Icon key={i} name="Star" className="w-5 h-5 text-red-400 fill-current" />)}
             </div>
           </div>
           <div className="flex items-center space-x-2">
             <Icon name="Zap" className="w-5 h-5 text-yellow-500" />
             <span className="font-semibold text-white">Capterra</span>
             <div className="flex">
-              {[...Array(5)].map((i) => <Icon key={i} name="Star" className="w-5 h-5 text-yellow-400 fill-current" />)}
+              {[...Array(5)].map((_, i) => <Icon key={i} name="Star" className="w-5 h-5 text-yellow-400 fill-current" />)}
             </div>
           </div>
         </div>

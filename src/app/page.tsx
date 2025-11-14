@@ -469,8 +469,8 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
     const entry = data[index]; 
 
     const outerRadialOffset = 5;
-    const lineSegmentLength = 8;
-    const horizontalLineExtension = 5;
+    const lineSegmentLength = 20;
+    const horizontalLineExtension = 15;
     const labelBoxMargin = 8;
 
     const angleInRad = -RADIAN * midAngle;
@@ -515,15 +515,15 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
           <div style={{
             background: 'transparent',
             border: 'none',
-            color: '#d4d4d8', 
+            color: theme.text === 'text-zinc-900' ? '#52525b' : '#d4d4d8', 
             fontSize: isModal ? '14px' : '12px', 
             lineHeight: '1.3',
             textAlign: textAnchor === 'start' ? 'left' : 'right',
             whiteSpace: 'nowrap',
           }}>
             <div style={{ color: entry.color, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis' }}>{entry.name}</div>
-            <div style={{ color: theme.text === 'text-zinc-900' ? '#52525b' : '#d4d4d8' }}>Count: {entry.value}</div>
-            <div style={{ color: theme.text === 'text-zinc-900' ? '#52525b' : '#d4d4d8' }}>{percentValue}%</div>
+            <div>Count: {entry.value}</div>
+            <div>{percentValue}%</div>
           </div>
         </foreignObject>
       </g>
@@ -655,7 +655,7 @@ interface MiniDatasetTableProps {
 const MiniDatasetTable: React.FC<MiniDatasetTableProps> = ({
   data,
   theme,
-  title = "New Datasets", 
+  title = "Datasets", 
   setActivePage,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -969,7 +969,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
         <div className="lg:col-span-2">
-          <div className={`rounded-2xl p-6 shadow-sm ${theme.chartBg} h-[350px]`}>
+          <div className={`rounded-2xl p-6 shadow-sm ${theme.chartBg} h-[400px]`}>
             <div className="flex justify-between items-start mb-6">
               <div>
                 <h3 className={`text-xl font-bold ${theme.chartTitle}`}>{kpiTitle[activeKpi]}</h3>
@@ -994,20 +994,20 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
                 </button>
               </div>
             </div>
-            <div className="h-[250px]">
+            <div className="h-[300px]">
               <ChartRenderer id="mainChart" chartType="line" data={mainChartDataAndOptions.data} options={mainChartDataAndOptions.options} />
             </div>
           </div>
         </div>
         <div className="lg:col-span-1">
-          <div className={`rounded-2xl p-6 shadow-sm ${theme.chartBg} h-[350px]`}>
+          <div className={`rounded-2xl p-6 shadow-sm ${theme.chartBg} h-[400px]`}>
             <div className="flex justify-between items-start mb-6">
               <h3 className={`text-xl font-bold ${theme.chartTitle}`}>Datasets by Category</h3>
               <button onClick={() => openChartModal('pie', 'Datasets by Category')} className="p-2 rounded-lg text-zinc-400 hover:bg-zinc-800">
                 <Icon name="Maximize2" className="w-5 h-5" />
               </button>
             </div>
-            <div className="h-[250px]">
+            <div className="h-[300px]">
               <DonutChartRecharts data={DONUT_DATA} theme={theme} />
             </div>
           </div>
@@ -1054,58 +1054,38 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
 
 // components/DatasetsPage.tsx
 const DatasetsPage: React.FC = () => {
-  return (
-    <div className="flex-1 overflow-y-auto bg-gray-900 text-gray-200">
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-blue-500">
-            Next-Gen Data Solutions
-          </h1>
-          <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-8">
-            Unlock the full potential of your data with our cutting-edge AI-powered platform. From computer vision to predictive analytics, we provide the tools you need to stay ahead.
-          </p>
-          <div className="flex justify-center gap-4 mb-12">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition-transform transform hover:scale-105 shadow-lg">
-              Buy Now
-            </button>
-            <button className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-full transition-transform transform hover:scale-105 shadow-lg">
-              Contact Sales
-            </button>
-          </div>
-          <div className="flex justify-center items-center space-x-4 text-gray-400">
-            <span className="font-semibold">Trustpilot</span>
-            <div className="flex">
-              {[...Array(5)].map((_, i) => <Icon key={i} name="Star" className="w-5 h-5 text-green-400 fill-current" />)}
-            </div>
-          </div>
-        </div>
-
-        <div className="relative mt-16">
-          <div className="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-blue-500/10 blur-3xl rounded-full"></div>
-          <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              { title: 'Computer Vision', icon: 'Eye' },
-              { title: 'NLP & Text Analytics', icon: 'FileText' },
-              { title: 'Predictive Modeling', icon: 'TrendingUp' },
-              { title: 'Anomaly Detection', icon: 'ShieldAlert' },
-            ].map((feature, index) => (
-              <div key={index} className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-gray-700/50 hover:border-teal-400/50 transition-all transform hover:-translate-y-2">
-                <div className="flex justify-center items-center mb-6 h-16">
-                  <div className="p-4 bg-gray-700/50 rounded-full">
-                    <Icon name={feature.icon} className="w-8 h-8 text-teal-400" />
-                  </div>
+    return (
+        <div className="flex-1 overflow-y-auto bg-gray-900 text-gray-200">
+            <div className="container mx-auto px-4 py-16">
+                <div className="text-center max-w-4xl mx-auto">
+                    <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-blue-500">
+                        Explore Our Datasets
+                    </h1>
+                    <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-12">
+                        Unlock insights from a vast collection of datasets across various domains.
+                    </p>
                 </div>
-                <h3 className="text-xl font-bold mb-2 text-white">{feature.title}</h3>
-                <p className="text-gray-400 text-sm">
-                  Lorem ipsum dolor sit am adipisc elit, sed do eiusmod. Lorem ipsum dolor sit adipiscing elit.
-                </p>
-              </div>
-            ))}
-          </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {[
+                        { title: 'Departments', icon: 'Building' },
+                        { title: 'Industries', icon: 'Factory' },
+                        { title: 'Technology', icon: 'Laptop' },
+                        { title: 'Business', icon: 'Briefcase' },
+                    ].map((feature, index) => (
+                        <div key={index} className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-gray-700/50 hover:border-teal-400/50 transition-all transform hover:-translate-y-2">
+                            <div className="flex justify-center items-center mb-6 h-16">
+                                <div className="p-4 bg-gray-700/50 rounded-full">
+                                    <Icon name={feature.icon} className="w-8 h-8 text-teal-400" />
+                                </div>
+                            </div>
+                            <h3 className="text-xl font-bold mb-2 text-center text-white">{feature.title}</h3>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 

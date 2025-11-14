@@ -22,7 +22,7 @@ const HeroSection: React.FC<{ theme: Theme }> = ({ theme }) => {
             </h1>
             
             <p className={`text-lg sm:text-xl ${isDark ? 'text-gray-400' : 'text-gray-600'} mb-10 max-w-lg`}>
-              No more maintaining scrapers or bypassing blocks – just structured and validated data tailored to your business needs.
+              Access high-quality, structured datasets without the hassle of web scraping or getting blocked.
             </p>
 
             <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4"> 

@@ -11,7 +11,7 @@ const HeroSection: React.FC<{ theme: Theme }> = ({ theme }) => {
   const imageUrl = "https://i.postimg.cc/wMKCXy1V/Gemini-Generated-Image-vdgi6yvdgi6yvdgi-Photoroom-removebg-preview.png";
 
   return (
-    <section className={`relative py-12 lg:py-20 px-4 sm:px-8 ${isDark ? 'bg-slate-900' : 'bg-gray-100'} text-gray-100`}>
+    <section className={`relative py-12 lg:py-20 px-4 sm:px-8 ${theme.heroBg || (isDark ? 'bg-slate-900' : 'bg-gray-100')} text-gray-100`}>
       <div className={`max-w-7xl mx-auto w-full ${isDark ? 'bg-slate-800/70' : 'bg-white'} backdrop-blur-sm rounded-3xl shadow-2xl p-6 md:p-12 border ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
         
         <div className="lg:flex lg:space-x-12">
@@ -62,8 +62,8 @@ interface DatasetCardProps {
 
 const DatasetCard: React.FC<DatasetCardProps> = ({ dataset, theme }) => {
   const isDark = theme.text !== 'text-zinc-900';
-  const cardBg = isDark ? 'bg-slate-800/60' : 'bg-white';
-  const cardBorder = isDark ? 'border-slate-700/80' : 'border-gray-200/80';
+  const cardBg = theme.cardBg || (isDark ? 'bg-slate-800/60' : 'bg-white');
+  const cardBorder = theme.cardBorder || (isDark ? 'border-slate-700/80' : 'border-gray-200/80');
   const textColor = isDark ? 'text-slate-100' : 'text-slate-800';
   const subtleTextColor = isDark ? 'text-slate-400' : 'text-slate-500';
 

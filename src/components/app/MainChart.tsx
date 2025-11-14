@@ -22,7 +22,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
             <div className="rounded-lg p-3 shadow-lg bg-zinc-900 border border-zinc-700">
                 <p className="label text-sm font-bold mb-2 text-zinc-100">{label}</p>
                 {payload.map((p: any, index: number) => (
-                    <div key={index} style={{ color: p.color }} className="text-sm font-medium">
+                    <div key={index} style={{ color: p.stroke }} className="text-sm font-medium">
                         {`${p.name}: ${p.value.toLocaleString()}`}
                     </div>
                 ))}
@@ -47,6 +47,7 @@ export default function MainChart({ kpiKey, chartColor, timeRange, setTimeRange 
             return (dataForTimeRange as any[]).map((d: any) => ({
                 name: d.name,
                 trending: d.crypto + d.shipping + d.userData,
+                crypto: d.crypto,
             }));
         }
         
@@ -95,6 +96,17 @@ export default function MainChart({ kpiKey, chartColor, timeRange, setTimeRange 
                     dot={false}
                     activeDot={{ r: 6, fill: activeChartColor, stroke: 'none' }}
                 />
+                {kpiKey === 'trending' && (
+                    <Line
+                        type="monotone"
+                        dataKey="crypto"
+                        name="Crypto"
+                        stroke="#34d399" // A green color
+                        strokeWidth={2}
+                        dot={false}
+                        activeDot={{ r: 6, fill: '#34d399', stroke: 'none' }}
+                    />
+                )}
             </LineChart>
         </ResponsiveContainer>
     );

@@ -1,11 +1,10 @@
-"use client";
-
+'use client';
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import Chart, { ChartConfiguration, ChartType, ChartData, ChartOptions } from 'chart.js/auto';
 import { CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Tooltip, Legend } from 'chart.js';
 import * as LucideIcons from 'lucide-react';
-// Fix: Add Tooltip to the recharts import
-import { ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+// Re-import Tooltip from recharts with an alias for use in recharts components
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip as RechartsTooltip } from 'recharts';
 
 // Register Chart.js components
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Tooltip, Legend);
@@ -59,29 +58,14 @@ export interface Dataset {
   type: DatasetType;
   status: DatasetStatus;
   trend: string;
-  records: string;
+  records: string; // Used for views count now
   size: string;
   created: string;
   lastUpdate: string;
   owner: string;
   sensitivity: string;
-}
-
-export interface MarketplaceDataset {
-  id: string;
-  title: string;
-  description: string;
-  views: string;
-  downloads: string;
-}
-
-export interface Instructor {
-  id: string;
-  name: string;
-  avatar: string;
-  degree: string;
-  classes: number;
-  expertise: string;
+  description: string; // New field for card description
+  downloads: string; // New field for card downloads
 }
 
 export interface KpiDataItem {
@@ -91,7 +75,6 @@ export interface KpiDataItem {
   changeType: 'positive' | 'negative';
   icon: string;
   color: string;
-  gradient: string;
 }
 
 export interface BaseChartSeries {
@@ -139,6 +122,13 @@ export interface Theme {
   chartBg: string;
   chartTitle: string;
   modal: string;
+  // New theme properties for the dataset page layout
+  heroBg?: string;
+  cardBg?: string;
+  cardBorder?: string;
+  sectionBg?: string;
+  highlightText?: string;
+  neutralBg?: string; // For sections that need a subtle background
 }
 
 export type Themes = {
@@ -158,81 +148,45 @@ export interface SortState {
 
 // constants.ts
 export const MOCK_DATASETS: Dataset[] = [
-  { id: 'ds_002', name: 'Product Catalog (Staging)', type: DatasetType.DATABASE, status: DatasetStatus.ACTIVE, trend: '+5.2%', records: '1.2K', size: '150MB', created: '2023-02-01', lastUpdate: '2023-11-10', owner: 'Data Ops', sensitivity: 'Medium' },
-  { id: 'ds_003', name: 'Quarterly Sales Projections', type: DatasetType.FILE, status: DatasetStatus.ACTIVE, trend: '-2.4%', records: '850', size: '25MB', created: '2023-03-20', lastUpdate: '2023-11-01', owner: 'Finance Team', sensitivity: 'High' },
-  { id: 'ds_004', name: 'API Gateway Logs (Jan)', type: DatasetType.LOG, status: DatasetStatus.ARCHIVED, trend: '0.0%', records: '150M', size: '25.6TB', created: '2023-01-31', lastUpdate: '2023-02-01', owner: 'DevOps', sensitivity: 'Medium' },
-  { id: 'ds_005', name: 'Customer Support Tickets', type: DatasetType.DATABASE, status: DatasetStatus.ACTIVE, trend: '+18.3%', records: '45.2K', size: '2.2GB', created: '2022-11-10', lastUpdate: '2023-11-11', owner: 'Support Team', sensitivity: 'High' },
-  { id: 'ds_006', name: 'Marketing Campaign ROI', type: DatasetType.STATIC, status: DatasetStatus.ACTIVE, trend: '+8.1%', records: '5.6K', size: '110MB', created: '2023-04-05', lastUpdate: '2023-10-28', owner: 'Marketing', sensitivity: 'Medium' },
-  { id: 'ds_007', name: 'IoT Sensor Data (Factory A)', type: DatasetType.STREAM, status: DatasetStatus.PAUSED, trend: 'N/A', records: 'N/A', size: 'N/A', created: '2023-05-15', lastUpdate: '2023-11-05', owner: 'Ops', sensitivity: 'Low' },
-  { id: 'ds_008', name: 'Employee Directory', type: DatasetType.DATABASE, status: DatasetStatus.ACTIVE, trend: '+1.0%', records: '1.8K', size: '90MB', created: '2022-01-01', lastUpdate: '2023-11-11', owner: 'HR', sensitivity: 'High' },
-  { id: 'ds_009', name: 'Web Analytics (Main Site)', type: DatasetType.STREAM, status: DatasetStatus.ERROR, trend: '-5.5%', records: '800K', size: '500GB', created: '2023-06-01', lastUpdate: '2023-11-12', owner: 'Marketing', sensitivity: 'Medium' },
-  { id: 'ds_010', name: 'Financial Transactions Q3', type: DatasetType.STATIC, status: DatasetStatus.ACTIVE, trend: '+3.2%', records: '1.1M', size: '1.5GB', created: '2023-10-01', lastUpdate: '2023-11-01', owner: 'Finance Team', sensitivity: 'Confidential' },
-  { id: 'ds_012', name: 'Internal Audit Logs (Q1)', type: DatasetType.LOG, status: DatasetStatus.ACTIVE, trend: '+0.5%', records: '200M', size: '30.0TB', created: '2023-01-01', lastUpdate: '2023-03-31', owner: 'Security', sensitivity: 'High' },
-  { id: 'ds_013', name: 'Customer Feedback Survey', type: DatasetType.FILE, status: DatasetStatus.ACTIVE, trend: '+7.8%', records: '1.5K', size: '35MB', created: '2023-09-01', lastUpdate: '2023-11-10', owner: 'Customer Success', sensitivity: 'Medium' },
-  { id: 'ds_014', name: 'Supply Chain Data', type: DatasetType.DATABASE, status: DatasetStatus.ACTIVE, trend: '+4.1%', records: '50K', size: '3.5GB', created: '2023-08-10', lastUpdate: '2023-11-09', owner: 'Operations', sensitivity: 'High' },
-  // Reordered 'Live' datasets to match screenshot for "New Datasets"
-  { id: 'ds_015', name: 'Website Performance Logs', type: DatasetType.LOG, status: DatasetStatus.ACTIVE, trend: '+9.2%', records: '10M', size: '700GB', created: '2023-04-15', lastUpdate: 'Live', owner: 'DevOps', sensitivity: 'Low' },
-  { id: 'ds_011', name: 'User Engagement Metrics', type: DatasetType.STREAM, status: DatasetStatus.ACTIVE, trend: '+15.0%', records: '3.1M', size: '1.8TB', created: '2023-07-20', lastUpdate: 'Live', owner: 'Product Team', sensitivity: 'Medium' },
-  { id: 'ds_001', name: 'Real-time User Activity', type: DatasetType.STREAM, status: DatasetStatus.ACTIVE, trend: '+12.5%', records: '2.5M', size: '1.2TB', created: '2023-01-15', lastUpdate: 'Live', owner: 'Alex Moran', sensitivity: 'High' },
+  { id: 'ds_002', name: 'Product Catalog (Staging)', type: DatasetType.DATABASE, status: DatasetStatus.ACTIVE, trend: '+5.2%', records: '1.2K', size: '150MB', created: '2023-02-01', lastUpdate: '2023-11-10', owner: 'Data Ops', sensitivity: 'Medium', description: 'Product IDs, SKUs, pricing, images, and inventory data.', downloads: '120+' },
+  { id: 'ds_003', name: 'Quarterly Sales Projections', type: DatasetType.FILE, status: DatasetStatus.ACTIVE, trend: '-2.4%', records: '850', size: '25MB', created: '2023-03-20', lastUpdate: '2023-11-01', owner: 'Finance Team', sensitivity: 'High', description: 'Revenue forecasts, regional sales targets, and market analysis.', downloads: '85+' },
+  { id: 'ds_004', name: 'API Gateway Logs (Jan)', type: DatasetType.LOG, status: DatasetStatus.ARCHIVED, trend: '0.0%', records: '150M', size: '25.6TB', created: '2023-01-31', lastUpdate: '2023-02-01', owner: 'DevOps', sensitivity: 'Medium', description: 'API call details, response times, error rates, and user agents.', downloads: '15M+' },
+  { id: 'ds_005', name: 'Customer Support Tickets', type: DatasetType.DATABASE, status: DatasetStatus.ACTIVE, trend: '+18.3%', records: '45.2K', size: '2.2GB', created: '2022-11-10', lastUpdate: '2023-11-11', owner: 'Support Team', sensitivity: 'High', description: 'Ticket ID, customer name, issue description, status, and resolution.', downloads: '4.5K+' },
+  { id: 'ds_006', name: 'Marketing Campaign ROI', type: DatasetType.STATIC, status: DatasetStatus.ACTIVE, trend: '+8.1%', records: '5.6K', size: '110MB', created: '2023-04-05', lastUpdate: '2023-10-28', owner: 'Marketing', sensitivity: 'Medium', description: 'Campaign ID, spend, impressions, clicks, conversions, and revenue.', downloads: '560+' },
+  { id: 'ds_007', name: 'IoT Sensor Data (Factory A)', type: DatasetType.STREAM, status: DatasetStatus.PAUSED, trend: 'N/A', records: 'N/A', size: 'N/A', created: '2023-05-15', lastUpdate: '2023-11-05', owner: 'Ops', sensitivity: 'Low', description: 'Temperature, pressure, humidity readings from factory sensors.', downloads: 'N/A' },
+  { id: 'ds_008', name: 'Employee Directory', type: DatasetType.DATABASE, status: DatasetStatus.ACTIVE, trend: '+1.0%', records: '1.8K', size: '90MB', created: '2022-01-01', lastUpdate: '2023-11-11', owner: 'HR', sensitivity: 'High', description: 'Employee ID, name, department, title, contact information, and start date.', downloads: '180+' },
+  { id: 'ds_009', name: 'Web Analytics (Main Site)', type: DatasetType.STREAM, status: DatasetStatus.ERROR, trend: '-5.5%', records: '800K', size: '500GB', created: '2023-06-01', lastUpdate: '2023-11-12', owner: 'Marketing', sensitivity: 'Medium', description: 'Page views, unique visitors, bounce rate, session duration, and referral sources.', downloads: '80K+' },
+  { id: 'ds_010', name: 'Financial Transactions Q3', type: DatasetType.STATIC, status: DatasetStatus.ACTIVE, trend: '+3.2%', records: '1.1M', size: '1.5GB', created: '2023-10-01', lastUpdate: '2023-11-01', owner: 'Finance Team', sensitivity: 'Confidential', description: 'Transaction ID, amount, date, payment method, and product details.', downloads: '110K+' },
+  { id: 'ds_012', name: 'Internal Audit Logs (Q1)', type: DatasetType.LOG, status: DatasetStatus.ACTIVE, trend: '+0.5%', records: '200M', size: '30.0TB', created: '2023-01-01', lastUpdate: '2023-03-31', owner: 'Security', sensitivity: 'High', description: 'User actions, system events, access attempts, and security incidents.', downloads: '20M+' },
+  { id: 'ds_013', name: 'Customer Feedback Survey', type: DatasetType.FILE, status: DatasetStatus.ACTIVE, trend: '+7.8%', records: '1.5K', size: '35MB', created: '2023-09-01', lastUpdate: '2023-11-10', owner: 'Customer Success', sensitivity: 'Medium', description: 'Survey responses, customer sentiment, product suggestions, and satisfaction scores.', downloads: '150+' },
+  { id: 'ds_014', name: 'Supply Chain Data', type: DatasetType.DATABASE, status: DatasetStatus.ACTIVE, trend: '+4.1%', records: '50K', size: '3.5GB', created: '2023-08-10', lastUpdate: '2023-11-09', owner: 'Operations', sensitivity: 'High', description: 'Supplier information, inventory levels, shipment tracking, and logistics data.', downloads: '5K+' },
+  { id: 'ds_015', name: 'Website Performance Logs', type: DatasetType.LOG, status: DatasetStatus.ACTIVE, trend: '+9.2%', records: '10M', size: '700GB', created: '2023-04-15', lastUpdate: 'Live', owner: 'DevOps', sensitivity: 'Low', description: 'Page load times, server response, network requests, and error logs.', downloads: '1M+' },
+  { id: 'ds_011', name: 'User Engagement Metrics', type: DatasetType.STREAM, status: DatasetStatus.ACTIVE, trend: '+15.0%', records: '3.1M', size: '1.8TB', created: '2023-07-20', lastUpdate: 'Live', owner: 'Product Team', sensitivity: 'Medium', description: 'User sessions, clicks, page views, conversion funnels, and feature usage.', downloads: '310K+' },
+  { id: 'ds_001', name: 'Real-time User Activity', type: DatasetType.STREAM, status: DatasetStatus.ACTIVE, trend: '+12.5%', records: '2.5M', size: '1.2TB', created: '2023-01-15', lastUpdate: 'Live', owner: 'Alex Moran', sensitivity: 'High', description: 'Live user actions, navigation paths, and interactive events.', downloads: '250K+' },
+  // Added more specific dataset examples to match screenshot content if possible
+  { id: 'ds_016', name: 'LinkedIn People Profiles', type: DatasetType.DATABASE, status: DatasetStatus.ACTIVE, trend: '+10%', records: '68.3K+', size: '10GB', created: '2023-10-01', lastUpdate: '2023-11-15', owner: 'Marketing', sensitivity: 'High', description: 'ID, Name, City, Country code, Position, About, Posts, Current company, and more.', downloads: '6.7K+' },
+  { id: 'ds_017', name: 'Amazon Products', type: DatasetType.STATIC, status: DatasetStatus.ACTIVE, trend: '+15%', records: '21.3K+', size: '5GB', created: '2023-09-20', lastUpdate: '2023-11-14', owner: 'E-commerce', sensitivity: 'Medium', description: 'Title, Seller name, Brand, Description, Initial price, Currency, Reviews count, and more.', downloads: '3K+' },
+  { id: 'ds_018', name: 'LinkedIn Company Information', type: DatasetType.DATABASE, status: DatasetStatus.ACTIVE, trend: '+8%', records: '20.1K+', size: '8GB', created: '2023-10-05', lastUpdate: '2023-11-13', owner: 'Sales', sensitivity: 'Medium', description: 'ID, Name, Country code, Locations, Followers, Employees in linkedin, About, Specialties, and more.', downloads: '2.4K+' },
+  { id: 'ds_019', name: 'Instagram - Profiles', type: DatasetType.STREAM, status: DatasetStatus.ACTIVE, trend: '+20%', records: '12.6K+', size: '3GB', created: '2023-11-01', lastUpdate: '2023-11-16', owner: 'Social Media', sensitivity: 'Medium', description: 'Account, Fbid, ID, Followers, Posts count, Is business account, Is professional account, Is verified, and more.', downloads: '1.5K+' },
+  { id: 'ds_020', name: 'Crunchbase Companies Information', type: DatasetType.DATABASE, status: DatasetStatus.ACTIVE, trend: '+12%', records: '10.3K+', size: '6GB', created: '2023-09-15', lastUpdate: '2023-11-10', owner: 'Business Dev', sensitivity: 'Medium', description: 'Name, URL, ID, Cb rank, Region, About, Industries, Operating status, and more.', downloads: '1.1K+' },
+  { id: 'ds_021', name: 'LinkedIn Job Listings Information', type: DatasetType.STATIC, status: DatasetStatus.ACTIVE, trend: '+7%', records: '9.6K+', size: '4GB', created: '2023-10-20', lastUpdate: '2023-11-12', owner: 'HR', sensitivity: 'Medium', description: 'URL, job posting id, job title, Company name, Company id, Job location, Job summary, Job seniority level, and more.', downloads: '1.5K+' },
 ];
 
-
-export const MOCK_MARKETPLACE_DATASETS: MarketplaceDataset[] = [
-    {
-        id: 'mp_001',
-        title: 'LinkedIn people profiles',
-        description: 'ID, Name, City, Country code, Position, About, Posts, Current company, and more.',
-        views: '68.3K+',
-        downloads: '6.7K+'
-    },
-    {
-        id: 'mp_002',
-        title: 'Amazon products',
-        description: 'Title, Seller name, Brand, Description, Initial price, Currency, Availability, Reviews count, and more.',
-        views: '21.3K+',
-        downloads: '3K+'
-    },
-    {
-        id: 'mp_003',
-        title: 'LinkedIn company information',
-        description: 'ID, Name, Country code, Locations, Followers, Employees in linkedin, About, Specialties, and more.',
-        views: '20.1K+',
-        downloads: '2.4K+'
-    },
-    {
-        id: 'mp_004',
-        title: 'Instagram - Profiles',
-        description: 'Account, Fbid, ID, Followers, Posts count, Is business account, Is professional account, Is verified, and more.',
-        views: '12.6K+',
-        downloads: '1.5K+'
-    },
-    {
-        id: 'mp_005',
-        title: 'Crunchbase companies information',
-        description: 'Name, URL, ID, Cb rank, Region, About, Industries, Operating status, and more.',
-        views: '10.3K+',
-        downloads: '1.1K+'
-    },
-    {
-        id: 'mp_006',
-        title: 'Linkedin job listings information',
-        description: 'URL, Job posting id, Job title, Company name, Company id, Job location, Job summary, Job seniority level, and more.',
-        views: '9.6K+',
-        downloads: '1.5K+'
-    }
-];
 export const TRENDING_DATA_SERIES: TrendingChartSeries = {
   Month: [
-    { label: 'Total', data: [0.7, 0.6, 0.8, 0.75, 0.9, 0.85, 0.95, 0.8, 0.7, 0.75, 0.8, 0.9], color: '#c084fc' }, // purple-400
-    { label: 'Crypto', data: [0.3, 0.4, 0.35, 0.5, 0.45, 0.55, 0.5, 0.4, 0.3, 0.4, 0.5, 0.4], color: '#f97316' }, // orange-500
+    { label: 'Dataset A', data: [0.7, 0.6, 0.8, 0.75, 0.9, 0.85, 0.95, 0.8, 0.7, 0.75, 0.8, 0.9], color: '#3b82f6' }, // blue-500
+    { label: 'Dataset B', data: [0.5, 0.55, 0.6, 0.65, 0.7, 0.6, 0.65, 0.75, 0.8, 0.7, 0.65, 0.7], color: '#ec4899' }, // pink-500
+    { label: 'Dataset C', data: [0.3, 0.4, 0.35, 0.5, 0.45, 0.55, 0.5, 0.4, 0.3, 0.4, 0.5, 0.4], color: '#14b8a6' }, // teal-500
   ],
   Week: [
-    { label: 'Total', data: [0.8, 0.75, 0.85, 0.9, 0.8, 0.7, 0.9], color: '#c084fc' },
-    { label: 'Crypto', data: [0.4, 0.45, 0.5, 0.4, 0.3, 0.35, 0.4], color: '#f97316' },
+    { label: 'Dataset A', data: [0.8, 0.75, 0.85, 0.9, 0.8, 0.7, 0.9], color: '#3b82f6' },
+    { label: 'Dataset B', data: [0.6, 0.65, 0.7, 0.75, 0.7, 0.6, 0.7], color: '#ec4899' },
+    { label: 'Dataset C', data: [0.4, 0.45, 0.5, 0.4, 0.3, 0.35, 0.4], color: '#14b8a6' },
   ],
   Day: [
-    { label: 'Total', data: [0.7, 0.75, 0.8, 0.85, 0.9, 0.88, 0.92, 0.85, 0.8, 0.75, 0.7, 0.65], color: '#c084fc' },
-    { label: 'Crypto', data: [0.3, 0.32, 0.35, 0.38, 0.4, 0.37, 0.39, 0.35, 0.3, 0.28, 0.25, 0.2], color: '#f97316' },
+    { label: 'Dataset A', data: [0.7, 0.75, 0.8, 0.85, 0.9, 0.88, 0.92, 0.85, 0.8, 0.75, 0.7, 0.65], color: '#3b82f6' },
+    { label: 'Dataset B', data: [0.5, 0.55, 0.6, 0.62, 0.65, 0.6, 0.58, 0.63, 0.6, 0.55, 0.5, 0.48], color: '#ec4899' },
+    { label: 'Dataset C', data: [0.3, 0.32, 0.35, 0.38, 0.4, 0.37, 0.39, 0.35, 0.3, 0.28, 0.25, 0.2], color: '#14b8a6' },
   ],
 };
 
@@ -258,6 +212,7 @@ export const CHART_DATA: ChartDataType = {
 export const DONUT_DATA: DonutDataItem[] = [
   { name: 'Stream', value: 4, color: '#3b82f6' }, // blue-500 (ds_001, ds_007, ds_009, ds_011)
   { name: 'Database', value: 4, color: '#ec4899' }, // pink-500 (ds_002, ds_005, ds_008, ds_014)
+  { name: 'File', value: 2, color: '#14b8a6' }, // teal-500 (ds_003, ds_013)
   { name: 'Log', value: 3, color: '#f97316' }, // orange-500 (ds_004, ds_012, ds_015)
   { name: 'Static', value: 2, color: '#a855f7' } // purple-500 (ds_006, ds_010)
 ];
@@ -289,7 +244,14 @@ export const THEMES: Themes = {
     kpiCardValue: 'text-white',
     chartBg: 'bg-[#14253F]/90',
     chartTitle: 'text-white',
-    modal: 'bg-zinc-900'
+    modal: 'bg-zinc-900',
+    // New properties for Datasets page
+    heroBg: 'bg-[#0A1934]', // Deep blue background for hero section
+    cardBg: 'bg-[#1A3459]', // Slightly lighter dark blue for dataset cards
+    cardBorder: 'border-[#2A497A]', // Border for cards
+    sectionBg: 'bg-[#0A1934]', // Main section background for datasets page
+    neutralBg: 'bg-zinc-900', // For sections that need a subtle background
+    highlightText: 'text-teal-400', // Highlight color for "AI & Big Data"
   },
   [ThemeKey.DAY]: {
     app: 'bg-gradient-to-br from-white to-blue-50',
@@ -310,7 +272,14 @@ export const THEMES: Themes = {
     kpiCardValue: 'text-zinc-900',
     chartBg: 'bg-white',
     chartTitle: 'text-zinc-900',
-    modal: 'bg-white'
+    modal: 'bg-white',
+    // New properties for Datasets page
+    heroBg: 'bg-blue-600',
+    cardBg: 'bg-white',
+    cardBorder: 'border-zinc-200',
+    sectionBg: 'bg-zinc-100',
+    neutralBg: 'bg-white',
+    highlightText: 'text-blue-700',
   },
   [ThemeKey.SUNSET]: {
     app: 'bg-gradient-to-br from-purple-900 via-red-700 to-orange-500',
@@ -331,7 +300,14 @@ export const THEMES: Themes = {
     kpiCardValue: 'text-white',
     chartBg: 'bg-[#2a1a3b]/90',
     chartTitle: 'text-white',
-    modal: 'bg-zinc-900'
+    modal: 'bg-zinc-900',
+    // New properties for Datasets page
+    heroBg: 'bg-purple-950',
+    cardBg: 'bg-red-950',
+    cardBorder: 'border-red-800',
+    sectionBg: 'bg-purple-900',
+    neutralBg: 'bg-[#2a1a3b]',
+    highlightText: 'text-orange-300',
   },
   [ThemeKey.FOREST]: {
     app: 'bg-gradient-to-br from-green-900 via-teal-800 to-gray-900',
@@ -352,7 +328,14 @@ export const THEMES: Themes = {
     kpiCardValue: 'text-white',
     chartBg: 'bg-[#0d2a21]/90',
     chartTitle: 'text-white',
-    modal: 'bg-zinc-900'
+    modal: 'bg-zinc-900',
+    // New properties for Datasets page
+    heroBg: 'bg-green-950',
+    cardBg: 'bg-teal-950',
+    cardBorder: 'border-teal-800',
+    sectionBg: 'bg-green-900',
+    neutralBg: 'bg-[#0d2a21]',
+    highlightText: 'text-green-300',
   }
 };
 
@@ -431,16 +414,16 @@ const KpiCard: React.FC<KpiCardProps> = ({ data, isActive, onClick, theme, isTre
     <div
       onClick={onClick}
       className={`relative p-4 rounded-2xl cursor-pointer transition-all overflow-hidden ${theme.kpiCard} ${
-        isActive ? 'ring-2 ring-purple-500/70 shadow-[0_0_15px_rgba(168,85,247,0.3)]' : 'shadow-md hover:-translate-y-0.5'
+        isActive ? 'ring-2 ring-blue-500/70 shadow-[0_0_15px_rgba(6,182,212,0.3)]' : 'shadow-md hover:-translate-y-0.5'
       }`}
     >
       <div
-        className={`absolute top-0 left-0 right-0 h-1 ${data.gradient}`}
+        className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 to-blue-500"
         style={{ opacity: isActive ? 1 : 0.7 }}
       ></div>
       <div className="flex items-start justify-between pt-2">
         <div className="flex items-center space-x-2">
-          <div className="p-2 rounded-full" style={{ backgroundColor: `${data.color}1A`}}>
+          <div className="p-2 rounded-full bg-cyan-500/10">
             <Icon name={data.icon} className="w-4 h-4 text-sm" style={{ color: data.color }} />
           </div>
           <span className="text-sm font-medium text-zinc-400">{data.title}</span>
@@ -453,7 +436,7 @@ const KpiCard: React.FC<KpiCardProps> = ({ data, isActive, onClick, theme, isTre
             <Icon name={trendIcon} className={`w-3.5 h-3.5 ${trendRotationClass}`} />
             <span>{data.change}</span>
           </div>
-          <span className="text-zinc-400">vs last month</span>
+          {!isTrendingCard && <span className="text-zinc-400">vs last month</span>}
         </div>
       </div>
     </div>
@@ -512,19 +495,22 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
   const pieInnerRadius = isModal ? 70 : 60;
   const pieOuterRadius = isModal ? 110 : 90;
 
+  const outerRadialOffset = isModal ? 10 : 5;
+  const lineSegmentLength = isModal ? 15 : 10;
+  const horizontalLineExtension = isModal ? 20 : 15;
+  const labelBoxMargin = 8;
+  const labelRectWidth = isModal ? 140 : 130;
+  const labelRectHeight = isModal ? 70 : 65;
+  const verticalStackingOffset = isModal ? 35 : 30;
+
+
   const getVerticalStackOffset = useCallback((idx: number, total: number): number => {
-    const verticalStackingOffset = 28;
     return (idx - (total - 1) / 2) * verticalStackingOffset;
-  }, []);
+  }, [verticalStackingOffset]);
 
   const renderCustomizedLabel = useCallback((props: any) => {
     const { cx, cy, midAngle, outerRadius, percent, index } = props;
     const entry = data[index]; 
-
-    const outerRadialOffset = 5;
-    const lineSegmentLength = 10;
-    const horizontalLineExtension = 15;
-    const labelBoxMargin = 8;
 
     const angleInRad = -RADIAN * midAngle;
     const cos = Math.cos(angleInRad);
@@ -555,33 +541,35 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
     if (textAnchor === 'start') {
       labelX = ex + labelBoxMargin;
     } else {
-      labelX = ex - (100 + labelBoxMargin); // 100 is width
+      labelX = ex - labelRectWidth - labelBoxMargin;
     }
-    const labelY = finalEy - (40 / 2); // 40 is height
+    const labelY = finalEy - (labelRectHeight / 2);
 
     const percentValue = (percent * 100).toFixed(0);
 
     return (
       <g>
         <path d={`M${sx},${sy}L${elbowX},${elbowY}L${ex},${finalEy}`} stroke="#a1a1aa" fill="none" strokeWidth={1} />
-        <foreignObject x={labelX} y={labelY} width={100} height={40} style={{ overflow: 'visible' }}>
+        <foreignObject x={labelX} y={labelY} width={labelRectWidth} height={labelRectHeight} style={{ overflow: 'visible' }}>
           <div style={{
-            background: 'transparent',
-            border: 'none',
-            color: '#a1a1aa',
+            backgroundColor: 'rgba(30, 41, 59, 0.9)', 
+            border: `1.5px solid #475569`, 
+            borderRadius: '8px',
+            padding: '6px 8px',
+            color: '#f1f5f9', 
             fontSize: isModal ? '14px' : '12px', 
             lineHeight: '1.3',
             textAlign: textAnchor === 'start' ? 'left' : 'right',
-            whiteSpace: 'nowrap',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
           }}>
-            <div style={{ color: entry.color, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis' }}>{entry.name}</div>
+            <div style={{ color: entry.color, fontWeight: 600 }}>{entry.name}</div>
             <div>Count: {entry.value}</div>
             <div>{percentValue}%</div>
           </div>
         </foreignObject>
       </g>
     );
-  }, [data, getVerticalStackOffset, isModal]);
+  }, [data, outerRadialOffset, lineSegmentLength, horizontalLineExtension, labelBoxMargin, labelRectWidth, labelRectHeight, getVerticalStackOffset, isModal]);
 
 
   return (
@@ -603,7 +591,8 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
             <Cell key={`cell-${index}`} fill={entry.color} />
           ))}
         </Pie>
-        {isModal && <Tooltip />}
+        {/* Fix: Use the aliased RechartsTooltip component */}
+        {isModal && <RechartsTooltip />}
       </PieChart>
     </ResponsiveContainer>
   );
@@ -653,40 +642,18 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage, theme }) =
 
 // components/Topbar.tsx
 interface TopbarProps {
-  searchTerm: string;
-  setSearchTerm: (term: string) => void;
   cycleTheme: () => void;
   theme: Theme;
   activePage: Page;
 }
 
-const Topbar: React.FC<TopbarProps> = ({ searchTerm, setSearchTerm, cycleTheme, theme, activePage }) => {
-  const pageTitles: Record<Page, string> = {
-    [Page.DASHBOARD]: 'Dashboard',
-    [Page.DATASETS]: 'Datasets',
-    [Page.ANALYTICS]: 'Analytics',
-    [Page.SETTINGS]: 'Settings',
-  };
-
-  const showSearch = activePage === Page.DASHBOARD;
-
-
+const Topbar: React.FC<TopbarProps> = ({ cycleTheme, theme, activePage }) => {
   return (
     <header className={`h-20 flex items-center justify-between px-8 border-b backdrop-blur-sm z-10 ${theme.topbar} ${theme.topbarBorder}`}>
       <div className="flex items-center space-x-6">
-        <h1 className={`text-2xl font-bold ${theme.title}`}>{pageTitles[activePage]}</h1>
-        {showSearch && (
-          <div className="relative">
-            <Icon name="Search" className="w-5 h-5 text-zinc-400 absolute top-1/2 left-3 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search datasets..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={`pl-10 pr-4 py-2 w-72 rounded-lg border focus:outline-none focus:ring-2 focus:border-transparent transition-all ${theme.searchBg} ${theme.searchBorder} focus:ring-blue-500`}
-            />
-          </div>
-        )}
+        <h1 className={`text-2xl font-bold ${theme.title}`}>
+          {activePage === Page.DASHBOARD ? 'Dashboard' : activePage.charAt(0).toUpperCase() + activePage.slice(1)}
+        </h1>
       </div>
       <div className="flex items-center space-x-5">
         <button onClick={cycleTheme} className="p-2 rounded-full text-zinc-400 hover:bg-zinc-800">
@@ -710,182 +677,6 @@ const Topbar: React.FC<TopbarProps> = ({ searchTerm, setSearchTerm, cycleTheme, 
   );
 };
 
-// components/MiniDatasetTable.tsx
-interface MiniDatasetTableProps {
-  data: Dataset[];
-  theme: Theme;
-  title?: string;
-  setActivePage: (page: Page) => void;
-}
-
-const MiniDatasetTable: React.FC<MiniDatasetTableProps> = ({
-  data,
-  theme,
-  title = "Datasets", 
-  setActivePage,
-}) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sort, setSort] = useState<SortState>({ key: 'lastUpdate', asc: false });
-  const itemsPerPage = 5;
-
-  const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
-
-  const processedData = useMemo(() => {
-    const filtered = data.filter(item => {
-      const term = searchTerm.toLowerCase();
-      return (
-        item.name.toLowerCase().includes(term) ||
-        item.type.toLowerCase().includes(term)
-      );
-    });
-
-    const sorted = [...filtered].sort((a, b) => {
-      let valA: any = a[sort.key as keyof Dataset];
-      let valB: any = b[sort.key as keyof Dataset];
-
-      if (sort.key === 'lastUpdate' || sort.key === 'created') {
-        if (valA === 'Live') return sort.asc ? 1 : -1;
-        if (valB === 'Live') return sort.asc ? -1 : 1;
-        if (!valA) return sort.asc ? 1 : -1;
-        if (!valB) return sort.asc ? -1 : 1;
-        valA = new Date(valA); valB = new Date(valB);
-      } else if (sort.key === 'size' || sort.key === 'records') {
-        valA = parseMetric(valA); valB = parseMetric(valB);
-      } else if (typeof valA === 'string' && typeof valB === 'string') {
-        valA = valA.toLowerCase(); valB = valB.toLowerCase();
-      } else if (valA == null || valA === 'N/A') return 1;
-      else if (valB == null || valB === 'N/A') return -1;
-
-      if (valA < valB) return sort.asc ? -1 : 1;
-      if (valA > valB) return sort.asc ? 1 : -1;
-      return 0;
-    });
-
-    return sorted.slice(0, itemsPerPage);
-  }, [data, searchTerm, sort]);
-
-  const handleSort = useCallback((key: keyof Dataset) => {
-    setSort(prevSort => ({
-      key,
-      asc: prevSort.key === key ? !prevSort.asc : false,
-    }));
-  }, []);
-
-  const getSortLabel = useCallback((key: keyof Dataset) => {
-    switch (key) {
-      case 'id': return 'ID';
-      case 'name': return 'Name';
-      case 'type': return 'Type';
-      case 'status': return 'Status';
-      case 'records': return 'Records';
-      case 'size': return 'Size';
-      case 'lastUpdate': return 'Last Updated';
-      default: return String(key);
-    }
-  }, []);
-
-  const sortOptions: { key: keyof Dataset; label: string }[] = [
-    { key: 'name', label: 'Name' },
-    { key: 'type', label: 'Type' },
-    { key: 'status', label: 'Status' },
-    { key: 'records', label: 'Records' },
-    { key: 'size', label: 'Size' },
-    { key: 'lastUpdate', label: 'Last Updated' },
-  ];
-
-  return (
-    <div className={`rounded-2xl p-6 shadow-sm border h-full ${theme.table} ${theme.sidebarBorder}`}>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className={`text-xl font-bold ${theme.title}`}>{title}</h2>
-        <div className="flex items-center space-x-4">
-          <div className="relative">
-            <Icon name="Search" className="w-4 h-4 text-zinc-400 absolute top-1/2 left-3 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search Here"
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={`pl-8 pr-4 py-2 w-48 rounded-lg border focus:outline-none focus:ring-1 focus:border-blue-500 ${theme.searchBg} ${theme.searchBorder} ${theme.tableCell}`}
-            />
-          </div>
-          <div className="relative">
-            <button
-              onClick={() => setIsSortMenuOpen(!isSortMenuOpen)}
-              className="flex items-center space-x-2 text-sm font-medium rounded-lg px-4 py-2 transition-colors bg-blue-600 text-white hover:bg-blue-700"
-            >
-              <span>Sort By{sort.key ? `: ${getSortLabel(sort.key)}${sort.asc ? ' ↑' : ' ↓'}` : ''}</span>
-              <Icon name="ChevronDown" className="w-4 h-4" />
-            </button>
-            {isSortMenuOpen && (
-              <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-lg shadow-lg bg-zinc-900 divide-y divide-zinc-800 z-10">
-                {sortOptions.map(option => (
-                  <button
-                    key={option.key as string}
-                    onClick={() => {
-                      handleSort(option.key);
-                      setIsSortMenuOpen(false);
-                    }}
-                    className="block w-full text-left px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800"
-                  >
-                    {option.label}
-                    {sort.key === option.key && (sort.asc ? ' ↑' : ' ↓')}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="overflow-x-auto">
-        <table className={`min-w-full divide-y ${theme.sidebarBorder}`}>
-          <thead className={`${theme.chartBg.replace('/90', '/50')}`}>
-            <tr>
-              <th className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider ${theme.tableCellSubtle}`}>Name</th>
-              <th className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider ${theme.tableCellSubtle}`}>Type</th>
-              <th className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider ${theme.tableCellSubtle}`}>Status</th>
-              <th className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider ${theme.tableCellSubtle}`}>Records</th>
-              <th className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider ${theme.tableCellSubtle}`}>Size</th>
-              <th className={`px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider ${theme.tableCellSubtle}`}>Last Updated</th>
-            </tr>
-          </thead>
-          <tbody className={`${theme.chartBg.replace('/90', '')} divide-y ${theme.sidebarBorder}`}>
-            {processedData.map((item) => (
-              <tr key={item.id} className="hover:bg-zinc-800/20 transition-colors">
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <div className="flex items-center space-x-3">
-                    <Icon name={getIcon(item.type)} className="w-4 h-4 text-blue-400" />
-                    <div>
-                      <div className={`text-sm font-medium ${theme.tableCell}`}>{item.name}</div>
-                      <div className={`text-xs ${theme.tableCellSubtle}`}>{item.id}</div>
-                    </div>
-                  </div>
-                </td>
-                <td className={`px-4 py-3 whitespace-nowrap text-sm ${theme.tableCellSubtle}`}>{item.type}</td>
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <span className={`px-3 py-1 text-xs font-medium text-white rounded-full ${getStatusClass(item.status)}`}>{item.status}</span>
-                </td>
-                <td className={`px-4 py-3 whitespace-nowrap text-sm ${theme.tableCellSubtle}`}>{item.records}</td>
-                <td className={`px-4 py-3 whitespace-nowrap text-sm ${theme.tableCellSubtle}`}>{item.size}</td>
-                <td className={`px-4 py-3 whitespace-nowrap text-sm ${theme.tableCellSubtle}`}>{formatDate(item.lastUpdate)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="flex justify-start items-center mt-4">
-        <button
-          onClick={() => setActivePage(Page.DATASETS)}
-          className="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg px-4 py-2 transition-colors shadow-sm"
-        >
-          View Full Datasets
-        </button>
-      </div>
-    </div>
-  );
-};
-
-
 // components/DashboardPage.tsx
 interface DashboardPageProps {
   datasets: Dataset[];
@@ -908,14 +699,13 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
   openChartModal,
   setActivePage,
 }) => {
-
   const kpiData: Record<KpiKey, KpiDataItem> = {
-    [KpiKey.REQUESTS]: { title: "Total Requests", value: "2.5M", change: "+12.5%", changeType: "positive", icon: "Zap", color: "#818cf8", gradient: "bg-gradient-to-r from-indigo-400 to-indigo-500" },
-    [KpiKey.TRENDING]: { title: "Trending Datasets", value: "Explore", change: "+3 New", changeType: "positive", icon: "TrendingUp", color: "#fb923c", gradient: "bg-gradient-to-r from-orange-400 to-orange-500" },
-    [KpiKey.LATENCY]: { title: "Avg. Response", value: "24ms", change: "-2.4%", changeType: "negative", icon: "Activity", color: "#f472b6", gradient: "bg-gradient-to-r from-pink-400 to-pink-500" },
-    [KpiKey.USERS]: { title: "Concurrent Users", value: "842", change: "+4.3%", changeType: "positive", icon: "Users", color: "#60a5fa", gradient: "bg-gradient-to-r from-blue-400 to-blue-500" }
+    [KpiKey.REQUESTS]: { title: "Total Requests", value: "2.5M", change: "+12.5%", changeType: "positive", icon: "Zap", color: "#22d3ee" },
+    [KpiKey.TRENDING]: { title: "Trending Datasets", value: "7", change: "Top 3 Active", changeType: "positive", icon: "TrendingUp", color: "#c084fc" },
+    [KpiKey.LATENCY]: { title: "Avg. Response", value: "24ms", change: "-2.4%", changeType: "negative", icon: "Activity", color: "#2dd4bf" },
+    [KpiKey.USERS]: { title: "Concurrent Users", value: "842", change: "+4.3%", changeType: "positive", icon: "Users", color: "#fb923c" }
   };
-  
+
   const kpiTitle: Record<KpiKey, string> = {
     [KpiKey.REQUESTS]: 'Total Requests',
     [KpiKey.TRENDING]: 'Top Dataset Trends',
@@ -992,7 +782,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
       mainChartDatasets = [{
         label: kpiTitle[activeKpi],
         data: dataForChart,
-        borderColor: kpiData[activeKpi].color,
+        borderColor: activeKpi === KpiKey.REQUESTS ? '#22d3ee' : activeKpi === KpiKey.LATENCY ? '#2dd4bf' : '#fb923c',
         backgroundColor: 'transparent',
         borderWidth: 2.5,
         pointRadius: 0,
@@ -1011,7 +801,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
       },
       options: mainChartOptions
     };
-  }, [activeKpi, timeRange, theme, getLabels, kpiData]);
+  }, [activeKpi, timeRange, theme, getLabels]);
 
   const trendingDatasets = useMemo(() => {
     return datasets
@@ -1035,7 +825,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
         <div className="lg:col-span-2">
-          <div className={`rounded-2xl p-6 shadow-sm ${theme.chartBg} h-[400px]`}>
+          <div className={`rounded-2xl p-6 shadow-sm ${theme.chartBg}`}>
             <div className="flex justify-between items-start mb-6">
               <div>
                 <h3 className={`text-xl font-bold ${theme.chartTitle}`}>{kpiTitle[activeKpi]}</h3>
@@ -1060,35 +850,26 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
                 </button>
               </div>
             </div>
-            <div className="h-[300px]">
+            <div className="h-[350px]">
               <ChartRenderer id="mainChart" chartType="line" data={mainChartDataAndOptions.data} options={mainChartDataAndOptions.options} />
             </div>
           </div>
         </div>
         <div className="lg:col-span-1">
-          <div className={`rounded-2xl p-6 shadow-sm ${theme.chartBg} h-[400px]`}>
+          <div className={`rounded-2xl p-6 shadow-sm ${theme.chartBg}`}>
             <div className="flex justify-between items-start mb-6">
               <h3 className={`text-xl font-bold ${theme.chartTitle}`}>Datasets by Category</h3>
               <button onClick={() => openChartModal('pie', 'Datasets by Category')} className="p-2 rounded-lg text-zinc-400 hover:bg-zinc-800">
                 <Icon name="Maximize2" className="w-5 h-5" />
               </button>
             </div>
-            <div className="h-[300px]">
+            <div className="h-[350px]">
               <DonutChartRecharts data={DONUT_DATA} theme={theme} />
             </div>
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 h-full">
-          <MiniDatasetTable
-            data={datasets}
-            theme={theme}
-            title="Datasets"
-            setActivePage={setActivePage}
-          />
-        </div>
-        <div className="lg:col-span-1 h-full">
+      <div className="grid grid-cols-1 lg:col-span-1 h-full mt-8"> {/* Adjusted grid and margin */}
           <div className={`rounded-2xl p-6 shadow-sm border h-full ${theme.kpiCard}`}>
             <h3 className={`text-xl font-bold mb-6 ${theme.title}`}>Trending Datasets</h3>
             <div className="space-y-4">
@@ -1114,175 +895,204 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 };
 
-// components/DatasetsPage.tsx
-interface CategoryCardProps {
-  icon: string;
-  title: string;
-  description: string;
+
+// NEW COMPONENTS FOR DATASETS PAGE
+
+interface HeroSectionProps {
+  theme: Theme;
 }
 
-const CategoryCard: React.FC<CategoryCardProps> = ({ icon, title, description }) => (
-  <div className="bg-slate-800/50 p-6 rounded-lg text-center hover:bg-slate-700/50 transition-colors duration-300">
-    <div className="flex justify-center mb-4">
-      <div className="bg-slate-700 p-4 rounded-full">
-        <Icon name={icon} className="w-8 h-8 text-cyan-400" />
-      </div>
-    </div>
-    <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
-    <p className="text-slate-400">{description}</p>
-  </div>
-);
-
-const DatasetsDashboard: React.FC = () => {
-    return (
-        <div className="flex-1 overflow-y-auto p-8" style={{ background: 'rgb(8, 20, 41)' }}>
-            <div className="container mx-auto text-center">
-                <h1 className="text-5xl font-bold text-white mb-4">The #1 source of business data</h1>
-                <p className="text-lg text-slate-400 max-w-2xl mx-auto mb-8">The most accurate, real-time data to fuel your business.</p>
-                <div className="flex justify-center gap-4 mb-8">
-                    <button className="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">Contact Sales</button>
-                    <button className="bg-slate-700 text-white font-semibold py-3 px-6 rounded-lg hover:bg-slate-600 transition-colors">Buy a dataset</button>
-                </div>
-                <div className="flex justify-center items-center gap-8 text-slate-400">
-                    <div className="flex items-center space-x-2">
-                        <span className="font-semibold">G2</span>
-                        <div className="flex">
-                            {[...Array(5)].map((_, i) => <Icon key={i} name="Star" className="w-5 h-5 text-yellow-400 fill-current" />)}
-                        </div>
-                        <span className="text-sm">4.6/5</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <span className="font-semibold">Trustpilot</span>
-                        <div className="flex">
-                            {[...Array(5)].map((_, i) => <Icon key={i} name="Star" className="w-5 h-5 text-green-400 fill-current" />)}
-                        </div>
-                        <span className="text-sm">4.8/5</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-// components/DatasetCard.tsx
-interface DatasetCardProps {
-    dataset: MarketplaceDataset;
-}
-
-const DatasetCard: React.FC<DatasetCardProps> = ({ dataset }) => {
-    return (
-        <div className="bg-[#132644] p-6 rounded-lg border border-blue-900/50 flex flex-col h-full shadow-lg">
-            <h3 className="font-bold text-white text-lg mb-2">{dataset.title}</h3>
-            <p className="text-gray-400 text-sm flex-grow mb-4">{dataset.description}</p>
-            <div className="flex items-center text-gray-400 text-sm mb-4">
-                <div className="flex items-center mr-6">
-                    <Icon name="Eye" className="w-4 h-4 mr-2" />
-                    <span>{dataset.views}</span>
-                </div>
-                <div className="flex items-center">
-                    <Icon name="Download" className="w-4 h-4 mr-2" />
-                    <span>{dataset.downloads}</span>
-                </div>
-            </div>
-            <button className="mt-auto bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors w-full flex items-center justify-center">
-                Buy Now
-                <Icon name="ChevronRight" className="w-4 h-4 ml-1" />
-            </button>
-        </div>
-    );
-};
-
-const DatasetsMarketplace: React.FC = () => {
-    const [searchTerm, setSearchTerm] = useState('');
-
-    const filteredDatasets = useMemo(() => {
-        if (!searchTerm) {
-            return MOCK_MARKETPLACE_DATASETS;
-        }
-        return MOCK_MARKETPLACE_DATASETS.filter(dataset =>
-            dataset.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            dataset.description.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-    }, [searchTerm]);
-
-    return (
-        <div className="flex-1 overflow-y-auto p-8" style={{ background: '#081429' }}>
-            <div className="container mx-auto">
-                <div className="relative mb-8 max-w-lg mx-auto">
-                    <input
-                        type="text"
-                        placeholder="Search for a dataset"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-[#132644] text-white placeholder-gray-500 border border-blue-900/50 rounded-lg py-3 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <Icon name="Search" className="w-5 h-5 text-gray-500 absolute top-1/2 right-4 -translate-y-1/2" />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredDatasets.map(dataset => (
-                        <DatasetCard key={dataset.id} dataset={dataset} />
-                    ))}
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const DatasetsLandingPage: React.FC = () => {
+const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
   return (
-    <div className="flex-1 overflow-y-auto p-8 bg-white">
-      <div className="container mx-auto text-center">
-        <h2 className="text-4xl font-bold text-gray-800 mb-2">
-          Endless Possibilities With <span className="text-teal-500">AI & Big Data</span>
+    <section className={`relative py-20 lg:py-32 px-8 ${theme.heroBg} ${theme.text} overflow-hidden`}>
+      <div className="max-w-7xl mx-auto relative z-10 flex flex-col lg:flex-row items-center lg:items-start justify-between">
+        <div className="lg:w-1/2 text-center lg:text-left mb-12 lg:mb-0">
+          <div className="flex items-center justify-center lg:justify-start space-x-4 mb-6">
+            <div className="flex items-center text-sm">
+              <img src="https://assets-global.website-files.com/653063fcd0c776097d40f28e/653229b139031c54e0c81d86_trustpilot.svg" alt="Trustpilot" className="h-4 mr-2" />
+              <span className="font-semibold text-green-400">4.5</span>
+            </div>
+            <div className="flex items-center text-sm">
+              <img src="https://assets-global.website-files.com/653063fcd0c776097d40f28e/653229b139031c54e0c81d88_capterra.svg" alt="Capterra" className="h-4 mr-2" />
+              <span className="font-semibold text-yellow-400">4.7</span>
+            </div>
+          </div>
+          <h1 className="text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
+            Get fresh datasets from popular websites
+          </h1>
+          <p className="text-lg text-zinc-300 mb-10 max-w-lg mx-auto lg:mx-0">
+            No more maintaining scrapers or bypassing blocks – just structured and validated data tailored to your business needs.
+          </p>
+          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center lg:justify-start">
+            <button className="flex items-center justify-center px-8 py-3 border-2 border-white text-white rounded-lg shadow-md hover:bg-white hover:text-blue-700 transition-colors">
+              Contact sales <Icon name="ArrowRight" className="w-5 h-5 ml-2" />
+            </button>
+            <button className="flex items-center justify-center px-8 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors">
+              <svg className="w-6 h-6 mr-2" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 11.2C12 10.428 12.628 9.8 13.4 9.8H21.2C22.296 9.8 23.2 10.704 23.2 11.8V21.2C23.2 22.296 22.296 23.2 21.2 23.2H13.4C12.628 23.2 12 22.572 12 21.8V11.2ZM12 11.2C12 10.428 12.628 9.8 13.4 9.8H21.2C22.296 9.8 23.2 10.704 23.2 11.8V21.2C23.2 22.296 22.296 23.2 21.2 23.2H13.4C12.628 23.2 12 22.572 12 21.8V11.2ZM12 11.2C12 10.428 12.628 9.8 13.4 9.8H21.2C22.296 9.8 23.2 10.704 23.2 11.8V21.2C23.2 22.296 22.296 23.2 21.2 23.2H13.4C12.628 23.2 12 22.572 12 21.8V11.2ZM12 11.2C12 10.428 12.628 9.8 13.4 9.8H21.2C22.296 9.8 23.2 10.704 23.2 11.8V21.2C23.2 22.296 22.296 23.2 21.2 23.2H13.4C12.628 23.2 12 22.572 12 21.8V11.2ZM12 11.2C12 10.428 12.628 9.8 13.4 9.8H21.2C22.296 9.8 23.2 10.704 23.2 11.8V21.2C23.2 22.296 22.296 23.2 21.2 23.2H13.4C12.628 23.2 12 22.572 12 21.8V11.2ZM12 11.2C12 10.428 12.628 9.8 13.4 9.8H21.2C22.296 9.8 23.2 10.704 23.2 11.8V21.2C23.2 22.296 22.296 23.2 21.2 23.2H13.4C12.628 23.2 12 22.572 12 21.8V11.2Z" />
+              <path d="M22.5 12.5C22.5 12.5 22.5 12.5 22.5 12.5L22.5 12.5L22.5 12.5ZM24 10C24 4.477 19.523 0 14 0H10C4.477 0 0 4.477 0 10V14C0 19.523 4.477 24 10 24H14C19.523 24 24 19.523 24 14V10ZM22.5 12.5C22.5 12.5 22.5 12.5 22.5 12.5L22.5 12.5L22.5 12.5Z" />
+                <path d="M12.0001 10.0001C12.0001 10.0001 12.0001 10.0001 12.0001 10.0001L12.0001 10.0001L12.0001 10.0001ZM12.0001 10.0001C12.0001 10.0001 12.0001 10.0001 12.0001 10.0001L12.0001 10.0001L12.0001 10.0001Z" />
+                <path d="M10.1501 12.2999L12.0001 10.0001L13.8501 12.2999L13.1501 12.8999L12.0001 11.4999L10.8501 12.8999L10.1501 12.2999ZM12.0001 10.0001C12.0001 10.0001 12.0001 10.0001 12.0001 10.0001L12.0001 10.0001L12.0001 10.0001Z" />
+                <path d="M14.28 11.16C14.28 11.16 14.28 11.16 14.28 11.16C14.28 11.16 14.28 11.16 14.28 11.16ZM12.0001 10.0001C12.0001 10.0001 12.0001 10.0001 12.0001 10.0001L12.0001 10.0001L12.0001 10.0001Z" />
+                <path d="M12 0C5.373 0 0 5.373 0 12C0 18.627 5.373 24 12 24C18.627 24 24 18.627 24 12C24 5.373 18.627 0 12 0ZM12 4.4C14.093 4.4 15.8 6.107 15.8 8.2C15.8 10.293 14.093 12 12 12C9.907 12 8.2 10.293 8.2 8.2C8.2 6.107 9.907 4.4 12 4.4ZM12 20.8C9.664 20.8 7.6 19.387 6.556 17.387C6.012 16.32 5.597 15.19 5.398 14H18.602C18.403 15.19 17.988 16.32 17.444 17.387C16.393 19.387 14.336 20.8 12 20.8Z" fill="#fff"/>
+              </svg>
+              Buy dataset
+            </button>
+          </div>
+        </div>
+        <div className="lg:w-1/2 flex justify-center lg:justify-end">
+          {/* Placeholder for illustration */}
+          <img src="https://assets-global.website-files.com/653063fcd0c776097d40f28e/653229b139031c54e0c81d8a_image.webp" alt="Data illustration" className="max-w-full h-auto w-[600px] object-contain" />
+        </div>
+      </div>
+    </section>
+  );
+};
+
+interface EndlessPossibilitiesSectionProps {
+  theme: Theme;
+}
+
+const EndlessPossibilitiesSection: React.FC<EndlessPossibilitiesSectionProps> = ({ theme }) => {
+  const featureCards = [
+    {
+      icon: <img src="https://assets-global.website-files.com/653063fcd0c776097d40f28e/653229b139031c54e0c81d9e_icon-1.svg" alt="Departments Icon" className="w-16 h-16 mb-4" />,
+      title: "Departments",
+      description: "Enhance operational efficiency and decision-making within various departments using specialized datasets.",
+    },
+    {
+      icon: <img src="https://assets-global.website-files.com/653063fcd0c776097d40f28e/653229b139031c54e0c81da5_icon-2.svg" alt="Industries Icon" className="w-16 h-16 mb-4" />,
+      title: "Industries",
+      description: "Tailored datasets providing deep insights into specific industry trends, market analysis, and competitive landscapes.",
+    },
+    {
+      icon: <img src="https://assets-global.website-files.com/653063fcd0c776097d40f28e/653229b139031c54e0c81da1_icon-3.svg" alt="Technology Icon" className="w-16 h-16 mb-4" />,
+      title: "Technology & Innovation",
+      description: "Leverage data for product development, AI model training, and advancing technological capabilities.",
+    },
+    {
+      icon: <img src="https://assets-global.website-files.com/653063fcd0c776097d40f28e/653229b139031c54e0c81d9f_icon-4.svg" alt="Business Icon" className="w-16 h-16 mb-4" />,
+      title: "Business Growth",
+      description: "Drive marketing strategies, improve customer understanding, and identify new market opportunities with rich business data.",
+    },
+  ];
+
+  const textColorClass = theme.text === 'text-zinc-900' ? 'text-zinc-900' : 'text-zinc-100';
+  const cardBgClass = theme.text === 'text-zinc-900' ? 'bg-white' : 'bg-[#1A3459] border-[#2A497A]';
+  const descriptionTextColor = theme.text === 'text-zinc-900' ? 'text-zinc-600' : 'text-zinc-400';
+
+  return (
+    <section className={`py-20 px-8 ${theme.neutralBg || 'bg-white'} ${textColorClass}`}>
+      <div className="max-w-7xl mx-auto text-center">
+        <h2 className="text-4xl font-extrabold mb-4">
+          Unlock Business Potential with <span className={theme.highlightText}>Powerful Datasets and AI Insights</span>
         </h2>
-        <h3 className="text-4xl font-bold text-gray-800 mb-4">
-          Computer Vision
-        </h3>
-        <p className="text-gray-500 max-w-2xl mx-auto mb-12">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit dolore magna aliqua
+        <p className={`text-lg mb-12 ${descriptionTextColor}`}>
+          Discover how comprehensive datasets fuel innovation, drive strategic decisions, and unlock new growth opportunities across various domains.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div className="bg-gray-50 p-8 rounded-lg shadow-md">
-            <img src="https://storage.googleapis.com/aai-web-template-files/3650992a-3513-43dc-8869-3406385a539b.png" alt="Departments" className="h-20 mx-auto mb-4" />
-            <h4 className="text-xl font-bold text-gray-800 mb-2">Departments</h4>
-            <p className="text-gray-600">Lorem ipsum dolor sit am adipisc elit, sed do eiusmod. Lorem ipsum dolor sit adipiscing elit.</p>
-          </div>
-          <div className="bg-gray-50 p-8 rounded-lg shadow-md">
-            <img src="https://storage.googleapis.com/aai-web-template-files/7037133f-9556-4279-9138-02805ea3f45f.png" alt="Industries" className="h-20 mx-auto mb-4" />
-            <h4 className="text-xl font-bold text-gray-800 mb-2">Industries</h4>
-            <p className="text-gray-600">Lorem ipsum dolor sit am adipisc elit, sed do eiusmod. Lorem ipsum dolor sit adipiscing elit.</p>
-          </div>
-          <div className="bg-gray-50 p-8 rounded-lg shadow-md">
-            <img src="https://storage.googleapis.com/aai-web-template-files/87884554-3253-4811-9959-192e40633ffa.png" alt="Technology" className="h-20 mx-auto mb-4" />
-            <h4 className="text-xl font-bold text-gray-800 mb-2">Technology</h4>
-            <p className="text-gray-600">Lorem ipsum dolor sit am adipisc elit, sed do eiusmod. Lorem ipsum dolor sit adipiscing elit.</p>
-          </div>
-          <div className="bg-gray-50 p-8 rounded-lg shadow-md">
-            <img src="https://storage.googleapis.com/aai-web-template-files/524ab1d5-fa27-4a9a-9283-a859a729358f.png" alt="Business" className="h-20 mx-auto mb-4" />
-            <h4 className="text-xl font-bold text-gray-800 mb-2">Business</h4>
-            <p className="text-gray-600">Lorem ipsum dolor sit am adipisc elit, sed do eiusmod. Lorem ipsum dolor sit adipiscing elit.</p>
-          </div>
+          {featureCards.map((card, index) => (
+            <div key={index} className={`rounded-xl shadow-lg p-6 ${cardBgClass}`}>
+              <div className="flex justify-center mb-4">
+                {card.icon}
+              </div>
+              <h3 className={`text-xl font-semibold mb-2 ${textColorClass}`}>{card.title}</h3>
+              <p className={`text-sm ${descriptionTextColor}`}>{card.description}</p>
+            </div>
+          ))}
         </div>
       </div>
+    </section>
+  );
+};
+
+
+interface DatasetCardProps {
+  dataset: Dataset;
+  theme: Theme;
+}
+
+const DatasetCard: React.FC<DatasetCardProps> = ({ dataset, theme }) => {
+  return (
+    <div className={`rounded-xl p-6 shadow-lg ${theme.cardBg} ${theme.cardBorder ? `border ${theme.cardBorder}` : ''} ${theme.text}`}>
+      <h3 className="text-xl font-bold mb-2">{dataset.name}</h3>
+      <p className={`text-sm mb-4 ${theme.tableCellSubtle}`}>{dataset.description}</p>
+      <div className="flex items-center space-x-4 mb-6 text-zinc-400">
+        <div className="flex items-center space-x-1">
+          <Icon name="Eye" className="w-4 h-4" />
+          <span>{dataset.records}</span>
+        </div>
+        <div className="flex items-center space-x-1">
+          <Icon name="Download" className="w-4 h-4" />
+          <span>{dataset.downloads}</span>
+        </div>
+      </div>
+      <button className="flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors">
+        Buy Now <Icon name="ArrowRight" className="w-4 h-4 ml-2" />
+      </button>
     </div>
   );
 };
 
 
-const DatasetsPage: React.FC = () => {
-    return (
-        <div className="flex flex-col">
-            <DatasetsDashboard />
-            <DatasetsLandingPage />
-            <DatasetsMarketplace />
-        </div>
+// components/DatasetsPageContent.tsx (renamed and refactored from renderDatasetsPage logic)
+interface DatasetsPageContentProps {
+  datasets: Dataset[];
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
+  theme: Theme;
+}
+
+const DatasetsPageContent: React.FC<DatasetsPageContentProps> = ({
+  datasets,
+  searchTerm,
+  setSearchTerm,
+  theme,
+}) => {
+  const filteredDatasets = useMemo(() => {
+    if (!searchTerm) return datasets;
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    return datasets.filter(ds =>
+      ds.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+      ds.description.toLowerCase().includes(lowerCaseSearchTerm) ||
+      ds.owner.toLowerCase().includes(lowerCaseSearchTerm)
     );
+  }, [datasets, searchTerm]);
+
+  return (
+    <div className={`flex-1 overflow-y-auto ${theme.sectionBg} ${theme.text}`}>
+      <HeroSection theme={theme} />
+      <EndlessPossibilitiesSection theme={theme} />
+
+      <div className="max-w-7xl mx-auto px-8 py-16">
+        <div className="relative mb-8 max-w-2xl mx-auto">
+          <Icon name="Search" className={`w-5 h-5 text-zinc-400 absolute top-1/2 left-3 -translate-y-1/2 ${theme.text === 'text-zinc-900' ? 'text-zinc-500' : 'text-zinc-400'}`} />
+          <input
+            type="text"
+            placeholder="Search for a dataset"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className={`w-full pl-10 pr-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all ${theme.searchBg} ${theme.searchBorder} ${theme.text === 'text-zinc-900' ? 'text-zinc-900 placeholder-zinc-500 border-zinc-300' : 'text-white placeholder-zinc-400 border-[#2A497A]'}`}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredDatasets.length > 0 ? (
+            filteredDatasets.map(ds => (
+              <DatasetCard key={ds.id} dataset={ds} theme={theme} />
+            ))
+          ) : (
+            <div className="lg:col-span-3 text-center py-10 text-zinc-400">No datasets found matching your search.</div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 
@@ -1291,24 +1101,126 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  chartType: ChartType;
-  chartData: ChartData | DonutDataItem[]; // Allow for DonutDataItem[]
-  chartOptions: ChartOptions;
+  chartType: 'line' | 'pie';
+  kpi?: KpiKey;
+  timeRange?: TimeRange;
   theme: Theme;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, chartType, chartData, chartOptions, theme }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, chartType, kpi, timeRange, theme }) => {
   if (!isOpen) return null;
 
-  const modalChartOptions: ChartOptions = {
-    ...chartOptions, // Start with existing options
+  const getLabels = useCallback((range: TimeRange): string[] => {
+    switch (range) {
+      case TimeRange.MONTH: return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      case TimeRange.WEEK: return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      case TimeRange.DAY: return ['00:00', '02:00', '04:00', '06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'];
+    }
+  }, []);
+
+  const modalChartDataAndOptions = useMemo(() => {
+    let modalChartDatasets: ChartData<'line'>['datasets'] = [];
+    let modalChartOptions: ChartOptions<'line'> = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          labels: { color: theme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa' }
+        }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: theme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa' } },
+        y: { grid: { display: false }, ticks: { color: theme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa', callback: (v) => (v as number).toLocaleString() } }
+      }
+    };
+
+    if (chartType === 'line' && kpi && timeRange) {
+      if (kpi === KpiKey.TRENDING) {
+        const trendingData = (CHART_DATA[KpiKey.TRENDING] as TrendingChartSeries | undefined)?.[timeRange];
+        if (trendingData) {
+          modalChartDatasets = trendingData.map(series => ({
+            label: series.label,
+            data: series.data,
+            borderColor: series.color,
+            backgroundColor: 'transparent',
+            borderWidth: 2.5,
+            pointRadius: 3,
+            pointHoverRadius: 8,
+            fill: false,
+            tension: 0.2
+          }));
+        }
+        modalChartOptions.scales = {
+          x: { grid: { display: false }, ticks: { color: theme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa' } },
+          y: {
+            grid: { display: false },
+            ticks: { color: theme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa', stepSize: 0.1 },
+            beginAtZero: true,
+            min: 0,
+            max: 1,
+          }
+        };
+      } else {
+        const currentChartData = CHART_DATA[kpi] as BaseChartSeries | undefined;
+        const dataForChart = currentChartData ? currentChartData[timeRange] : [];
+        modalChartDatasets = [{
+          label: title,
+          data: dataForChart,
+          borderColor: kpi === KpiKey.REQUESTS ? '#22d3ee' : kpi === KpiKey.LATENCY ? '#2dd4bf' : '#fb923c',
+          backgroundColor: 'transparent',
+          borderWidth: 2.5,
+          pointRadius: 3,
+          pointHoverRadius: 8,
+          fill: false,
+          tension: 0.2
+        }];
+      }
+    }
+
+    const labels = timeRange ? getLabels(timeRange).slice(0, (modalChartDatasets[0]?.data.length || 0)) : [];
+
+    return {
+      data: {
+        labels: labels,
+        datasets: modalChartDatasets
+      },
+      options: modalChartOptions
+    };
+  }, [chartType, kpi, timeRange, title, theme, getLabels]);
+
+  const modalPieData = useMemo(() => {
+    return {
+      labels: DONUT_DATA.map(d => d.name),
+      datasets: [{
+        data: DONUT_DATA.map(d => d.value),
+        backgroundColor: DONUT_DATA.map(d => d.color),
+        borderWidth: 3,
+        borderColor: theme.chartBg.split(' ')[0]
+      }]
+    };
+  }, [theme]);
+
+  const modalPieOptions: ChartOptions<'pie'> = {
+    responsive: true,
+    maintainAspectRatio: false,
     plugins: {
-      ...(chartOptions.plugins || {}), // Ensure plugins is an object to spread into, in case it's undefined
-      legend: { display: true, labels: { color: theme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa' } }, // Always show legend in modal for clarity
+      legend: {
+        display: true,
+        position: 'right',
+        labels: {
+          color: theme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa'
+        }
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => `${context.label}: ${context.raw}`
+        }
+      }
     },
-    // Conditionally add the cutout property only if chartType is 'pie'
-    ...(chartType === 'pie' && { cutout: '50%' }),
+    cutout: '50%',
   };
+
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
@@ -1320,10 +1232,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, chartType, chartD
           </button>
         </div>
         <div className="h-[90%]">
-          {chartType === 'pie' ? (
-            <DonutChartRecharts data={chartData as DonutDataItem[]} theme={theme} isModal={true} />
-          ) : (
-            <ChartRenderer id="modalChart" chartType={chartType} data={chartData as ChartData} options={modalChartOptions} />
+          {chartType === 'line' && kpi && timeRange && (
+            <ChartRenderer id="modalChartLine" chartType="line" data={modalChartDataAndOptions.data} options={modalChartDataAndOptions.options as ChartOptions<'line'>} />
+          )}
+          {chartType === 'pie' && (
+             <DonutChartRecharts data={DONUT_DATA} theme={theme} isModal={true}/>
           )}
         </div>
       </div>
@@ -1333,138 +1246,35 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, chartType, chartD
 
 
 // App.tsx
-export default function App() {
+const App: React.FC = () => {
   const [activePage, setActivePage] = useState<Page>(Page.DASHBOARD);
   const [datasets, setDatasets] = useState<Dataset[]>(MOCK_DATASETS);
-  const [searchTerm, setSearchTerm] = useState<string>(''); 
-  const [timeRange, setTimeRange] = useState<TimeRange>(TimeRange.MONTH);
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [activeKpi, setActiveKpi] = useState<KpiKey>(KpiKey.REQUESTS);
-  const [activeThemeKey, setActiveThemeKey] = useState<ThemeKey>(ThemeKey.OCEAN);
-  const [filter, setFilter] = useState<Dataset['status'] | 'All'>('All');
-  const [sort, setSort] = useState<SortState>({ key: 'lastUpdate', asc: false }); 
-
+  const [timeRange, setTimeRange] = useState<TimeRange>(TimeRange.MONTH);
+  const [activeTheme, setActiveTheme] = useState<ThemeKey>(ThemeKey.OCEAN);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [modalTitle, setModalTitle] = useState<string>('');
-  const [modalChartType, setModalChartType] = useState<ChartType>('line');
-  const [modalChartData, setModalChartData] = useState<ChartData | DonutDataItem[] | {}>({}); 
-  const [modalChartOptions, setModalChartOptions] = useState<ChartOptions | {}>({});
+  const [modalChartConfig, setModalChartConfig] = useState<{ chartType: 'line' | 'pie'; title: string; kpi?: KpiKey; } | null>(null);
 
-  const kpiData: Record<KpiKey, KpiDataItem> = {
-    [KpiKey.REQUESTS]: { title: "Total Requests", value: "2.5M", change: "+12.5%", changeType: "positive", icon: "Zap", color: "#818cf8", gradient: "bg-gradient-to-r from-indigo-400 to-indigo-500" },
-    [KpiKey.TRENDING]: { title: "Trending Datasets", value: "Explore", change: "+3 New", changeType: "positive", icon: "TrendingUp", color: "#fb923c", gradient: "bg-gradient-to-r from-orange-400 to-orange-500" },
-    [KpiKey.LATENCY]: { title: "Avg. Response", value: "24ms", change: "-2.4%", changeType: "negative", icon: "Activity", color: "#f472b6", gradient: "bg-gradient-to-r from-pink-400 to-pink-500" },
-    [KpiKey.USERS]: { title: "Concurrent Users", value: "842", change: "+4.3%", changeType: "positive", icon: "Users", color: "#60a5fa", gradient: "bg-gradient-to-r from-blue-400 to-blue-500" }
-  };
-
-  const currentTheme = THEMES[activeThemeKey];
+  const theme = useMemo(() => THEMES[activeTheme], [activeTheme]);
 
   const cycleTheme = useCallback(() => {
-    const keys = Object.values(ThemeKey);
-    const idx = keys.indexOf(activeThemeKey);
-    setActiveThemeKey(keys[(idx + 1) % keys.length]);
-  }, [activeThemeKey]);
+    const keys = Object.keys(THEMES) as ThemeKey[];
+    const idx = keys.indexOf(activeTheme);
+    setActiveTheme(keys[(idx + 1) % keys.length]);
+  }, [activeTheme]);
 
-  const handleDatasetSort = useCallback((key: keyof Dataset) => {
-    setSort(prevSort => ({
-      key,
-      asc: prevSort.key === key ? !prevSort.asc : false,
-    }));
-  }, []);
-
-  const getLabels = useCallback((range: TimeRange): string[] => {
-    switch (range) {
-      case TimeRange.MONTH: return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      case TimeRange.WEEK: return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-      case TimeRange.DAY: return ['00:00', '02:00', '04:00', '06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'];
-    }
-  }, []);
-
-  const openChartModal = useCallback((chartType: ChartType, title: string, kpi?: KpiKey) => {
-    setModalTitle(title);
-    setModalChartType(chartType);
-
-    if (chartType === 'line' && kpi) {
-      let modalDatasets: ChartData<'line'>['datasets'] = [];
-      let modalOptions: ChartOptions<'line'> = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { display: false }, ticks: { color: currentTheme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa' } },
-          y: { grid: { display: false }, ticks: { color: currentTheme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa', callback: (v: any) => v.toLocaleString() } }
-        }
-      };
-
-      if (kpi === KpiKey.TRENDING) {
-        const trendingData = (CHART_DATA[KpiKey.TRENDING] as TrendingChartSeries | undefined)?.[timeRange];
-        if (trendingData) {
-          modalDatasets = trendingData.map(series => ({
-            label: series.label,
-            data: series.data,
-            borderColor: series.color,
-            backgroundColor: 'transparent',
-            borderWidth: 2.5,
-            pointRadius: 3, 
-            pointHoverRadius: 6,
-            fill: false,
-            tension: 0.2
-          }));
-        }
-        modalOptions = {
-          ...modalOptions,
-          plugins: {
-            legend: {
-              display: true,
-              position: 'bottom', 
-              labels: { color: currentTheme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa' }
-            }
-          },
-          scales: {
-            x: { grid: { display: false }, ticks: { color: currentTheme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa' } },
-            y: {
-              grid: { display: false },
-              ticks: { color: currentTheme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa', stepSize: 0.1 },
-              beginAtZero: true,
-              min: 0,
-              max: 1,
-            }
-          }
-        };
-      } else {
-        const dataForChart = (CHART_DATA[kpi] as BaseChartSeries | undefined)?.[timeRange];
-        modalDatasets = [{
-          label: kpi === KpiKey.REQUESTS ? 'Requests' : kpi === KpiKey.LATENCY ? 'Latency (ms)' : 'Users',
-          data: dataForChart || [],
-          borderColor: kpiData[kpi].color,
-          backgroundColor: 'transparent',
-          borderWidth: 2.5,
-          pointRadius: 3, 
-            pointHoverRadius: 6,
-          fill: false,
-          tension: 0.2
-        }];
-      }
-
-      setModalChartData({
-        labels: getLabels(timeRange).slice(0, (modalDatasets[0]?.data.length || 0)),
-        datasets: modalDatasets
-      });
-      setModalChartOptions(modalOptions);
-
-    } else if (chartType === 'pie') {
-      setModalChartData(DONUT_DATA); 
-      setModalChartOptions({}); 
-    }
+  const openChartModal = useCallback((chartType: 'line' | 'pie', title: string, kpi?: KpiKey) => {
+    setModalChartConfig({ chartType, title, kpi });
     setIsModalOpen(true);
-  }, [timeRange, getLabels, currentTheme, kpiData]);
+  }, []);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
-    setModalChartData({});
-    setModalChartOptions({});
+    setModalChartConfig(null);
   }, []);
 
-  const renderMainContent = useMemo(() => {
+  const renderMainContent = useCallback(() => {
     switch (activePage) {
       case Page.DASHBOARD:
         return (
@@ -1474,52 +1284,57 @@ export default function App() {
             setActiveKpi={setActiveKpi}
             timeRange={timeRange}
             setTimeRange={setTimeRange}
-            theme={currentTheme}
+            theme={theme}
             openChartModal={openChartModal}
             setActivePage={setActivePage}
           />
         );
       case Page.DATASETS:
         return (
-          <DatasetsPage />
+          <DatasetsPageContent
+            datasets={datasets}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            theme={theme}
+          />
         );
       case Page.ANALYTICS:
       case Page.SETTINGS:
         return (
-          <div className={`flex-1 overflow-y-auto p-8 ${currentTheme.app} ${currentTheme.text}`}>
-            <div className="flex items-center justify-center h-full">
-              <h2 className={`text-3xl font-bold ${currentTheme.title}`}>{activePage.charAt(0).toUpperCase() + activePage.slice(1)} Page (Coming Soon)</h2>
+          <div className={`flex-1 overflow-y-auto p-8 ${theme.app} ${theme.text}`}>
+            <div className={`text-3xl font-bold ${theme.title} p-8`}>
+              {activePage.charAt(0).toUpperCase() + activePage.slice(1)} Page (Coming Soon)
             </div>
           </div>
         );
       default:
         return null;
     }
-  }, [activePage, datasets, activeKpi, timeRange, currentTheme, openChartModal, searchTerm, filter, sort, handleDatasetSort]);
+  }, [activePage, datasets, searchTerm, setSearchTerm, activeKpi, setActiveKpi, timeRange, setTimeRange, theme, openChartModal, setActivePage]);
 
   return (
-    <div className={`flex flex-1 h-screen ${currentTheme.app} ${currentTheme.text}`}>
-      <Sidebar activePage={activePage} setActivePage={setActivePage} theme={currentTheme} />
-      <div className="flex-1 flex flex-col">
-        <Topbar
-          searchTerm={searchTerm} 
-          setSearchTerm={setSearchTerm} 
-          cycleTheme={cycleTheme}
-          theme={currentTheme}
-          activePage={activePage}
-        />
-        {renderMainContent}
+    <div className={`flex h-screen overflow-hidden font-sans ${theme.app} ${theme.text}`}>
+      <Sidebar activePage={activePage} setActivePage={setActivePage} theme={theme} />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <Topbar cycleTheme={cycleTheme} theme={theme} activePage={activePage} />
+        <main className="flex-1 overflow-y-auto">
+          {renderMainContent()}
+        </main>
       </div>
 
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
-        title={modalTitle}
-        chartType={modalChartType}
-        chartData={modalChartData as ChartData | DonutDataItem[]}
-        chartOptions={modalChartOptions as ChartOptions}
-        theme={currentTheme}
+        title={modalChartConfig?.title || ''}
+        chartType={modalChartConfig?.chartType || 'line'}
+        kpi={modalChartConfig?.kpi || KpiKey.REQUESTS}
+        timeRange={timeRange}
+        theme={theme}
       />
     </div>
   );
 };
+
+export default App;
+
+    

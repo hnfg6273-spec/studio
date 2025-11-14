@@ -7,8 +7,6 @@ import { CheckCircle, Plane } from 'lucide-react';
 
 const ReviewBadge: React.FC<{ name: string; ratingText: string; ratingColor: string }> = ({ name, ratingText, ratingColor }) => (
   <div className="flex items-center space-x-2">
-    <div className={`text-sm font-bold ${ratingColor}`}>{ratingText}</div>
-    <span className="text-gray-400 text-sm">|</span>
     <span className="text-gray-300 text-sm">{name}</span>
   </div>
 );

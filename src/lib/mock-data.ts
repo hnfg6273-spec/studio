@@ -1,0 +1,259 @@
+import {
+  Dataset,
+  DatasetStatus,
+  DatasetType,
+  KpiKey,
+  TrendingChartSeries,
+  ChartDataType,
+  DonutDataItem,
+  NavItem,
+  Page,
+  ThemeKey,
+  Themes,
+} from './types';
+
+export const MOCK_DATASETS: Dataset[] = [
+  { id: 'ds_002', name: 'Product Catalog (Staging)', type: DatasetType.DATABASE, status: DatasetStatus.ACTIVE, trend: '+5.2%', records: '1.2K', size: '150MB', created: '2023-02-01', lastUpdate: '2023-11-10', owner: 'Data Ops', sensitivity: 'Medium', description: 'Product IDs, SKUs, pricing, images, and inventory data.', downloads: '120+' },
+  { id: 'ds_003', name: 'Quarterly Sales Projections', type: DatasetType.FILE, status: DatasetStatus.ACTIVE, trend: '-2.4%', records: '850', size: '25MB', created: '2023-03-20', lastUpdate: '2023-11-01', owner: 'Finance Team', sensitivity: 'High', description: 'Revenue forecasts, regional sales targets, and market analysis.', downloads: '85+' },
+  { id: 'ds_004', name: 'API Gateway Logs (Jan)', type: DatasetType.LOG, status: DatasetStatus.ARCHIVED, trend: '0.0%', records: '150M', size: '25.6TB', created: '2023-01-31', lastUpdate: '2023-02-01', owner: 'DevOps', sensitivity: 'Medium', description: 'API call details, response times, error rates, and user agents.', downloads: '15M+' },
+  { id: 'ds_005', name: 'Customer Support Tickets', type: DatasetType.DATABASE, status: DatasetStatus.ACTIVE, trend: '+18.3%', records: '45.2K', size: '2.2GB', created: '2022-11-10', lastUpdate: '2023-11-11', owner: 'Support Team', sensitivity: 'High', description: 'Ticket ID, customer name, issue description, status, and resolution.', downloads: '4.5K+' },
+  { id: 'ds_006', name: 'Marketing Campaign ROI', type: DatasetType.STATIC, status: DatasetStatus.ACTIVE, trend: '+8.1%', records: '5.6K', size: '110MB', created: '2023-04-05', lastUpdate: '2023-10-28', owner: 'Marketing', sensitivity: 'Medium', description: 'Campaign ID, spend, impressions, clicks, conversions, and revenue.', downloads: '560+' },
+  { id: 'ds_007', name: 'IoT Sensor Data (Factory A)', type: DatasetType.STREAM, status: DatasetStatus.PAUSED, trend: 'N/A', records: 'N/A', size: 'N/A', created: '2023-05-15', lastUpdate: '2023-11-05', owner: 'Ops', sensitivity: 'Low', description: 'Temperature, pressure, humidity readings from factory sensors.', downloads: 'N/A' },
+  { id: 'ds_008', name: 'Employee Directory', type: DatasetType.DATABASE, status: DatasetStatus.ACTIVE, trend: '+1.0%', records: '1.8K', size: '90MB', created: '2022-01-01', lastUpdate: '2023-11-11', owner: 'HR', sensitivity: 'High', description: 'Employee ID, name, department, title, contact information, and start date.', downloads: '180+' },
+  { id: 'ds_009', name: 'Web Analytics (Main Site)', type: DatasetType.STREAM, status: DatasetStatus.ERROR, trend: '-5.5%', records: '800K', size: '500GB', created: '2023-06-01', lastUpdate: '2023-11-12', owner: 'Marketing', sensitivity: 'Medium', description: 'Page views, unique visitors, bounce rate, session duration, and referral sources.', downloads: '80K+' },
+  { id: 'ds_010', name: 'Financial Transactions Q3', type: DatasetType.STATIC, status: DatasetStatus.ACTIVE, trend: '+3.2%', records: '1.1M', size: '1.5GB', created: '2023-10-01', lastUpdate: '2023-11-01', owner: 'Finance Team', sensitivity: 'Confidential', description: 'Transaction ID, amount, date, payment method, and product details.', downloads: '110K+' },
+  { id: 'ds_012', name: 'Internal Audit Logs (Q1)', type: DatasetType.LOG, status: DatasetStatus.ACTIVE, trend: '+0.5%', records: '200M', size: '30.0TB', created: '2023-01-01', lastUpdate: '2023-03-31', owner: 'Security', sensitivity: 'High', description: 'User actions, system events, access attempts, and security incidents.', downloads: '20M+' },
+  { id: 'ds_013', name: 'Customer Feedback Survey', type: DatasetType.FILE, status: DatasetStatus.ACTIVE, trend: '+7.8%', records: '1.5K', size: '35MB', created: '2023-09-01', lastUpdate: '2023-11-10', owner: 'Customer Success', sensitivity: 'Medium', description: 'Survey responses, customer sentiment, product suggestions, and satisfaction scores.', downloads: '150+' },
+  { id: 'ds_014', name: 'Supply Chain Data', type: DatasetType.DATABASE, status: DatasetStatus.ACTIVE, trend: '+4.1%', records: '50K', size: '3.5GB', created: '2023-08-10', lastUpdate: '2023-11-09', owner: 'Operations', sensitivity: 'High', description: 'Supplier information, inventory levels, shipment tracking, and logistics data.', downloads: '5K+' },
+  { id: 'ds_015', name: 'Website Performance Logs', type: DatasetType.LOG, status: DatasetStatus.ACTIVE, trend: '+9.2%', records: '10M', size: '700GB', created: '2023-04-15', lastUpdate: 'Live', owner: 'DevOps', sensitivity: 'Low', description: 'Page load times, server response, network requests, and error logs.', downloads: '1M+' },
+  { id: 'ds_011', name: 'User Engagement Metrics', type: DatasetType.STREAM, status: DatasetStatus.ACTIVE, trend: '+15.0%', records: '3.1M', size: '1.8TB', created: '2023-07-20', lastUpdate: 'Live', owner: 'Product Team', sensitivity: 'Medium', description: 'User sessions, clicks, page views, conversion funnels, and feature usage.', downloads: '310K+' },
+  { id: 'ds_001', name: 'Real-time User Activity', type: DatasetType.STREAM, status: DatasetStatus.ACTIVE, trend: '+12.5%', records: '2.5M', size: '1.2TB', created: '2023-01-15', lastUpdate: 'Live', owner: 'Alex Moran', sensitivity: 'High', description: 'Live user actions, navigation paths, and interactive events.', downloads: '250K+' },
+  // Added more specific dataset examples to match screenshot content if possible
+  { id: 'ds_016', name: 'LinkedIn People Profiles', type: DatasetType.DATABASE, status: DatasetStatus.ACTIVE, trend: '+10%', records: '68.3K+', size: '10GB', created: '2023-10-01', lastUpdate: '2023-11-15', owner: 'Marketing', sensitivity: 'High', description: 'ID, Name, City, Country code, Position, About, Posts, Current company, and more.', downloads: '6.7K+' },
+  { id: 'ds_017', name: 'Amazon Products', type: DatasetType.STATIC, status: DatasetStatus.ACTIVE, trend: '+15%', records: '21.3K+', size: '5GB', created: '2023-09-20', lastUpdate: '2023-11-14', owner: 'E-commerce', sensitivity: 'Medium', description: 'Title, Seller name, Brand, Description, Initial price, Currency, Reviews count, and more.', downloads: '3K+' },
+  { id: 'ds_018', name: 'LinkedIn Company Information', type: DatasetType.DATABASE, status: DatasetStatus.ACTIVE, trend: '+8%', records: '20.1K+', size: '8GB', created: '2023-10-05', lastUpdate: '2023-11-13', owner: 'Sales', sensitivity: 'Medium', description: 'ID, Name, Country code, Locations, Followers, Employees in linkedin, About, Specialties, and more.', downloads: '2.4K+' },
+  { id: 'ds_019', name: 'Instagram - Profiles', type: DatasetType.STREAM, status: DatasetStatus.ACTIVE, trend: '+20%', records: '12.6K+', size: '3GB', created: '2023-11-01', lastUpdate: '2023-11-16', owner: 'Social Media', sensitivity: 'Medium', description: 'Account, Fbid, ID, Followers, Posts count, Is business account, Is professional account, Is verified, and more.', downloads: '1.5K+' },
+  { id: 'ds_020', name: 'Crunchbase Companies Information', type: DatasetType.DATABASE, status: DatasetStatus.ACTIVE, trend: '+12%', records: '10.3K+', size: '6GB', created: '2023-09-15', lastUpdate: '2023-11-10', owner: 'Business Dev', sensitivity: 'Medium', description: 'Name, URL, ID, Cb rank, Region, About, Industries, Operating status, and more.', downloads: '1.1K+' },
+  { id: 'ds_021', name: 'LinkedIn Job Listings Information', type: DatasetType.STATIC, status: DatasetStatus.ACTIVE, trend: '+7%', records: '9.6K+', size: '4GB', created: '2023-10-20', lastUpdate: '2023-11-12', owner: 'HR', sensitivity: 'Medium', description: 'URL, job posting id, job title, Company name, Company id, Job location, Job summary, Job seniority level, and more.', downloads: '1.5K+' },
+];
+
+export const TRENDING_DATA_SERIES: TrendingChartSeries = {
+  Month: [
+    { label: 'Dataset A', data: [0.7, 0.6, 0.8, 0.75, 0.9, 0.85, 0.95, 0.8, 0.7, 0.75, 0.8, 0.9], color: '#3b82f6' }, // blue-500
+    { label: 'Dataset B', data: [0.5, 0.55, 0.6, 0.65, 0.7, 0.6, 0.65, 0.75, 0.8, 0.7, 0.65, 0.7], color: '#ec4899' }, // pink-500
+    { label: 'Dataset C', data: [0.3, 0.4, 0.35, 0.5, 0.45, 0.55, 0.5, 0.4, 0.3, 0.4, 0.5, 0.4], color: '#14b8a6' }, // teal-500
+  ],
+  Week: [
+    { label: 'Dataset A', data: [0.8, 0.75, 0.85, 0.9, 0.8, 0.7, 0.9], color: '#3b82f6' },
+    { label: 'Dataset B', data: [0.6, 0.65, 0.7, 0.75, 0.7, 0.6, 0.7], color: '#ec4899' },
+    { label: 'Dataset C', data: [0.4, 0.45, 0.5, 0.4, 0.3, 0.35, 0.4], color: '#14b8a6' },
+  ],
+  Day: [
+    { label: 'Dataset A', data: [0.7, 0.75, 0.8, 0.85, 0.9, 0.88, 0.92, 0.85, 0.8, 0.75, 0.7, 0.65], color: '#3b82f6' },
+    { label: 'Dataset B', data: [0.5, 0.55, 0.6, 0.62, 0.65, 0.6, 0.58, 0.63, 0.6, 0.55, 0.5, 0.48], color: '#ec4899' },
+    { label: 'Dataset C', data: [0.3, 0.32, 0.35, 0.38, 0.4, 0.37, 0.39, 0.35, 0.3, 0.28, 0.25, 0.2], color: '#14b8a6' },
+  ],
+};
+
+export const CHART_DATA: ChartDataType = {
+  [KpiKey.REQUESTS]: {
+    Month: [4000, 3000, 2000, 2780, 1890, 2390, 3490, 3000, 3500, 4100, 4300, 4500],
+    Week: [820, 932, 901, 1120, 1290, 1250, 1100],
+    Day: [110, 100, 120, 180, 250, 300, 280, 310, 350, 320, 280, 200],
+  },
+  [KpiKey.USERS]: {
+    Month: [500, 520, 510, 550, 580, 620, 650, 680, 700, 710, 730, 750],
+    Week: [680, 700, 710, 730, 750, 740, 720],
+    Day: [300, 250, 280, 350, 450, 550, 600, 620, 650, 630, 580, 450],
+  },
+  [KpiKey.LATENCY]: {
+    Month: [30, 28, 32, 30, 25, 22, 24, 28, 26, 30, 32, 28],
+    Week: [32, 30, 28, 25, 28, 30, 29],
+    Day: [20, 22, 25, 30, 35, 40, 38, 35, 32, 28, 25, 22],
+  },
+  [KpiKey.TRENDING]: TRENDING_DATA_SERIES,
+};
+
+export const DONUT_DATA: DonutDataItem[] = [
+  { name: 'Stream', value: 4, color: '#3b82f6' }, // blue-500 (ds_001, ds_007, ds_009, ds_011)
+  { name: 'Database', value: 4, color: '#ec4899' }, // pink-500 (ds_002, ds_005, ds_008, ds_014)
+  { name: 'File', value: 2, color: '#14b8a6' }, // teal-500 (ds_003, ds_013)
+  { name: 'Log', value: 3, color: '#f97316' }, // orange-500 (ds_004, ds_012, ds_015)
+  { name: 'Static', value: 2, color: '#a855f7' }, // purple-500 (ds_006, ds_010)
+];
+
+export const NAV_ITEMS: NavItem[] = [
+  { name: 'Dashboard', icon: 'LayoutDashboard', page: Page.DASHBOARD },
+  { name: 'Datasets', icon: 'Database', page: Page.DATASETS },
+  { name: 'Analytics', icon: 'BarChart3', page: Page.ANALYTICS },
+  { name: 'Settings', icon: 'Settings', page: Page.SETTINGS },
+];
+
+export const THEMES: Themes = {
+  [ThemeKey.OCEAN]: {
+    app: 'bg-gradient-to-br from-[#14253F] via-[#126C86] to-[#2198AC]',
+    text: 'text-zinc-100',
+    sidebar: 'bg-[#14253F]',
+    sidebarBorder: 'border-zinc-800',
+    sidebarActive: 'bg-gradient-to-br from-[#126C86] to-[#2198AC] text-white',
+    sidebarHover: 'hover:bg-[#126C86]',
+    topbar: 'bg-[#14253F]/50',
+    topbarBorder: 'border-zinc-800',
+    title: 'text-white',
+    searchBg: 'bg-[#14253F]/80',
+    searchBorder: 'border-[#126C86]/50',
+    table: 'bg-[#14253F]/90 border-[#126C86]/50',
+    tableCell: 'text-white',
+    tableCellSubtle: 'text-zinc-400',
+    kpiCard: 'bg-[#14253F]/90 border-[#126C86]/50',
+    kpiCardValue: 'text-white',
+    chartBg: 'bg-[#14253F]/90',
+    chartTitle: 'text-white',
+    modal: 'bg-zinc-900',
+    // New properties for Datasets page
+    heroBg: 'bg-[#0A1934]', // Deep blue background for hero section
+    cardBg: 'bg-[#1A3459]', // Slightly lighter dark blue for dataset cards
+    cardBorder: 'border-[#2A497A]', // Border for cards
+    sectionBg: 'bg-[#0A1934]', // Main section background for datasets page
+    neutralBg: 'bg-zinc-900', // For sections that need a subtle background
+    highlightText: 'text-teal-400', // Highlight color for "AI & Big Data"
+  },
+  [ThemeKey.DAY]: {
+    app: 'bg-gradient-to-br from-white to-blue-50',
+    text: 'text-zinc-900',
+    sidebar: 'bg-zinc-100',
+    sidebarBorder: 'border-zinc-200',
+    sidebarActive: 'bg-gradient-to-br from-[#126C86] to-[#2198AC] text-white',
+    sidebarHover: 'hover:bg-zinc-200',
+    topbar: 'bg-zinc-100/50',
+    topbarBorder: 'border-zinc-200',
+    title: 'text-zinc-900',
+    searchBg: 'bg-white',
+    searchBorder: 'border-zinc-300',
+    table: 'bg-white border-zinc-200',
+    tableCell: 'text-zinc-900',
+    tableCellSubtle: 'text-zinc-500',
+    kpiCard: 'bg-white border-gray-200',
+    kpiCardValue: 'text-zinc-900',
+    chartBg: 'bg-white',
+    chartTitle: 'text-zinc-900',
+    modal: 'bg-white',
+    // New properties for Datasets page
+    heroBg: 'bg-blue-600',
+    cardBg: 'bg-white',
+    cardBorder: 'border-zinc-200',
+    sectionBg: 'bg-zinc-100',
+    neutralBg: 'bg-white',
+    highlightText: 'text-blue-700',
+  },
+  [ThemeKey.SUNSET]: {
+    app: 'bg-gradient-to-br from-purple-900 via-red-700 to-orange-500',
+    text: 'text-zinc-100',
+    sidebar: 'bg-gradient-to-b from-purple-900 to-red-900',
+    sidebarBorder: 'border-purple-700/50',
+    sidebarActive: 'bg-gradient-to-br from-purple-600 to-red-600 text-white',
+    sidebarHover: 'hover:bg-purple-700/50',
+    topbar: 'bg-purple-900/50',
+    topbarBorder: 'border-purple-700/50',
+    title: 'text-white',
+    searchBg: 'bg-purple-900/80',
+    searchBorder: 'border-purple-700/50',
+    table: 'bg-[#2a1a3b]/90 border-purple-700/50',
+    tableCell: 'text-white',
+    tableCellSubtle: 'text-zinc-400',
+    kpiCard: 'bg-[#2a1a3b]/90 border-purple-700/50',
+    kpiCardValue: 'text-white',
+    chartBg: 'bg-[#2a1a3b]/90',
+    chartTitle: 'text-white',
+    modal: 'bg-zinc-900',
+    // New properties for Datasets page
+    heroBg: 'bg-purple-950',
+    cardBg: 'bg-red-950',
+    cardBorder: 'border-red-800',
+    sectionBg: 'bg-purple-900',
+    neutralBg: 'bg-[#2a1a3b]',
+    highlightText: 'text-orange-300',
+  },
+  [ThemeKey.FOREST]: {
+    app: 'bg-gradient-to-br from-green-900 via-teal-800 to-gray-900',
+    text: 'text-zinc-100',
+    sidebar: 'bg-gradient-to-b from-green-900 to-teal-900',
+    sidebarBorder: 'border-teal-700/50',
+    sidebarActive: 'bg-gradient-to-br from-green-600 to-teal-500 text-white',
+    sidebarHover: 'hover:bg-green-700/50',
+    topbar: 'bg-green-900/50',
+    topbarBorder: 'border-teal-700/50',
+    title: 'text-white',
+    searchBg: 'bg-green-900/80',
+    searchBorder: 'border-teal-700/50',
+    table: 'bg-[#0d2a21]/90 border-teal-700/50',
+    tableCell: 'text-white',
+    tableCellSubtle: 'text-zinc-400',
+    kpiCard: 'bg-[#0d2a21]/90 border-teal-700/50',
+    kpiCardValue: 'text-white',
+    chartBg: 'bg-[#0d2a21]/90',
+    chartTitle: 'text-white',
+    modal: 'bg-zinc-900',
+    // New properties for Datasets page
+    heroBg: 'bg-green-950',
+    cardBg: 'bg-teal-950',
+    cardBorder: 'border-teal-800',
+    sectionBg: 'bg-green-900',
+    neutralBg: 'bg-[#0d2a21]',
+    highlightText: 'text-green-300',
+  },
+  [ThemeKey.GRADIENT_DARK]: {
+    app: 'bg-gradient-to-br from-gray-900 via-purple-900 to-black',
+    text: 'text-zinc-100',
+    sidebar: 'bg-gray-900',
+    sidebarBorder: 'border-purple-800/50',
+    sidebarActive: 'bg-gradient-to-br from-purple-700 to-purple-800 text-white',
+    sidebarHover: 'hover:bg-purple-900/50',
+    topbar: 'bg-gray-900/50',
+    topbarBorder: 'border-purple-800/50',
+    title: 'text-white',
+    searchBg: 'bg-gray-900/80',
+    searchBorder: 'border-purple-700/50',
+    table: 'bg-[#1a1a2e]/90 border-purple-800/50',
+    tableCell: 'text-white',
+    tableCellSubtle: 'text-zinc-400',
+    kpiCard: 'bg-[#1a1a2e]/90 border-purple-800/50',
+    kpiCardValue: 'text-white',
+    chartBg: 'bg-[#1a1a2e]/90',
+    chartTitle: 'text-white',
+    modal: 'bg-zinc-900',
+    heroBg: 'bg-gray-900',
+    cardBg: 'bg-[#1a1a2e]',
+    cardBorder: 'border-purple-800/50',
+    sectionBg: 'bg-black',
+    neutralBg: 'bg-gray-900',
+    highlightText: 'text-purple-400',
+  },
+  [ThemeKey.FULL_DARK]: {
+    app: 'bg-black',
+    text: 'text-zinc-100',
+    sidebar: 'bg-zinc-900',
+    sidebarBorder: 'border-zinc-800',
+    sidebarActive: 'bg-blue-600 text-white',
+    sidebarHover: 'hover:bg-zinc-800',
+    topbar: 'bg-zinc-900/50',
+    topbarBorder: 'border-zinc-800',
+    title: 'text-white',
+    searchBg: 'bg-zinc-900',
+    searchBorder: 'border-zinc-700',
+    table: 'bg-zinc-900/90 border-zinc-800/50',
+    tableCell: 'text-white',
+    tableCellSubtle: 'text-zinc-400',
+    kpiCard: 'bg-zinc-900/90 border-zinc-800/50',
+    kpiCardValue: 'text-white',
+    chartBg: 'bg-zinc-900/90',
+    chartTitle: 'text-white',
+    modal: 'bg-zinc-950',
+    heroBg: 'bg-black',
+    cardBg: 'bg-zinc-900',
+    cardBorder: 'border-zinc-800',
+    sectionBg: 'bg-black',
+    neutralBg: 'bg-zinc-900',
+    highlightText: 'text-blue-400',
+  },
+};

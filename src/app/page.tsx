@@ -945,7 +945,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
         </div>
         <div className="lg:w-1/2 flex justify-center lg:justify-end">
           {/* Placeholder for illustration */}
-          <img data-ai-hint="data pipeline" src="https://picsum.photos/seed/1/600/400" alt="Data illustration" className="max-w-full h-auto w-[600px] object-contain" />
+          <img data-ai-hint="data pipeline" src="https://storage.googleapis.com/aifire.appspot.com/images/data-pipeline.webp" alt="Data illustration" className="max-w-full h-auto w-[600px] object-contain" />
         </div>
       </div>
     </section>
@@ -959,22 +959,22 @@ interface EndlessPossibilitiesSectionProps {
 const EndlessPossibilitiesSection: React.FC<EndlessPossibilitiesSectionProps> = ({ theme }) => {
   const featureCards = [
     {
-      icon: <img src="https://assets-global.website-files.com/653063fcd0c776097d40f28e/653229b139031c54e0c81d9e_icon-1.svg" alt="Departments Icon" className="w-16 h-16 mb-4" />,
+      icon: <img src="https://storage.googleapis.com/aifire.appspot.com/images/icon-departments.webp" alt="Departments Icon" className="w-16 h-16 mb-4" />,
       title: "Departments",
       description: "Enhance operational efficiency and decision-making within various departments using specialized datasets.",
     },
     {
-      icon: <img src="https://assets-global.website-files.com/653063fcd0c776097d40f28e/653229b139031c54e0c81da5_icon-2.svg" alt="Industries Icon" className="w-16 h-16 mb-4" />,
+      icon: <img src="https://storage.googleapis.com/aifire.appspot.com/images/icon-industries.webp" alt="Industries Icon" className="w-16 h-16 mb-4" />,
       title: "Industries",
       description: "Tailored datasets providing deep insights into specific industry trends, market analysis, and competitive landscapes.",
     },
     {
-      icon: <img src="https://assets-global.website-files.com/653063fcd0c776097d40f28e/653229b139031c54e0c81da1_icon-3.svg" alt="Technology Icon" className="w-16 h-16 mb-4" />,
+      icon: <img src="https://storage.googleapis.com/aifire.appspot.com/images/icon-technology.webp" alt="Technology Icon" className="w-16 h-16 mb-4" />,
       title: "Technology & Innovation",
       description: "Leverage data for product development, AI model training, and advancing technological capabilities.",
     },
     {
-      icon: <img src="https://assets-global.website-files.com/653063fcd0c776097d40f28e/653229b139031c54e0c81d9f_icon-4.svg" alt="Business Icon" className="w-16 h-16 mb-4" />,
+      icon: <img src="https://storage.googleapis.com/aifire.appspot.com/images/icon-business.webp" alt="Business Icon" className="w-16 h-16 mb-4" />,
       title: "Business Growth",
       description: "Drive marketing strategies, improve customer understanding, and identify new market opportunities with rich business data.",
     },

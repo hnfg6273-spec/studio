@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { Dataset, Theme } from '@/lib/types';
 import Icon from './Icon';
 import DatasetTypeSelector from './DatasetTypeSelector';
-import { CheckCircle, Plane } from 'lucide-react';
+import { getIcon } from '@/lib/utils';
 
 
 const HeroSection: React.FC<{ theme: Theme }> = ({ theme }) => {

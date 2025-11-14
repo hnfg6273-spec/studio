@@ -460,8 +460,8 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
   const pieOuterRadius = isModal ? 110 : 90;
 
   const outerRadialOffset = isModal ? 10 : 1;
-  const lineSegmentLength = isModal ? 10 : 20;
-  const horizontalLineExtension = isModal ? 10 : 10;
+  const lineSegmentLength = isModal ? 10 : 5;
+  const horizontalLineExtension = isModal ? 10 : 5;
   const labelBoxMargin = 8;
   const labelRectWidth = isModal ? 130 : 120;
   const labelRectHeight = isModal ? 65 : 60;
@@ -513,7 +513,7 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
     return (
       <g>
         <path d={`M${sx},${sy}L${elbowX},${elbowY}L${ex},${finalEy}`} stroke="#a1a1aa" fill="none" strokeWidth={1} />
-        <foreignObject x={labelX} y={labelY} width={labelRectWidth} height={labelRectHeight} style={{ overflow: 'hidden' }}>
+        <foreignObject x={labelX} y={labelY} width={labelRectWidth} height={labelRectHeight} style={{ overflow: 'visible' }}>
           <div style={{
             background: 'transparent',
             border: 'none',
@@ -1005,7 +1005,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
                 <Icon name="Maximize2" className="w-5 h-5" />
               </button>
             </div>
-            <div className="h-[400px]">
+            <div className="h-[300px]">
               <DonutChartRecharts data={DONUT_DATA} theme={theme} />
             </div>
           </div>

@@ -120,7 +120,7 @@ export const THEMES: Themes = {
     highlightText: 'text-teal-400', // Highlight color for "AI & Big Data"
   },
   [ThemeKey.DAY]: {
-    app: 'bg-zinc-50',
+    app: 'bg-zinc-100',
     text: 'text-zinc-900',
     sidebar: 'bg-white',
     sidebarBorder: 'border-zinc-200',
@@ -132,9 +132,9 @@ export const THEMES: Themes = {
     searchBg: 'bg-white',
     searchBorder: 'border-zinc-300',
     table: 'bg-white border-zinc-200',
-    tableCell: 'text-zinc-900',
+    tableCell: 'text-zinc-800',
     tableCellSubtle: 'text-zinc-500',
-    kpiCard: 'bg-white border-gray-200',
+    kpiCard: 'bg-white border-zinc-200',
     kpiCardValue: 'text-zinc-900',
     chartBg: 'bg-white',
     chartTitle: 'text-zinc-900',

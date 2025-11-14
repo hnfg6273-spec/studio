@@ -5,12 +5,6 @@ import Icon from './Icon';
 import DatasetTypeSelector from './DatasetTypeSelector';
 import { CheckCircle, Plane } from 'lucide-react';
 
-const ReviewBadge: React.FC<{ name: string; ratingText: string; ratingColor: string }> = ({ name, ratingText, ratingColor }) => (
-  <div className="flex items-center space-x-2">
-    <span className="text-gray-300 text-sm">{name}</span>
-  </div>
-);
-
 
 const HeroSection: React.FC<{ theme: Theme }> = ({ theme }) => {
   const isDark = theme.text !== 'text-zinc-900';
@@ -19,12 +13,7 @@ const HeroSection: React.FC<{ theme: Theme }> = ({ theme }) => {
   return (
     <section className={`relative py-12 lg:py-20 px-4 sm:px-8 ${isDark ? 'bg-slate-900' : 'bg-gray-100'} text-gray-100`}>
       <div className={`max-w-7xl mx-auto w-full ${isDark ? 'bg-slate-800/70' : 'bg-white'} backdrop-blur-sm rounded-3xl shadow-2xl p-6 md:p-12 border ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
-        <div className="flex space-x-4 mb-8">
-          <ReviewBadge name="Trustpilot" ratingColor="text-green-400" ratingText="★★★★★" />
-          <ReviewBadge name="G2" ratingColor="text-red-400" ratingText="★★★★" />
-          <ReviewBadge name="Capterra" ratingColor="text-yellow-400" ratingText="★★★★★" />
-        </div>
-
+        
         <div className="lg:flex lg:space-x-12">
           {/* Left Content Area */}
           <div className="lg:w-1/2 mb-10 lg:mb-0">

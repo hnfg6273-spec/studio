@@ -3,52 +3,78 @@ import React, { useMemo } from 'react';
 import { Dataset, Theme } from '@/lib/types';
 import Icon from './Icon';
 import DatasetTypeSelector from './DatasetTypeSelector';
+import { CheckCircle, Plane } from 'lucide-react';
 
-interface HeroSectionProps {
-  theme: Theme;
-}
+const ReviewBadge: React.FC<{ name: string; ratingText: string; ratingColor: string }> = ({ name, ratingText, ratingColor }) => (
+  <div className="flex items-center space-x-2">
+    <div className={`text-sm font-bold ${ratingColor}`}>{ratingText}</div>
+    <span className="text-gray-400 text-sm">|</span>
+    <span className="text-gray-300 text-sm">{name}</span>
+  </div>
+);
 
-const HeroSection: React.FC<HeroSectionProps> = ({ theme }) => {
+
+const HeroSection: React.FC<{ theme: Theme }> = ({ theme }) => {
+  const isDark = theme.text !== 'text-zinc-900';
+  const imageUrl = "https://i.postimg.cc/WzmjH6rz/Gemini-Generated-Image-vdgi6yvdgi6yvdgi-removebg-preview.png";
+
   return (
-    <section className={`relative py-20 lg:py-32 px-8 ${theme.heroBg} ${theme.text} overflow-hidden`}>
-      <div className="max-w-7xl mx-auto relative z-10 flex flex-col lg:flex-row items-center lg:items-start justify-between">
-        <div className="lg:w-1/2 text-center lg:text-left mb-12 lg:mb-0">
-          <div className="flex items-center justify-center lg:justify-start space-x-4 mb-6">
-            <div className="flex items-center text-sm">
-              <img src="https://assets-global.website-files.com/653063fcd0c776097d40f28e/653229b139031c54e0c81d86_trustpilot.svg" alt="Trustpilot" className="h-4 mr-2" />
-              <span className="font-semibold text-green-400">4.5</span>
-            </div>
-            <div className="flex items-center text-sm">
-              <img src="https://assets-global.website-files.com/653063fcd0c776097d40f28e/653229b139031c54e0c81d88_capterra.svg" alt="Capterra" className="h-4 mr-2" />
-              <span className="font-semibold text-yellow-400">4.7</span>
+    <section className={`relative py-12 lg:py-20 px-4 sm:px-8 ${isDark ? 'bg-slate-900' : 'bg-gray-100'} text-gray-100`}>
+      <div className={`max-w-7xl mx-auto w-full ${isDark ? 'bg-slate-800/70' : 'bg-white'} backdrop-blur-sm rounded-3xl shadow-2xl p-6 md:p-12 border ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
+        <div className="flex space-x-4 mb-8">
+          <ReviewBadge name="Trustpilot" ratingColor="text-green-400" ratingText="★★★★★" />
+          <ReviewBadge name="G2" ratingColor="text-red-400" ratingText="★★★★" />
+          <ReviewBadge name="Capterra" ratingColor="text-yellow-400" ratingText="★★★★★" />
+        </div>
+
+        <div className="lg:flex lg:space-x-12">
+          {/* Left Content Area */}
+          <div className="lg:w-1/2 mb-10 lg:mb-0">
+            <h1 className={`text-4xl sm:text-6xl font-extrabold leading-tight tracking-tight mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              Get fresh datasets <br className="hidden sm:inline" />from popular websites
+            </h1>
+            
+            <p className={`text-lg sm:text-xl ${isDark ? 'text-gray-400' : 'text-gray-600'} mb-10 max-w-lg`}>
+              No more maintaining scrapers or bypassing blocks – just structured and validated data tailored to your business needs.
+            </p>
+
+            <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4"> 
+              <button
+                className={`flex items-center justify-center px-8 py-3 text-lg font-semibold rounded-xl border ${isDark ? 'border-gray-600 bg-gray-900/50 hover:bg-gray-800/80 text-white' : 'border-gray-300 bg-gray-100 hover:bg-gray-200 text-gray-800'} transition duration-200 shadow-lg group`}
+              >
+                Contact sales
+                <Plane size={18} className="ml-2 transform group-hover:translate-x-1 transition duration-200" />
+              </button>
+
+              <button
+                className="flex items-center justify-center px-8 py-3 text-lg font-semibold rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition duration-200 shadow-lg shadow-blue-500/30"
+              >
+                <Icon name="Search" className="w-5 h-5 mr-2" />
+                Buy dataset
+              </button>
             </div>
           </div>
-          <h1 className="text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
-            Get fresh datasets from popular websites
-          </h1>
-          <p className="text-lg text-zinc-300 mb-10 max-w-lg mx-auto lg:mx-0">
-            No more maintaining scrapers or bypassing blocks – just structured and validated data tailored to your business needs.
-          </p>
-          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center lg:justify-start">
-            <button className="flex items-center justify-center px-8 py-3 border-2 border-white text-white rounded-lg shadow-md hover:bg-white hover:text-blue-700 transition-colors">
-              Contact sales <Icon name="ArrowRight" className="w-5 h-5 ml-2" />
-            </button>
-            <button className="flex items-center justify-center px-8 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors">
-              <svg className="w-6 h-6 mr-2" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 11.2C12 10.428 12.628 9.8 13.4 9.8H21.2C22.296 9.8 23.2 10.704 23.2 11.8V21.2C23.2 22.296 22.296 23.2 21.2 23.2H13.4C12.628 23.2 12 22.572 12 21.8V11.2ZM12 11.2C12 10.428 12.628 9.8 13.4 9.8H21.2C22.296 9.8 23.2 10.704 23.2 11.8V21.2C23.2 22.296 22.296 23.2 21.2 23.2H13.4C12.628 23.2 12 22.572 12 21.8V11.2ZM12 11.2C12 10.428 12.628 9.8 13.4 9.8H21.2C22.296 9.8 23.2 10.704 23.2 11.8V21.2C23.2 22.296 22.296 23.2 21.2 23.2H13.4C12.628 23.2 12 22.572 12 21.8V11.2ZM12 11.2C12 10.428 12.628 9.8 13.4 9.8H21.2C22.296 9.8 23.2 10.704 23.2 11.8V21.2C23.2 22.296 22.296 23.2 21.2 23.2H13.4C12.628 23.2 12 22.572 12 21.8V11.2ZM12 11.2C12 10.428 12.628 9.8 13.4 9.8H21.2C22.296 9.8 23.2 10.704 23.2 11.8V21.2C23.2 22.296 22.296 23.2 21.2 23.2H13.4C12.628 23.2 12 22.572 12 21.8V11.2ZM12 11.2C12 10.428 12.628 9.8 13.4 9.8H21.2C22.296 9.8 23.2 10.704 23.2 11.8V21.2C23.2 22.296 22.296 23.2 21.2 23.2H13.4C12.628 23.2 12 22.572 12 21.8V11.2Z" />
-              <path d="M22.5 12.5C22.5 12.5 22.5 12.5 22.5 12.5L22.5 12.5L22.5 12.5ZM24 10C24 4.477 19.523 0 14 0H10C4.477 0 0 4.477 0 10V14C0 19.523 4.477 24 10 24H14C19.523 24 24 19.523 24 14V10ZM22.5 12.5C22.5 12.5 22.5 12.5 22.5 12.5L22.5 12.5L22.5 12.5Z" />
-                <path d="M12.0001 10.0001C12.0001 10.0001 12.0001 10.0001 12.0001 10.0001L12.0001 10.0001L12.0001 10.0001ZM12.0001 10.0001C12.0001 10.0001 12.0001 10.0001 12.0001 10.0001L12.0001 10.0001L12.0001 10.0001Z" />
-                <path d="M10.1501 12.2999L12.0001 10.0001L13.8501 12.2999L13.1501 12.8999L12.0001 11.4999L10.8501 12.8999L10.1501 12.2999ZM12.0001 10.0001C12.0001 10.0001 12.0001 10.0001 12.0001 10.0001L12.0001 10.0001L12.0001 10.0001Z" />
-                <path d="M14.28 11.16C14.28 11.16 14.28 11.16 14.28 11.16C14.28 11.16 14.28 11.16 14.28 11.16ZM12.0001 10.0001C12.0001 10.0001 12.0001 10.0001 12.0001 10.0001L12.0001 10.0001L12.0001 10.0001Z" />
-                <path d="M12 0C5.373 0 0 5.373 0 12C0 18.627 5.373 24 12 24C18.627 24 24 18.627 24 12C24 5.373 18.627 0 12 0ZM12 4.4C14.093 4.4 15.8 6.107 15.8 8.2C15.8 10.293 14.093 12 12 12C9.907 12 8.2 10.293 8.2 8.2C8.2 6.107 9.907 4.4 12 4.4ZM12 20.8C9.664 20.8 7.6 19.387 6.556 17.387C6.012 16.32 5.597 15.19 5.398 14H18.602C18.403 15.19 17.988 16.32 17.444 17.387C16.393 19.387 14.336 20.8 12 20.8Z" fill="#fff"/>
-              </svg>
-              Buy dataset
-            </button>
+
+          {/* Right Image Area */}
+          <div className="lg:w-1/2 h-64 md:h-96 relative flex items-center justify-center p-4">
+            <img 
+              data-ai-hint="data dashboard preview"
+              src={imageUrl}
+              alt="Data Dashboard Preview"
+              className="w-full h-full object-contain rounded-xl transition duration-300"
+              onError={(e) => { 
+                e.currentTarget.onerror = null; 
+                e.currentTarget.src="https://placehold.co/800x600/1E293B/C7D2FE?text=Image+Load+Error"; 
+              }}
+            />
           </div>
         </div>
-        <div className="lg:w-1/2 flex justify-center lg:justify-end">
-          {/* Placeholder for illustration */}
-          <img data-ai-hint="data pipeline" src="https://storage.googleapis.com/aifire.appspot.com/images/data-pipeline.webp" alt="Data illustration" className="max-w-full h-auto w-[600px] object-contain" />
+
+        <div className={`mt-12 pt-8 border-t ${isDark ? 'border-slate-700/50' : 'border-gray-200'} flex flex-wrap items-center space-x-6 ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
+            <CheckCircle size={20} className="text-green-500" />
+            <span className="text-sm font-medium">CCPA Compliant</span>
+            <span className="text-sm font-medium">GDPR Ready</span>
+            <span className="text-sm font-medium">ISO Certified</span>
         </div>
       </div>
     </section>

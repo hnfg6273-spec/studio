@@ -83,6 +83,7 @@ export interface KpiDataItem {
   changeType: 'positive' | 'negative';
   icon: string;
   color: string;
+  gradient: string;
 }
 
 export interface BaseChartSeries {
@@ -171,17 +172,14 @@ export const TRENDING_DATA_SERIES: TrendingChartSeries = {
   Month: [
     { label: 'Dataset A', data: [0.7, 0.6, 0.8, 0.75, 0.9, 0.85, 0.95, 0.8, 0.7, 0.75, 0.8, 0.9], color: '#3b82f6' }, // blue-500
     { label: 'Dataset B', data: [0.5, 0.55, 0.6, 0.65, 0.7, 0.6, 0.65, 0.75, 0.8, 0.7, 0.65, 0.7], color: '#ec4899' }, // pink-500
-    { label: 'Dataset C', data: [0.3, 0.4, 0.35, 0.5, 0.45, 0.55, 0.5, 0.4, 0.3, 0.4, 0.5, 0.4], color: '#14b8a6' }, // teal-500
   ],
   Week: [
     { label: 'Dataset A', data: [0.8, 0.75, 0.85, 0.9, 0.8, 0.7, 0.9], color: '#3b82f6' },
     { label: 'Dataset B', data: [0.6, 0.65, 0.7, 0.75, 0.7, 0.6, 0.7], color: '#ec4899' },
-    { label: 'Dataset C', data: [0.4, 0.45, 0.5, 0.4, 0.3, 0.35, 0.4], color: '#14b8a6' },
   ],
   Day: [
     { label: 'Dataset A', data: [0.7, 0.75, 0.8, 0.85, 0.9, 0.88, 0.92, 0.85, 0.8, 0.75, 0.7, 0.65], color: '#3b82f6' },
     { label: 'Dataset B', data: [0.5, 0.55, 0.6, 0.62, 0.65, 0.6, 0.58, 0.63, 0.6, 0.55, 0.5, 0.48], color: '#ec4899' },
-    { label: 'Dataset C', data: [0.3, 0.32, 0.35, 0.38, 0.4, 0.37, 0.39, 0.35, 0.3, 0.28, 0.25, 0.2], color: '#14b8a6' },
   ],
 };
 
@@ -207,7 +205,6 @@ export const CHART_DATA: ChartDataType = {
 export const DONUT_DATA: DonutDataItem[] = [
   { name: 'Stream', value: 4, color: '#3b82f6' }, // blue-500 (ds_001, ds_007, ds_009, ds_011)
   { name: 'Database', value: 4, color: '#ec4899' }, // pink-500 (ds_002, ds_005, ds_008, ds_014)
-  { name: 'File', value: 2, color: '#14b8a6' }, // teal-500 (ds_003, ds_013)
   { name: 'Log', value: 3, color: '#f97316' }, // orange-500 (ds_004, ds_012, ds_015)
   { name: 'Static', value: 2, color: '#a855f7' } // purple-500 (ds_006, ds_010)
 ];
@@ -381,16 +378,16 @@ const KpiCard: React.FC<KpiCardProps> = ({ data, isActive, onClick, theme, isTre
     <div
       onClick={onClick}
       className={`relative p-4 rounded-2xl cursor-pointer transition-all overflow-hidden ${theme.kpiCard} ${
-        isActive ? 'ring-2 ring-blue-500/70 shadow-[0_0_15px_rgba(6,182,212,0.3)]' : 'shadow-md hover:-translate-y-0.5'
+        isActive ? 'ring-2 ring-purple-500/70 shadow-[0_0_15px_rgba(168,85,247,0.3)]' : 'shadow-md hover:-translate-y-0.5'
       }`}
     >
       <div
-        className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 to-blue-500"
+        className={`absolute top-0 left-0 right-0 h-1 ${data.gradient}`}
         style={{ opacity: isActive ? 1 : 0.7 }}
       ></div>
       <div className="flex items-start justify-between pt-2">
         <div className="flex items-center space-x-2">
-          <div className="p-2 rounded-full bg-cyan-500/10">
+          <div className="p-2 rounded-full" style={{ backgroundColor: `${data.color}1A`}}>
             <Icon name={data.icon} className="w-4 h-4 text-sm" style={{ color: data.color }} />
           </div>
           <span className="text-sm font-medium text-zinc-400">{data.title}</span>
@@ -403,7 +400,7 @@ const KpiCard: React.FC<KpiCardProps> = ({ data, isActive, onClick, theme, isTre
             <Icon name={trendIcon} className={`w-3.5 h-3.5 ${trendRotationClass}`} />
             <span>{data.change}</span>
           </div>
-          {!isTrendingCard && <span className="text-zinc-400">vs last month</span>}
+          <span className="text-zinc-400">vs last month</span>
         </div>
       </div>
     </div>
@@ -850,10 +847,10 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
   setActivePage,
 }) => {
   const kpiData: Record<KpiKey, KpiDataItem> = {
-    [KpiKey.REQUESTS]: { title: "Total Requests", value: "2.5M", change: "+12.5%", changeType: "positive", icon: "Zap", color: "#22d3ee" },
-    [KpiKey.TRENDING]: { title: "Trending Datasets", value: "7", change: "Top 3 Active", changeType: "positive", icon: "TrendingUp", color: "#c084fc" },
-    [KpiKey.LATENCY]: { title: "Avg. Response", value: "24ms", change: "-2.4%", changeType: "negative", icon: "Activity", color: "#2dd4bf" },
-    [KpiKey.USERS]: { title: "Concurrent Users", value: "842", change: "+4.3%", changeType: "positive", icon: "Users", color: "#fb923c" }
+    [KpiKey.REQUESTS]: { title: "Total Requests", value: "2.5M", change: "+12.5%", changeType: "positive", icon: "Zap", color: "#3b82f6", gradient: "bg-gradient-to-r from-cyan-400 to-blue-500" },
+    [KpiKey.TRENDING]: { title: "Trending Datasets", value: "7", change: "70% of all datasets", changeType: "positive", icon: "TrendingUp", color: "#a855f7", gradient: "bg-gradient-to-r from-pink-500 to-purple-500" },
+    [KpiKey.LATENCY]: { title: "Avg. Response", value: "24ms", change: "-2.4%", changeType: "negative", icon: "Activity", color: "#2dd4bf", gradient: "bg-gradient-to-r from-teal-400 to-green-500" },
+    [KpiKey.USERS]: { title: "Concurrent Users", value: "842", change: "+4.3%", changeType: "positive", icon: "Users", color: "#f97316", gradient: "bg-gradient-to-r from-yellow-400 to-orange-500" }
   };
 
   const kpiTitle: Record<KpiKey, string> = {
@@ -932,7 +929,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
       mainChartDatasets = [{
         label: kpiTitle[activeKpi],
         data: dataForChart,
-        borderColor: activeKpi === KpiKey.REQUESTS ? '#22d3ee' : activeKpi === KpiKey.LATENCY ? '#2dd4bf' : '#fb923c',
+        borderColor: kpiData[activeKpi].color,
         backgroundColor: 'transparent',
         borderWidth: 2.5,
         pointRadius: 0,
@@ -951,7 +948,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
       },
       options: mainChartOptions
     };
-  }, [activeKpi, timeRange, theme, getLabels]);
+  }, [activeKpi, timeRange, theme, getLabels, kpiData]);
 
   const trendingDatasets = useMemo(() => {
     return datasets

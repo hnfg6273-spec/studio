@@ -26,12 +26,6 @@ const HeroSection: React.FC<{ theme: Theme }> = ({ theme }) => {
             </p>
 
             <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4"> 
-              <button
-                className={`flex items-center justify-center px-8 py-3 text-lg font-semibold rounded-xl border ${isDark ? 'border-gray-600 bg-gray-900/50 hover:bg-gray-800/80 text-white' : 'border-gray-300 bg-gray-100 hover:bg-gray-200 text-gray-800'} transition duration-200 shadow-lg group`}
-              >
-                Contact sales
-                <Plane size={18} className="ml-2 transform group-hover:translate-x-1 transition duration-200" />
-              </button>
 
               <button
                 className="flex items-center justify-center px-8 py-3 text-lg font-semibold rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition duration-200 shadow-lg shadow-blue-500/30"

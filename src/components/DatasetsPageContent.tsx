@@ -129,7 +129,7 @@ const DatasetsPageContent: React.FC<DatasetsPageContentProps> = ({
       
       <DatasetTypeSelector theme={theme} />
 
-      <div className="max-w-7xl mx-auto px-8 py-16 bg-black">
+      <div className={`max-w-7xl mx-auto px-8 py-16 ${theme.neutralBg}`}>
         <div className="relative mb-8 max-w-2xl mx-auto">
           <Icon name="Search" className={`w-5 h-5 text-zinc-400 absolute top-1/2 left-3 -translate-y-1/2 ${theme.text === 'text-zinc-900' ? 'text-zinc-500' : 'text-zinc-400'}`} />
           <input

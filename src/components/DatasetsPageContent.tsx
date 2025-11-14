@@ -17,7 +17,7 @@ const HeroSection: React.FC<{ theme: Theme }> = ({ theme }) => {
         <div className="lg:flex lg:space-x-12">
           {/* Left Content Area */}
           <div className="lg:w-1/2 mb-10 lg:mb-0">
-            <h1 className={`text-4xl sm:text-6xl font-extrabold leading-tight tracking-tight mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            <h1 className={`text-3xl sm:text-5xl font-extrabold leading-tight tracking-tight mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
               Fresh Datasets, <br className="hidden sm:inline" />On Demand
             </h1>
             
@@ -62,7 +62,7 @@ interface DatasetCardProps {
 
 const DatasetCard: React.FC<DatasetCardProps> = ({ dataset, theme }) => {
   const isDark = theme.text !== 'text-zinc-900';
-  const cardBg = isDark ? 'bg-slate-800/80' : 'bg-white';
+  const cardBg = isDark ? 'bg-slate-800/60' : 'bg-white';
   const cardBorder = isDark ? 'border-slate-700/80' : 'border-gray-200/80';
   const textColor = isDark ? 'text-slate-100' : 'text-slate-800';
   const subtleTextColor = isDark ? 'text-slate-400' : 'text-slate-500';

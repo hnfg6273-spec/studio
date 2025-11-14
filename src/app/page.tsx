@@ -170,16 +170,16 @@ export const MOCK_DATASETS: Dataset[] = [
 
 export const TRENDING_DATA_SERIES: TrendingChartSeries = {
   Month: [
-    { label: 'Dataset A', data: [0.7, 0.6, 0.8, 0.75, 0.9, 0.85, 0.95, 0.8, 0.7, 0.75, 0.8, 0.9], color: '#3b82f6' }, // blue-500
-    { label: 'Dataset B', data: [0.5, 0.55, 0.6, 0.65, 0.7, 0.6, 0.65, 0.75, 0.8, 0.7, 0.65, 0.7], color: '#ec4899' }, // pink-500
+    { label: 'Total', data: [0.7, 0.6, 0.8, 0.75, 0.9, 0.85, 0.95, 0.8, 0.7, 0.75, 0.8, 0.9], color: '#c084fc' }, // purple-400
+    { label: 'Crypto', data: [0.3, 0.4, 0.35, 0.5, 0.45, 0.55, 0.5, 0.4, 0.3, 0.4, 0.5, 0.4], color: '#f97316' }, // orange-500
   ],
   Week: [
-    { label: 'Dataset A', data: [0.8, 0.75, 0.85, 0.9, 0.8, 0.7, 0.9], color: '#3b82f6' },
-    { label: 'Dataset B', data: [0.6, 0.65, 0.7, 0.75, 0.7, 0.6, 0.7], color: '#ec4899' },
+    { label: 'Total', data: [0.8, 0.75, 0.85, 0.9, 0.8, 0.7, 0.9], color: '#c084fc' },
+    { label: 'Crypto', data: [0.4, 0.45, 0.5, 0.4, 0.3, 0.35, 0.4], color: '#f97316' },
   ],
   Day: [
-    { label: 'Dataset A', data: [0.7, 0.75, 0.8, 0.85, 0.9, 0.88, 0.92, 0.85, 0.8, 0.75, 0.7, 0.65], color: '#3b82f6' },
-    { label: 'Dataset B', data: [0.5, 0.55, 0.6, 0.62, 0.65, 0.6, 0.58, 0.63, 0.6, 0.55, 0.5, 0.48], color: '#ec4899' },
+    { label: 'Total', data: [0.7, 0.75, 0.8, 0.85, 0.9, 0.88, 0.92, 0.85, 0.8, 0.75, 0.7, 0.65], color: '#c084fc' },
+    { label: 'Crypto', data: [0.3, 0.32, 0.35, 0.38, 0.4, 0.37, 0.39, 0.35, 0.3, 0.28, 0.25, 0.2], color: '#f97316' },
   ],
 };
 
@@ -459,9 +459,9 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
   const pieInnerRadius = isModal ? 70 : 60;
   const pieOuterRadius = isModal ? 110 : 90;
 
-  const outerRadialOffset = isModal ? 2 : 1; 
-  const lineSegmentLength = isModal ? 2 : 1;
-  const horizontalLineExtension = isModal ? 10 : 5;
+  const outerRadialOffset = isModal ? 20 : 15; 
+  const lineSegmentLength = isModal ? 30 : 20;
+  const horizontalLineExtension = isModal ? 25 : 20;
   const labelBoxMargin = 8;
   const labelRectWidth = isModal ? 140 : 130;
   const labelRectHeight = isModal ? 70 : 65;
@@ -515,15 +515,12 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
         <path d={`M${sx},${sy}L${elbowX},${elbowY}L${ex},${finalEy}`} stroke="#a1a1aa" fill="none" strokeWidth={1} />
         <foreignObject x={labelX} y={labelY} width={labelRectWidth} height={labelRectHeight} style={{ overflow: 'visible' }}>
           <div style={{
-            backgroundColor: theme.modal, 
-            border: `1.5px solid #3f3f46`, 
-            borderRadius: '8px',
-            padding: '6px 8px',
+            background: 'transparent',
+            border: 'none',
             color: '#d4d4d8', 
             fontSize: isModal ? '14px' : '12px', 
             lineHeight: '1.3',
             textAlign: textAnchor === 'start' ? 'left' : 'right',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           }}>
             <div style={{ color: entry.color, fontWeight: 600 }}>{entry.name}</div>
             <div>Count: {entry.value}</div>
@@ -834,6 +831,7 @@ interface DashboardPageProps {
   theme: Theme;
   openChartModal: (chartType: 'line' | 'pie', title: string, kpi?: KpiKey) => void;
   setActivePage: (page: Page) => void;
+  kpiData: Record<KpiKey, KpiDataItem>;
 }
 
 const DashboardPage: React.FC<DashboardPageProps> = ({
@@ -845,13 +843,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
   theme,
   openChartModal,
   setActivePage,
+  kpiData,
 }) => {
-  const kpiData: Record<KpiKey, KpiDataItem> = {
-    [KpiKey.REQUESTS]: { title: "Total Requests", value: "2.5M", change: "+12.5%", changeType: "positive", icon: "Zap", color: "#3b82f6", gradient: "bg-gradient-to-r from-cyan-400 to-blue-500" },
-    [KpiKey.TRENDING]: { title: "Trending Datasets", value: "7", change: "70% of all datasets", changeType: "positive", icon: "TrendingUp", color: "#a855f7", gradient: "bg-gradient-to-r from-pink-500 to-purple-500" },
-    [KpiKey.LATENCY]: { title: "Avg. Response", value: "24ms", change: "-2.4%", changeType: "negative", icon: "Activity", color: "#2dd4bf", gradient: "bg-gradient-to-r from-teal-400 to-green-500" },
-    [KpiKey.USERS]: { title: "Concurrent Users", value: "842", change: "+4.3%", changeType: "positive", icon: "Users", color: "#f97316", gradient: "bg-gradient-to-r from-yellow-400 to-orange-500" }
-  };
 
   const kpiTitle: Record<KpiKey, string> = {
     [KpiKey.REQUESTS]: 'Total Requests',
@@ -1351,6 +1344,13 @@ export default function App() {
   const [modalChartData, setModalChartData] = useState<ChartData | DonutDataItem[] | {}>({}); 
   const [modalChartOptions, setModalChartOptions] = useState<ChartOptions | {}>({});
 
+  const kpiData: Record<KpiKey, KpiDataItem> = {
+    [KpiKey.REQUESTS]: { title: "Total Requests", value: "2.5M", change: "+12.5%", changeType: "positive", icon: "Zap", color: "#3b82f6", gradient: "bg-gradient-to-r from-cyan-400 to-blue-500" },
+    [KpiKey.TRENDING]: { title: "Trending Datasets", value: "7", change: "70% of all datasets", changeType: "positive", icon: "TrendingUp", color: "#a855f7", gradient: "bg-gradient-to-r from-pink-500 to-purple-500" },
+    [KpiKey.LATENCY]: { title: "Avg. Response", value: "24ms", change: "-2.4%", changeType: "negative", icon: "Activity", color: "#2dd4bf", gradient: "bg-gradient-to-r from-teal-400 to-green-500" },
+    [KpiKey.USERS]: { title: "Concurrent Users", value: "842", change: "+4.3%", changeType: "positive", icon: "Users", color: "#f97316", gradient: "bg-gradient-to-r from-yellow-400 to-orange-500" }
+  };
+
   const currentTheme = THEMES[activeThemeKey];
 
   const cycleTheme = useCallback(() => {
@@ -1430,7 +1430,7 @@ export default function App() {
         modalDatasets = [{
           label: kpi === KpiKey.REQUESTS ? 'Requests' : kpi === KpiKey.LATENCY ? 'Latency (ms)' : 'Users',
           data: dataForChart || [],
-          borderColor: kpi === KpiKey.REQUESTS ? '#22d3ee' : kpi === KpiKey.LATENCY ? '#2dd4bf' : '#fb923c',
+          borderColor: kpiData[kpi].color,
           backgroundColor: 'transparent',
           borderWidth: 2.5,
           pointRadius: 3, 
@@ -1451,7 +1451,7 @@ export default function App() {
       setModalChartOptions({}); 
     }
     setIsModalOpen(true);
-  }, [timeRange, getLabels, currentTheme]);
+  }, [timeRange, getLabels, currentTheme, kpiData]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
@@ -1472,6 +1472,7 @@ export default function App() {
             theme={currentTheme}
             openChartModal={openChartModal}
             setActivePage={setActivePage}
+            kpiData={kpiData}
           />
         );
       case Page.DATASETS:
@@ -1500,7 +1501,7 @@ export default function App() {
       default:
         return null;
     }
-  }, [activePage, datasets, activeKpi, setActiveKpi, timeRange, setTimeRange, currentTheme, openChartModal, searchTerm, setSearchTerm, filter, setFilter, sort, handleDatasetSort, setActivePage]);
+  }, [activePage, datasets, activeKpi, setActiveKpi, timeRange, setTimeRange, currentTheme, openChartModal, searchTerm, setSearchTerm, filter, setFilter, sort, handleDatasetSort, setActivePage, kpiData]);
 
   return (
     <div className={`flex flex-1 h-screen ${currentTheme.app} ${currentTheme.text}`}>

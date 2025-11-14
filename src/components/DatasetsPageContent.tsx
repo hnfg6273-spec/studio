@@ -18,7 +18,7 @@ const HeroSection: React.FC<{ theme: Theme }> = ({ theme }) => {
           {/* Left Content Area */}
           <div className="lg:w-1/2 mb-10 lg:mb-0">
             <h1 className={`text-4xl sm:text-6xl font-extrabold leading-tight tracking-tight mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              Get fresh datasets <br className="hidden sm:inline" />from popular websites
+              Fresh Datasets, <br className="hidden sm:inline" />On Demand
             </h1>
             
             <p className={`text-lg sm:text-xl ${isDark ? 'text-gray-400' : 'text-gray-600'} mb-10 max-w-lg`}>

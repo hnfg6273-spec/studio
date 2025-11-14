@@ -459,13 +459,13 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
   const pieInnerRadius = isModal ? 70 : 60;
   const pieOuterRadius = isModal ? 110 : 90;
 
-  const outerRadialOffset = isModal ? 10 : 5;
-  const lineSegmentLength = isModal ? 10 : 8;
-  const horizontalLineExtension = isModal ? 10 : 5;
+  const outerRadialOffset = 5;
+  const lineSegmentLength = 8;
+  const horizontalLineExtension = 5;
   const labelBoxMargin = 8;
-  const labelRectWidth = isModal ? 130 : 120;
-  const labelRectHeight = isModal ? 65 : 60;
-  const verticalStackingOffset = isModal ? 30 : 28;
+  const labelRectWidth = 120;
+  const labelRectHeight = 60;
+  const verticalStackingOffset = 28;
 
   const getVerticalStackOffset = useCallback((idx: number, total: number): number => {
     return (idx - (total - 1) / 2) * verticalStackingOffset;
@@ -833,7 +833,6 @@ interface DashboardPageProps {
   theme: Theme;
   openChartModal: (chartType: 'line' | 'pie', title: string, kpi?: KpiKey) => void;
   setActivePage: (page: Page) => void;
-  kpiData: Record<KpiKey, KpiDataItem>;
 }
 
 const DashboardPage: React.FC<DashboardPageProps> = ({
@@ -845,9 +844,15 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
   theme,
   openChartModal,
   setActivePage,
-  kpiData,
 }) => {
 
+  const kpiData: Record<KpiKey, KpiDataItem> = {
+    [KpiKey.REQUESTS]: { title: "Total Requests", value: "2.5M", change: "+12.5%", changeType: "positive", icon: "Zap", color: "#818cf8", gradient: "bg-gradient-to-r from-indigo-400 to-indigo-500" },
+    [KpiKey.TRENDING]: { title: "Trending Datasets", value: "Explore", change: "+3 New", changeType: "positive", icon: "TrendingUp", color: "#fb923c", gradient: "bg-gradient-to-r from-orange-400 to-orange-500" },
+    [KpiKey.LATENCY]: { title: "Avg. Response", value: "24ms", change: "-2.4%", changeType: "negative", icon: "Activity", color: "#f472b6", gradient: "bg-gradient-to-r from-pink-400 to-pink-500" },
+    [KpiKey.USERS]: { title: "Concurrent Users", value: "842", change: "+4.3%", changeType: "positive", icon: "Users", color: "#60a5fa", gradient: "bg-gradient-to-r from-blue-400 to-blue-500" }
+  };
+  
   const kpiTitle: Record<KpiKey, string> = {
     [KpiKey.REQUESTS]: 'Total Requests',
     [KpiKey.TRENDING]: 'Top Dataset Trends',
@@ -1050,137 +1055,95 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
   );
 };
 
-// components/DatasetsDashboard.tsx
-const DatasetsDashboard: React.FC = () => {
-  const StarIcon = ({ className }: { className: string }) => (
-    <svg
-      className={className}
-      fill="currentColor"
-      viewBox="0 0 20 20"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-    </svg>
-  );
-
-  const Rating = ({
-    name,
-    stars,
-    icon,
-    iconBg,
-  }: {
-    name: string;
-    stars: number;
-    icon?: React.ReactNode;
-    iconBg?: string;
-  }) => (
-    <div className="flex items-center space-x-2">
-      {icon && (
-        <div className={`w-6 h-6 rounded-md flex items-center justify-center ${iconBg}`}>
-          {icon}
-        </div>
-      )}
-      <span className="font-semibold text-white">{name}</span>
-      <div className="flex">
-        {[...Array(5)].map((_, i) => (
-          <StarIcon
-            key={i}
-            className={`w-5 h-5 ${
-              i < stars ? 'text-yellow-400' : 'text-gray-600'
-            }`}
-          />
-        ))}
-      </div>
-    </div>
-  );
-
-  const TrustpilotIcon = () => (
-    <svg
-      className="w-5 h-5 text-white"
-      fill="currentColor"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M12 17.27l-5.18 3.73 1.64-6.03-4.54-3.95 6.13-.53L12 5.27l2.95 5.22 6.13.53-4.54 3.95 1.64 6.03L12 17.27z" />
-      <path d="M0 0h24v24H0z" fill="none" />
-      <path
-        d="M20.89 8.24l-6.13-.53L12 2.27 9.24 7.71l-6.13.53 4.54 3.95-1.64 6.03L12 13.73l5.18 3.73 1.64-6.03 4.54-3.95z"
-        fill="#00B67A"
-      />
-      <path d="M12 5.27l-2.95 5.22-6.13.53 4.54 3.95-1.64 6.03L12 17.27V5.27z" fill="#00B67A" />
-      <polygon points="12 5.27 14.95 10.49 21.08 11.02 16.54 14.97 18.18 21 12 17.27" fill="#009A66" />
-    </svg>
-  );
+// components/DatasetsPage.tsx
+const DatasetsPage: React.FC = () => {
+  const features = [
+    {
+      icon: (
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="18" y="26" width="4" height="8" fill="#FDBA74"/>
+          <rect x="26" y="22" width="4" height="12" fill="#FDBA74"/>
+          <rect x="34" y="18" width="4" height="16" fill="#FDBA74"/>
+          <path d="M47 38L42 34L47 30" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M51 42L56 38L51 34" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M49 46L53 42" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M40.24,54.79l-4.41-4.41c-1.15-1.15-1.77-2.6-1.77-4.11V44.5c0-3.27,2.65-5.91,5.91-5.91h0c3.27,0,5.91,2.65,5.91,5.91v1.77c0,1.51-0.62,2.96-1.77,4.11l-4.41,4.41C40.42,54.97,40.33,54.88,40.24,54.79z" fill="#34D399"/>
+          <path d="M12,52.09c0-2.91,2.36-5.27,5.27-5.27h7.47c2.91,0,5.27,2.36,5.27,5.27v0c0,2.91-2.36,5.27-5.27,5.27h-7.47C14.36,57.35,12,55,12,52.09z" fill="#3B82F6"/>
+          <path d="M8,42.24c0-2.31,1.87-4.18,4.18-4.18h13.64c2.31,0,4.18,1.87,4.18,4.18v0c0,2.31-1.87,4.18-4.18,4.18H12.18C9.87,46.42,8,44.55,8,42.24z" fill="#60A5FA"/>
+        </svg>
+      ),
+      title: 'Departments',
+      description: 'Lorem ipsum dolor sit am adipisc elit, sed do eiusmod. Lorem ipsum dolor sit adipiscing elit.',
+    },
+    {
+      icon: (
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18.5,54.09h27c1.65,0,3-1.35,3-3v-1.18c0-1.65-1.35-3-3-3h-27c-1.65,0-3,1.35-3,3v1.18C15.5,52.75,16.85,54.09,18.5,54.09z" fill="#FBBF24"/>
+          <path d="M37.7,46.91l-14.86,0L20.4,26.5l4.87-14.86,14.86,0,2.44,14.86L37.7,46.91z" fill="#10B981"/>
+          <path d="M29.5,41.91h-7l-1-6h9Z" fill="#34D399"/>
+          <path d="M25.33,14.09l4.5,2.5,4.5-2.5-2-4.5h-5Z" fill="#10B981"/>
+          <path d="M43,26.5l-3,9.5h-5.5l2-9.5,2-2.5Z" fill="#34D399"/>
+        </svg>
+      ),
+      title: 'Industries',
+      description: 'Lorem ipsum dolor sit am adipisc elit, sed do eiusmod. Lorem ipsum dolor sit adipiscing elit.',
+    },
+    {
+      icon: (
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="14" y="14" width="16" height="16" rx="3" fill="#2DD4BF"/>
+          <rect x="34" y="14" width="16" height="16" rx="3" fill="#2DD4BF"/>
+          <rect x="14" y="34" width="16" height="16" rx="3" fill="#2DD4BF"/>
+          <rect x="34" y="34" width="16" height="16" rx="3" fill="#2DD4BF"/>
+          <circle cx="22" cy="22" r="4" fill="#3B82F6"/>
+          <circle cx="42" cy="22" r="4" fill="#3B82F6"/>
+          <circle cx="22" cy="42" r="4" fill="#3B82F6"/>
+          <circle cx="42" cy="42" r="4" fill="#3B82F6"/>
+          <path d="M26 22h12M26 42h12M22 26v12M42 26v12" stroke="#A7F3D0" strokeWidth="2"/>
+        </svg>
+      ),
+      title: 'Technology',
+      description: 'Lorem ipsum dolor sit am adipisc elit, sed do eiusmod. Lorem ipsum dolor sit adipiscing elit.',
+    },
+    {
+      icon: (
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22,54h20v-4H22V54z M26,22h-4v-4c0-2.21,1.79-4,4-4h8c2.21,0,4,1.79,4,4v4h-4v-4h-8V22z" fill="#FBBF24"/>
+          <path d="M40.5,50H23.5c-1.93,0-3.5-1.57-3.5-3.5V30h24v16.5C44,48.43,42.43,50,40.5,50z" fill="#A78BFA"/>
+          <path d="M20,34h24v-4H20V34z" fill="#C4B5FD"/>
+          <path d="M28,42H24c-1.1,0-2-0.9-2-2v-4h8v4C30,41.1,29.1,42,28,42z" fill="#818CF8"/>
+          <path d="M40,42h-4c-1.1,0-2-0.9-2-2v-4h8v4C42,41.1,41.1,42,40,42z" fill="#818CF8"/>
+        </svg>
+      ),
+      title: 'Business',
+      description: 'Lorem ipsum dolor sit am adipisc elit, sed do eiusmod. Lorem ipsum dolor sit adipiscing elit.',
+    },
+  ];
 
   return (
-    <div className="flex-1 overflow-y-auto bg-[#0A1A3E] text-white p-8 lg:p-16">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center space-x-8 mb-12">
-          <div className="flex items-center space-x-2">
-            <Icon name="Star" className="w-5 h-5 text-green-400" />
-            <span className="font-semibold">Trustpilot</span>
-            <div className="flex">
-              {[...Array(5)].map((_, i) => <Icon key={i} name="Star" className="w-5 h-5 text-green-400 fill-current" />)}
-            </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="font-bold text-lg text-red-500">G</span>
-            <span className="font-semibold text-white">G2</span>
-            <div className="flex">
-              {[...Array(5)].map((_, i) => <Icon key={i} name="Star" className="w-5 h-5 text-red-400 fill-current" />)}
-            </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Icon name="Zap" className="w-5 h-5 text-yellow-500" />
-            <span className="font-semibold text-white">Capterra</span>
-            <div className="flex">
-              {[...Array(5)].map((_, i) => <Icon key={i} name="Star" className="w-5 h-5 text-yellow-400 fill-current" />)}
-            </div>
-          </div>
-        </div>
+    <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+      <div className="container mx-auto px-4 py-16 text-center">
+        <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          Endless Possibilities With <span className="text-teal-500">AI & Big Data</span>
+          <br />
+          Computer Vision
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-12">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit dolore magna aliqua
+        </p>
 
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div>
-            <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6">
-              Get fresh datasets <br /> from popular websites
-            </h1>
-            <p className="text-lg text-gray-300 mb-10">
-              No more maintaining scrapers or bypassing blocks – just
-              structured and validated data tailored to your business needs.
-            </p>
-            <div className="flex items-center space-x-4">
-              <button className="px-6 py-3 border border-white rounded-full flex items-center space-x-2 hover:bg-white hover:text-black transition-colors">
-                <span>Contact sales</span>
-                <Icon name="ArrowRight" className="w-4 h-4" />
-              </button>
-              <button className="px-6 py-3 bg-blue-600 rounded-full flex items-center space-x-2 hover:bg-blue-700 transition-colors">
-                <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                  <svg
-                    className="w-4 h-4"
-                    role="img"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <title>Google</title>
-                    <path
-                      d="M12.48 10.92v3.28h7.84c-.24 1.84-.85 3.18-1.73 4.1-1.05 1.05-2.86 2.25-5.12 2.25-6.16 0-9.28-4.75-9.28-9.28s3.12-9.28 9.28-9.28c3.58 0 5.82 1.55 7.15 2.78l2.6-2.6C19.43 1.34 16.27 0 12.48 0 5.88 0 .01 5.88.01 12.5s5.87 12.5 12.47 12.5c7.05 0 12.18-4.93 12.18-12.5 0-1.02-.1-1.82-.22-2.58H12.48z"
-                      fill="#4285F4"
-                    />
-                  </svg>
-                </div>
-                <span>Buy dataset</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="relative">
-            {/* Placeholder for complex image */}
-            <div className="bg-blue-900/50 rounded-2xl p-8 border border-blue-700/50 shadow-2xl backdrop-blur-lg">
-              <div className="flex justify-center items-center h-80 text-gray-400">
-                <Icon name="Image" className="w-24 h-24 opacity-50" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {features.map((feature, index) => (
+            <div key={index} className="bg-white dark:bg-gray-800/50 p-8 rounded-lg shadow-sm hover:shadow-lg transition-shadow">
+              <div className="flex justify-center items-center mb-6 h-16">
+                {feature.icon}
               </div>
+              <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
+                {feature.description}
+              </p>
             </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>
@@ -1252,10 +1215,10 @@ export default function App() {
   const [modalChartOptions, setModalChartOptions] = useState<ChartOptions | {}>({});
 
   const kpiData: Record<KpiKey, KpiDataItem> = {
-    [KpiKey.REQUESTS]: { title: "Total Requests", value: "2.5M", change: "+12.5%", changeType: "positive", icon: "Zap", color: "#3b82f6", gradient: "bg-gradient-to-r from-cyan-400 to-blue-500" },
-    [KpiKey.TRENDING]: { title: "Trending Datasets", value: "7", change: "70% of all datasets", changeType: "positive", icon: "TrendingUp", color: "#a855f7", gradient: "bg-gradient-to-r from-pink-500 to-purple-500" },
-    [KpiKey.LATENCY]: { title: "Avg. Response", value: "24ms", change: "-2.4%", changeType: "negative", icon: "Activity", color: "#2dd4bf", gradient: "bg-gradient-to-r from-teal-400 to-green-500" },
-    [KpiKey.USERS]: { title: "Concurrent Users", value: "842", change: "+4.3%", changeType: "positive", icon: "Users", color: "#f97316", gradient: "bg-gradient-to-r from-yellow-400 to-orange-500" }
+    [KpiKey.REQUESTS]: { title: "Total Requests", value: "2.5M", change: "+12.5%", changeType: "positive", icon: "Zap", color: "#818cf8", gradient: "bg-gradient-to-r from-indigo-400 to-indigo-500" },
+    [KpiKey.TRENDING]: { title: "Trending Datasets", value: "Explore", change: "+3 New", changeType: "positive", icon: "TrendingUp", color: "#fb923c", gradient: "bg-gradient-to-r from-orange-400 to-orange-500" },
+    [KpiKey.LATENCY]: { title: "Avg. Response", value: "24ms", change: "-2.4%", changeType: "negative", icon: "Activity", color: "#f472b6", gradient: "bg-gradient-to-r from-pink-400 to-pink-500" },
+    [KpiKey.USERS]: { title: "Concurrent Users", value: "842", change: "+4.3%", changeType: "positive", icon: "Users", color: "#60a5fa", gradient: "bg-gradient-to-r from-blue-400 to-blue-500" }
   };
 
   const currentTheme = THEMES[activeThemeKey];
@@ -1379,12 +1342,11 @@ export default function App() {
             theme={currentTheme}
             openChartModal={openChartModal}
             setActivePage={setActivePage}
-            kpiData={kpiData}
           />
         );
       case Page.DATASETS:
         return (
-          <DatasetsDashboard />
+          <DatasetsPage />
         );
       case Page.ANALYTICS:
       case Page.SETTINGS:
@@ -1398,7 +1360,7 @@ export default function App() {
       default:
         return null;
     }
-  }, [activePage, datasets, activeKpi, setActiveKpi, timeRange, setTimeRange, currentTheme, openChartModal, searchTerm, filter, sort, handleDatasetSort, setActivePage, kpiData]);
+  }, [activePage, datasets, activeKpi, timeRange, currentTheme, openChartModal, searchTerm, filter, sort, handleDatasetSort]);
 
   return (
     <div className={`flex flex-1 h-screen ${currentTheme.app} ${currentTheme.text}`}>

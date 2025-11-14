@@ -469,7 +469,7 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
     const entry = data[index]; 
 
     const outerRadialOffset = 5;
-    const lineSegmentLength = 20;
+    const lineSegmentLength = 10;
     const horizontalLineExtension = 15;
     const labelBoxMargin = 8;
 
@@ -1053,39 +1053,88 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
 };
 
 // components/DatasetsPage.tsx
-const DatasetsPage: React.FC = () => {
-    return (
-        <div className="flex-1 overflow-y-auto bg-gray-900 text-gray-200">
-            <div className="container mx-auto px-4 py-16">
-                <div className="text-center max-w-4xl mx-auto">
-                    <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-blue-500">
-                        Explore Our Datasets
-                    </h1>
-                    <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-12">
-                        Unlock insights from a vast collection of datasets across various domains.
-                    </p>
-                </div>
+const datasetCards = [
+  {
+    title: 'LinkedIn people profiles',
+    description: 'ID, Name, City, Country code, Position, About, Posts, Current company, and more.',
+    views: '68.3K+',
+    downloads: '6.7K+'
+  },
+  {
+    title: 'Amazon products',
+    description: 'Title, Seller name, Brand, Description, Initial price, Currency, Availability, Reviews count, and more.',
+    views: '21.3K+',
+    downloads: '3K+'
+  },
+  {
+    title: 'LinkedIn company information',
+    description: 'ID, Name, Country code, Locations, Followers, Employees in linkedin, About, Specialties, and more.',
+    views: '20.1K+',
+    downloads: '2.4K+'
+  },
+  {
+    title: 'Instagram - Profiles',
+    description: 'Account, Fbid, ID, Followers, Posts count, Is business account, Is professional account, Is verified, and more.',
+    views: '12.6K+',
+    downloads: '1.5K+'
+  },
+  {
+    title: 'Crunchbase companies information',
+    description: 'Name, URL, ID, Cb rank, Region, About, Industries, Operating status, and more.',
+    views: '10.3K+',
+    downloads: '1.1K+'
+  },
+  {
+    title: 'Linkedin job listings information',
+    description: 'URL, Job posting id, Job title, Company name, Company id, Job location, Job summary, Job seniority level, and more.',
+    views: '9.6K+',
+    downloads: '1.5K+'
+  },
+];
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {[
-                        { title: 'Departments', icon: 'Building' },
-                        { title: 'Industries', icon: 'Factory' },
-                        { title: 'Technology', icon: 'Laptop' },
-                        { title: 'Business', icon: 'Briefcase' },
-                    ].map((feature, index) => (
-                        <div key={index} className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-gray-700/50 hover:border-teal-400/50 transition-all transform hover:-translate-y-2">
-                            <div className="flex justify-center items-center mb-6 h-16">
-                                <div className="p-4 bg-gray-700/50 rounded-full">
-                                    <Icon name={feature.icon} className="w-8 h-8 text-teal-400" />
-                                </div>
-                            </div>
-                            <h3 className="text-xl font-bold mb-2 text-center text-white">{feature.title}</h3>
-                        </div>
-                    ))}
-                </div>
-            </div>
+
+const DatasetsPage: React.FC = () => {
+  return (
+    <div className="flex-1 overflow-y-auto p-8" style={{ background: '#081429' }}>
+      <div className="container mx-auto">
+        <div className="relative mb-8">
+          <input
+            type="text"
+            placeholder="Search for a dataset"
+            className="w-full bg-[#1e293b] text-white placeholder-gray-400 border border-gray-600 rounded-lg py-3 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <Icon name="Search" className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
         </div>
-    );
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {datasetCards.map((card, index) => (
+            <div key={index} className="bg-[#132644] p-6 rounded-lg shadow-lg border border-gray-700 flex flex-col justify-between">
+              <div>
+                <h3 className="text-lg font-bold text-white mb-2">{card.title}</h3>
+                <p className="text-gray-400 text-sm mb-4">{card.description}</p>
+              </div>
+              <div className="flex justify-between items-center mt-4">
+                <div className="flex items-center space-x-4 text-gray-400 text-sm">
+                  <div className="flex items-center space-x-1">
+                    <Icon name="Eye" className="w-4 h-4" />
+                    <span>{card.views}</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Icon name="Download" className="w-4 h-4" />
+                    <span>{card.downloads}</span>
+                  </div>
+                </div>
+                <button className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg flex items-center space-x-2 hover:bg-blue-700 transition-colors">
+                  <span>Buy Now</span>
+                  <Icon name="ChevronRight" className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 

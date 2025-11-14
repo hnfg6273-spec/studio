@@ -8,7 +8,7 @@ import { CheckCircle, Plane } from 'lucide-react';
 
 const HeroSection: React.FC<{ theme: Theme }> = ({ theme }) => {
   const isDark = theme.text !== 'text-zinc-900';
-  const imageUrl = "https://i.postimg.cc/WzmjH6rz/Gemini-Generated-Image-vdgi6yvdgi6yvdgi-removebg-preview.png";
+  const imageUrl = "https://i.postimg.cc/wMKCXy1V/Gemini-Generated-Image-vdgi6yvdgi6yvdgi-Photoroom-removebg-preview.png";
 
   return (
     <section className={`relative py-12 lg:py-20 px-4 sm:px-8 ${isDark ? 'bg-slate-900' : 'bg-gray-100'} text-gray-100`}>

@@ -1005,7 +1005,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
                 <Icon name="Maximize2" className="w-5 h-5" />
               </button>
             </div>
-            <div className="h-[300px]">
+            <div className="h-[400px]">
               <DonutChartRecharts data={DONUT_DATA} theme={theme} />
             </div>
           </div>

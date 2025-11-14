@@ -856,7 +856,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
       },
       options: mainChartOptions
     };
-  }, [activeKpi, timeRange, theme, getLabels]);
+  }, [activeKpi, timeRange, theme, getLabels, kpiTitle]);
 
   const trendingDatasets = useMemo(() => {
     return datasets
@@ -924,17 +924,38 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
           </div>
         </div>
       </div>
-      <div className="mb-8">
-          <h3 className={`text-xl font-bold mb-6 ${theme.title}`}>Trending Datasets</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {trendingDatasets.length > 0 ? (
-              trendingDatasets.map(ds => (
-                <DatasetCard key={ds.id} dataset={ds} theme={theme} isDashboardCard={true} />
-              ))
-            ) : (
-              <div className={`col-span-full text-center py-10 text-sm ${theme.tableCellSubtle}`}>No trending datasets found.</div>
-            )}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div>
+          <div className={`rounded-2xl p-6 shadow-sm ${theme.kpiCard}`}>
+            <h3 className={`text-xl font-bold mb-6 ${theme.title}`}>Trending Datasets</h3>
+            <div className="space-y-4">
+              {trendingDatasets.length > 0 ? (
+                trendingDatasets.map(ds => (
+                  <div key={ds.id} className="flex items-center space-x-4">
+                    <div className="p-2 rounded-full bg-blue-500/10 text-blue-400">
+                      <Icon name={getIcon(ds.type)} className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1">
+                      <div className={`text-sm font-semibold ${theme.tableCell}`}>{ds.name}</div>
+                      <div className={`text-xs ${theme.tableCellSubtle}`}>{ds.type}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className={`text-sm font-medium ${ds.trend.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>{ds.trend}</div>
+                      <div className={`text-xs ${theme.tableCellSubtle}`}>{ds.status}</div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className={`text-sm ${theme.tableCellSubtle} text-center py-4`}>No trending datasets found.</div>
+              )}
+            </div>
           </div>
+        </div>
+        <div className={`rounded-2xl p-6 shadow-sm ${theme.chartBg}`}>
+          <h3 className={`text-xl font-bold mb-6 ${theme.title}`}>Recent Activity</h3>
+          {/* Placeholder for recent activity feed */}
+          <div className="text-center text-zinc-400 py-10">Activity Feed Coming Soon</div>
+        </div>
       </div>
     </div>
   );
@@ -1056,10 +1077,9 @@ const EndlessPossibilitiesSection: React.FC<EndlessPossibilitiesSectionProps> = 
 interface DatasetCardProps {
   dataset: Dataset;
   theme: Theme;
-  isDashboardCard?: boolean;
 }
 
-const DatasetCard: React.FC<DatasetCardProps> = ({ dataset, theme, isDashboardCard = false }) => {
+const DatasetCard: React.FC<DatasetCardProps> = ({ dataset, theme }) => {
   return (
     <div className={`rounded-xl p-6 shadow-lg ${theme.cardBg} ${theme.cardBorder ? `border ${theme.cardBorder}` : ''} ${theme.text}`}>
       <h3 className="text-xl font-bold mb-2">{dataset.name}</h3>
@@ -1074,17 +1094,9 @@ const DatasetCard: React.FC<DatasetCardProps> = ({ dataset, theme, isDashboardCa
           <span>{dataset.downloads}</span>
         </div>
       </div>
-      {!isDashboardCard && (
-        <button className="flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors">
-          Buy Now <Icon name="ArrowRight" className="w-4 h-4 ml-2" />
-        </button>
-      )}
-       {isDashboardCard && (
-         <div className="text-right">
-            <div className={`text-sm font-medium ${dataset.trend.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>{dataset.trend}</div>
-            <div className={`text-xs ${theme.tableCellSubtle}`}>{dataset.status}</div>
-        </div>
-      )}
+      <button className="flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors">
+        Buy Now <Icon name="ArrowRight" className="w-4 h-4 ml-2" />
+      </button>
     </div>
   );
 };

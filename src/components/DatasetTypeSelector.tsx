@@ -71,9 +71,6 @@ const DatasetTypeSelector: React.FC<DatasetTypeSelectorProps> = ({ theme }) => {
     const isDark = theme.text !== 'text-zinc-900';
     const headerColor = isDark ? 'text-zinc-100' : 'text-gray-800';
     const underlineColor = isDark ? 'bg-cyan-400' : 'bg-blue-500';
-    const footerBg = isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-gray-50 border-gray-200';
-    const footerTextColor = isDark ? 'text-zinc-400' : 'text-gray-600';
-    const selectedTextColor = isDark ? 'text-cyan-300' : 'text-blue-600';
 
     return (
         <div className={`w-full max-w-7xl mx-auto py-16 px-8`}>
@@ -97,12 +94,6 @@ const DatasetTypeSelector: React.FC<DatasetTypeSelectorProps> = ({ theme }) => {
                     />
                 ))}
             </div>
-            
-            <footer className={`mt-10 p-4 rounded-lg text-center border ${footerBg}`}>
-                <p className={`text-sm ${footerTextColor}`}>
-                    Currently Selected Dataset Type: <span className={`font-semibold ${selectedTextColor}`}>{selectedDataset}</span>
-                </p>
-            </footer>
         </div>
     );
 };

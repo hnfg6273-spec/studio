@@ -459,9 +459,9 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
   const pieInnerRadius = isModal ? 70 : 60;
   const pieOuterRadius = isModal ? 110 : 90;
 
-  const outerRadialOffset = isModal ? 20 : 15; 
-  const lineSegmentLength = isModal ? 30 : 20;
-  const horizontalLineExtension = isModal ? 25 : 20;
+  const outerRadialOffset = isModal ? 20 : 10;
+  const lineSegmentLength = isModal ? 25 : 15;
+  const horizontalLineExtension = isModal ? 20 : 15;
   const labelBoxMargin = 8;
   const labelRectWidth = isModal ? 140 : 130;
   const labelRectHeight = isModal ? 70 : 65;

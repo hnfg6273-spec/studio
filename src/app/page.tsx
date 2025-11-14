@@ -51,6 +51,7 @@ export enum ThemeKey {
   SUNSET = 'sunset',
   FOREST = 'forest',
   GRADIENT_DARK = 'gradient_dark',
+  FULL_DARK = 'full_dark',
 }
 
 export interface Dataset {
@@ -364,6 +365,33 @@ export const THEMES: Themes = {
     sectionBg: 'bg-black',
     neutralBg: 'bg-gray-900',
     highlightText: 'text-purple-400',
+  },
+  [ThemeKey.FULL_DARK]: {
+    app: 'bg-black',
+    text: 'text-zinc-100',
+    sidebar: 'bg-zinc-900',
+    sidebarBorder: 'border-zinc-800',
+    sidebarActive: 'bg-blue-600 text-white',
+    sidebarHover: 'hover:bg-zinc-800',
+    topbar: 'bg-zinc-900/50',
+    topbarBorder: 'border-zinc-800',
+    title: 'text-white',
+    searchBg: 'bg-zinc-900',
+    searchBorder: 'border-zinc-700',
+    table: 'bg-zinc-900/90 border-zinc-800/50',
+    tableCell: 'text-white',
+    tableCellSubtle: 'text-zinc-400',
+    kpiCard: 'bg-zinc-900/90 border-zinc-800/50',
+    kpiCardValue: 'text-white',
+    chartBg: 'bg-zinc-900/90',
+    chartTitle: 'text-white',
+    modal: 'bg-zinc-950',
+    heroBg: 'bg-black',
+    cardBg: 'bg-zinc-900',
+    cardBorder: 'border-zinc-800',
+    sectionBg: 'bg-black',
+    neutralBg: 'bg-zinc-900',
+    highlightText: 'text-blue-400',
   },
 };
 

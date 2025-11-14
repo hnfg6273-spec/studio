@@ -568,7 +568,7 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
           <div style={{
             background: 'transparent',
             border: 'none',
-            color: theme.tableCellSubtle.includes('zinc-400') || theme.app.includes('white') ? '#a1a1aa' : '#52525b', 
+            color: '#a1a1aa',
             fontSize: isModal ? '14px' : '12px', 
             lineHeight: '1.3',
             textAlign: textAnchor === 'start' ? 'left' : 'right',
@@ -581,7 +581,7 @@ const DonutChartRecharts: React.FC<DonutChartRechartsProps> = ({ data, theme, is
         </foreignObject>
       </g>
     );
-  }, [data, theme, getVerticalStackOffset, isModal]);
+  }, [data, getVerticalStackOffset, isModal]);
 
 
   return (
@@ -1084,6 +1084,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
           <MiniDatasetTable
             data={datasets}
             theme={theme}
+            title="Datasets"
             setActivePage={setActivePage}
           />
         </div>
@@ -1118,6 +1119,56 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
   );
 };
 
+// components/DatasetsPage.tsx
+interface CategoryCardProps {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+const CategoryCard: React.FC<CategoryCardProps> = ({ icon, title, description }) => (
+  <div className="bg-slate-800/50 p-6 rounded-lg text-center hover:bg-slate-700/50 transition-colors duration-300">
+    <div className="flex justify-center mb-4">
+      <div className="bg-slate-700 p-4 rounded-full">
+        <Icon name={icon} className="w-8 h-8 text-cyan-400" />
+      </div>
+    </div>
+    <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
+    <p className="text-slate-400">{description}</p>
+  </div>
+);
+
+const DatasetsDashboard: React.FC = () => {
+    return (
+        <div className="flex-1 overflow-y-auto p-8" style={{ background: 'rgb(8, 20, 41)' }}>
+            <div className="container mx-auto text-center">
+                <h1 className="text-5xl font-bold text-white mb-4">The #1 source of business data</h1>
+                <p className="text-lg text-slate-400 max-w-2xl mx-auto mb-8">The most accurate, real-time data to fuel your business.</p>
+                <div className="flex justify-center gap-4 mb-8">
+                    <button className="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">Contact Sales</button>
+                    <button className="bg-slate-700 text-white font-semibold py-3 px-6 rounded-lg hover:bg-slate-600 transition-colors">Buy a dataset</button>
+                </div>
+                <div className="flex justify-center items-center gap-8 text-slate-400">
+                    <div className="flex items-center space-x-2">
+                        <span className="font-semibold">G2</span>
+                        <div className="flex">
+                            {[...Array(5)].map((_, i) => <Icon key={i} name="Star" className="w-5 h-5 text-yellow-400 fill-current" />)}
+                        </div>
+                        <span className="text-sm">4.6/5</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <span className="font-semibold">Trustpilot</span>
+                        <div className="flex">
+                            {[...Array(5)].map((_, i) => <Icon key={i} name="Star" className="w-5 h-5 text-green-400 fill-current" />)}
+                        </div>
+                        <span className="text-sm">4.8/5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 // components/DatasetCard.tsx
 interface DatasetCardProps {
     dataset: MarketplaceDataset;
@@ -1146,9 +1197,7 @@ const DatasetCard: React.FC<DatasetCardProps> = ({ dataset }) => {
     );
 };
 
-
-// components/DatasetsPage.tsx
-const DatasetsPage: React.FC = () => {
+const DatasetsMarketplace: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
 
     const filteredDatasets = useMemo(() => {
@@ -1180,6 +1229,58 @@ const DatasetsPage: React.FC = () => {
                     ))}
                 </div>
             </div>
+        </div>
+    );
+};
+
+const DatasetsLandingPage: React.FC = () => {
+  return (
+    <div className="flex-1 overflow-y-auto p-8 bg-white">
+      <div className="container mx-auto text-center">
+        <h2 className="text-4xl font-bold text-gray-800 mb-2">
+          Endless Possibilities With <span className="text-teal-500">AI & Big Data</span>
+        </h2>
+        <h3 className="text-4xl font-bold text-gray-800 mb-4">
+          Computer Vision
+        </h3>
+        <p className="text-gray-500 max-w-2xl mx-auto mb-12">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit dolore magna aliqua
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="bg-gray-50 p-8 rounded-lg shadow-md">
+            <img src="https://storage.googleapis.com/aai-web-template-files/3650992a-3513-43dc-8869-3406385a539b.png" alt="Departments" className="h-20 mx-auto mb-4" />
+            <h4 className="text-xl font-bold text-gray-800 mb-2">Departments</h4>
+            <p className="text-gray-600">Lorem ipsum dolor sit am adipisc elit, sed do eiusmod. Lorem ipsum dolor sit adipiscing elit.</p>
+          </div>
+          <div className="bg-gray-50 p-8 rounded-lg shadow-md">
+            <img src="https://storage.googleapis.com/aai-web-template-files/7037133f-9556-4279-9138-02805ea3f45f.png" alt="Industries" className="h-20 mx-auto mb-4" />
+            <h4 className="text-xl font-bold text-gray-800 mb-2">Industries</h4>
+            <p className="text-gray-600">Lorem ipsum dolor sit am adipisc elit, sed do eiusmod. Lorem ipsum dolor sit adipiscing elit.</p>
+          </div>
+          <div className="bg-gray-50 p-8 rounded-lg shadow-md">
+            <img src="https://storage.googleapis.com/aai-web-template-files/87884554-3253-4811-9959-192e40633ffa.png" alt="Technology" className="h-20 mx-auto mb-4" />
+            <h4 className="text-xl font-bold text-gray-800 mb-2">Technology</h4>
+            <p className="text-gray-600">Lorem ipsum dolor sit am adipisc elit, sed do eiusmod. Lorem ipsum dolor sit adipiscing elit.</p>
+          </div>
+          <div className="bg-gray-50 p-8 rounded-lg shadow-md">
+            <img src="https://storage.googleapis.com/aai-web-template-files/524ab1d5-fa27-4a9a-9283-a859a729358f.png" alt="Business" className="h-20 mx-auto mb-4" />
+            <h4 className="text-xl font-bold text-gray-800 mb-2">Business</h4>
+            <p className="text-gray-600">Lorem ipsum dolor sit am adipisc elit, sed do eiusmod. Lorem ipsum dolor sit adipiscing elit.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+const DatasetsPage: React.FC = () => {
+    return (
+        <div className="flex flex-col">
+            <DatasetsDashboard />
+            <DatasetsLandingPage />
+            <DatasetsMarketplace />
         </div>
     );
 };

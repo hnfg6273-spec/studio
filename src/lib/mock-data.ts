@@ -111,13 +111,12 @@ export const THEMES: Themes = {
     chartBg: 'bg-[#14253F]/90',
     chartTitle: 'text-white',
     modal: 'bg-zinc-900',
-    // New properties for Datasets page
-    heroBg: 'bg-[#0A1934]', // Deep blue background for hero section
-    cardBg: 'bg-[#1A3459]', // Slightly lighter dark blue for dataset cards
-    cardBorder: 'border-[#2A497A]', // Border for cards
-    sectionBg: 'bg-[#0A1934]', // Main section background for datasets page
-    neutralBg: 'bg-zinc-900', // For sections that need a subtle background
-    highlightText: 'text-teal-400', // Highlight color for "AI & Big Data"
+    heroBg: 'bg-[#0A1934]',
+    cardBg: 'bg-[#1A3459]',
+    cardBorder: 'border-[#2A497A]',
+    sectionBg: 'bg-[#0A1934]',
+    neutralBg: 'bg-zinc-900',
+    highlightText: 'text-teal-400',
   },
   [ThemeKey.DAY]: {
     app: 'bg-zinc-100',
@@ -166,7 +165,6 @@ export const THEMES: Themes = {
     chartBg: 'bg-[#2a1a3b]/90',
     chartTitle: 'text-white',
     modal: 'bg-zinc-900',
-    // New properties for Datasets page
     heroBg: 'bg-purple-950',
     cardBg: 'bg-red-950',
     cardBorder: 'border-red-800',
@@ -194,7 +192,6 @@ export const THEMES: Themes = {
     chartBg: 'bg-[#0d2a21]/90',
     chartTitle: 'text-white',
     modal: 'bg-zinc-900',
-    // New properties for Datasets page
     heroBg: 'bg-green-950',
     cardBg: 'bg-teal-950',
     cardBorder: 'border-teal-800',
@@ -257,3 +254,5 @@ export const THEMES: Themes = {
     highlightText: 'text-blue-400',
   },
 };
+
+    

@@ -363,11 +363,7 @@ const Sidebar: React.FC<{ activePage: Page; setActivePage: (page: Page) => void;
         <button className="p-3 rounded-xl relative group text-zinc-400">
           <Icon name="LogOut" className="w-6 h-6" />
         </button>
-        <div
-          className={`w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-xl shadow-lg border-2 ${theme.sidebar}`}
-        >
-          AV
-        </div>
+        
       </div>
     </nav>
   );

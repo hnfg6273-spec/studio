@@ -7,6 +7,8 @@ import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip as RechartsTooltip } 
 import { getIcon } from '@/lib/utils';
 import { Page, DatasetType, DatasetStatus, KpiKey, TimeRange, ThemeKey, Dataset, KpiDataItem, BaseChartSeries, TrendingChartSeries, ChartDataType, DonutDataItem, Theme, Themes, NavItem, SortState } from '@/lib/types';
 import { MOCK_DATASETS, TRENDING_DATA_SERIES, CHART_DATA, DONUT_DATA, NAV_ITEMS, THEMES } from '@/lib/mock-data.tsx';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 // Register Chart.js components
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Tooltip, Legend);
@@ -384,6 +386,21 @@ const Topbar: React.FC<{ cycleTheme: () => void; theme: Theme; activePage: Page;
             : activePage.charAt(0).toUpperCase() + activePage.slice(1)}
         </h1>
       </div>
+
+      <div className="flex flex-1 max-w-md items-center space-x-4">
+        <div className="relative w-full">
+          <Icon name="Search" className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400" />
+          <Input 
+            placeholder="Search..."
+            className="w-full pl-10 pr-4 py-2 rounded-lg bg-zinc-800/80 border-zinc-700 text-white placeholder-zinc-400"
+          />
+        </div>
+        <Button variant="outline" className="flex items-center space-x-2 bg-zinc-800/80 border-zinc-700 text-zinc-300 hover:bg-zinc-700 hover:text-white">
+          <Icon name="Filter" className="w-4 h-4" />
+          <span>Filter</span>
+        </Button>
+      </div>
+
       <div className="flex items-center space-x-5">
         <button
           onClick={cycleTheme}
@@ -1236,9 +1253,9 @@ const App: React.FC = () => {
           isOpen={isModalOpen}
           onClose={closeModal}
           title={modalTitle}
-          chartType={modalChartType}
-          chartData={modalChartData as ChartData | DonutDataItem[]}
-          chartOptions={modalChartOptions as ChartOptions}
+          chartType={modalChartType as 'line' | 'pie'}
+          kpi={modalTitle === 'Datasets by Category' ? undefined : activeKpi}
+          timeRange={timeRange}
           theme={currentTheme}
         />
       )}
@@ -1247,5 +1264,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
-    

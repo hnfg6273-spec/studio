@@ -860,51 +860,50 @@ const DashboardPage: React.FC<{
 
 
 // components/DatasetsPageContent.tsx
-const HeroSection: React.FC<{ theme: Theme }> = ({ theme }) => {
+const HeroSection: React.FC<{ theme: Theme, onSearch: () => void }> = ({ theme, onSearch }) => {
   const isDark = theme.text !== 'text-zinc-900';
   const imageUrl = "https://i.postimg.cc/wMKCXy1V/Gemini-Generated-Image-vdgi6yvdgi6yvdgi-Photoroom-removebg-preview.png";
 
   return (
-    <section className={`relative py-12 lg:py-20 px-4 sm:px-8 ${theme.heroBg || (isDark ? 'bg-slate-900' : 'bg-gray-100')} text-gray-100`}>
-      <div className={`max-w-7xl mx-auto w-full ${isDark ? 'bg-slate-800/70' : 'bg-white'} backdrop-blur-sm rounded-3xl shadow-2xl p-6 md:p-12 border ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
-        
-        <div className="lg:flex lg:space-x-12">
-          {/* Left Content Area */}
-          <div className="lg:w-1/2 mb-10 lg:mb-0">
-            <h1 className={`text-3xl sm:text-5xl font-extrabold leading-tight tracking-tight mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              Fresh Datasets, <br className="hidden sm:inline" />On Demand
-            </h1>
-            
-            <p className={`text-lg sm:text-xl ${isDark ? 'text-gray-400' : 'text-gray-600'} mb-10 max-w-lg`}>
-              Access high-quality, structured datasets without the hassle of web scraping or getting blocked.
-            </p>
-
-            <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4"> 
-
-              <button
-                className="flex items-center justify-center px-8 py-3 text-lg font-semibold rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition duration-200 shadow-lg shadow-blue-500/30"
-              >
-                <Icon name="Search" className="w-5 h-5 mr-2" />
-                Buy dataset
-              </button>
+    <section className="relative flex items-center justify-center text-gray-100 bg-gradient-to-b from-purple-950 to-red-900 w-full py-24 md:py-32">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-transparent"></div>
+        <div className="relative z-10 w-full grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-7xl mx-auto px-4 md:px-6">
+            <div className="text-center md:text-left">
+                <h1 className="text-4xl sm:text-6xl font-extrabold leading-tight tracking-tight mb-6 text-white text-shadow-lg">
+                    Find Your Next Dataset
+                </h1>
+                <p className="text-lg sm:text-xl text-gray-300 mb-10 max-w-2xl mx-auto md:mx-0">
+                    Use natural language to search our extensive library of high-quality, structured datasets.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                    <div className="relative w-full max-w-lg">
+                        <Icon name="Search" className="w-5 h-5 text-gray-400 absolute top-1/2 left-4 transform -translate-y-1/2" />
+                        <input
+                            placeholder="e.g., 'customer data from Q3' or 'all marketing campaigns'"
+                            className="w-full pl-12 pr-4 py-4 text-lg rounded-xl border-2 transition-colors duration-300 focus:outline-none focus:ring-2 bg-slate-800/80 border-slate-700 focus:ring-blue-500 text-white"
+                            type="text"
+                        />
+                    </div>
+                    <button 
+                        onClick={onSearch}
+                        className="flex items-center justify-center px-8 py-4 text-lg font-semibold rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition duration-200 shadow-lg shadow-blue-500/30 disabled:bg-blue-400 disabled:cursor-not-allowed">
+                        Search
+                    </button>
+                </div>
             </div>
-          </div>
-
-          {/* Right Image Area */}
-          <div className="lg:w-1/2 h-64 md:h-96 relative flex items-center justify-center p-4">
-            <img 
-              data-ai-hint="data dashboard preview"
-              src={imageUrl}
-              alt="Data Dashboard Preview"
-              className="w-full h-full object-contain rounded-xl transition duration-300"
-              onError={(e) => { 
-                e.currentTarget.onerror = null; 
-                e.currentTarget.src="https://placehold.co/800x600/1E293B/C7D2FE?text=Image+Load+Error"; 
-              }}
-            />
-          </div>
+            <div className="hidden md:block">
+              <img 
+                data-ai-hint="data dashboard preview"
+                src={imageUrl}
+                alt="Data Dashboard Preview"
+                className="w-full h-full object-contain rounded-xl transition duration-300"
+                onError={(e) => { 
+                  e.currentTarget.onerror = null; 
+                  e.currentTarget.src="https://placehold.co/800x600/1E293B/C7D2FE?text=Image+Load+Error"; 
+                }}
+              />
+            </div>
         </div>
-      </div>
     </section>
   );
 };
@@ -942,36 +941,35 @@ const DatasetCard: React.FC<{ dataset: Dataset; theme: Theme; }> = ({ dataset, t
         </div>
   
         <button className="w-full py-3 font-semibold text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
-          View Dataset
+          View Details
         </button>
       </div>
     );
   };
   
 
-const DatasetTypeSelector: React.FC<{ theme: Theme; }> = ({ theme }) => {
-    const [selectedDataset, setSelectedDataset] = useState('Structured data');
+const DatasetTypeSelector: React.FC<{ theme: Theme; selectedType: string; setSelectedType: (type: string) => void; }> = ({ theme, selectedType, setSelectedType }) => {
 
     const options = [
-        { id: 'Structured data', title: 'Structured data', icon: LucideIcons.LayoutGrid, description: "Relational tables, spreadsheets, and CSV files." },
-        { id: 'Images & Video', title: 'Images & Video', icon: LucideIcons.Image, description: "Photos, recorded videos, and live camera feeds." },
-        { id: 'Language', title: 'Language', icon: LucideIcons.Globe, description: "Text documents, transcripts, and spoken audio." },
-        { id: 'Time Series', title: 'Time Series', icon: LucideIcons.LineChart, description: "Sequential measurements like stock prices or sensor data." },
+        { id: 'View All', title: 'View All', icon: LucideIcons.List },
+        { id: 'Structured Data', title: 'Structured Data', icon: LucideIcons.LayoutGrid },
+        { id: 'Images & Video', title: 'Images & Video', icon: LucideIcons.Image },
+        { id: 'Language', title: 'Language', icon: LucideIcons.Globe },
+        { id: 'Time Series', title: 'Time Series', icon: LucideIcons.LineChart },
     ];
 
     const isDark = theme.text !== 'text-zinc-900';
     const headerColor = isDark ? 'text-zinc-100' : 'text-gray-800';
     const underlineColor = isDark ? 'bg-cyan-400' : 'bg-blue-500';
 
-    const DatasetOption: React.FC<{ icon: React.ElementType, title: string, description: string, isSelected: boolean, onClick: () => void, theme: Theme }> = ({ icon: IconComponent, title, description, isSelected, onClick, theme }) => {
+    const DatasetOption: React.FC<{ icon: React.ElementType, title: string, isSelected: boolean, onClick: () => void, theme: Theme }> = ({ icon: IconComponent, title, isSelected, onClick, theme }) => {
         const isDark = theme.text !== 'text-zinc-900';
     
-        const baseClasses = "flex flex-col items-center justify-start text-center p-6 transition-all duration-300 cursor-pointer rounded-xl min-h-[160px]";
+        const baseClasses = "flex flex-col items-center justify-center text-center p-6 transition-all duration-300 cursor-pointer rounded-xl min-h-[120px]";
         const selectedClasses = isDark ? "border-2 border-cyan-400 bg-cyan-900/20 shadow-lg text-cyan-300" : "border-2 border-blue-500 bg-blue-50 shadow-lg text-blue-700";
         const unselectedClasses = isDark ? "border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 hover:border-cyan-500/50" : "border border-gray-200 bg-white hover:bg-gray-50 hover:border-blue-500/50";
     
         const titleColor = isSelected ? (isDark ? 'text-cyan-300' : 'text-blue-700') : (isDark ? 'text-zinc-200' : 'text-gray-800');
-        const descriptionColor = isSelected ? (isDark ? 'text-cyan-400/80' : 'text-blue-600') : (isDark ? 'text-zinc-400' : 'text-gray-500');
         const iconColor = isSelected ? (isDark ? 'text-cyan-400' : 'text-blue-500') : (isDark ? 'text-zinc-400' : 'text-gray-400');
     
         return (
@@ -982,11 +980,8 @@ const DatasetTypeSelector: React.FC<{ theme: Theme; }> = ({ theme }) => {
                 tabIndex={0}
                 aria-pressed={isSelected}
             >
-                <IconComponent className={`w-10 h-10 mb-3 transition-colors ${iconColor}`} />
-                <span className={`text-lg font-semibold mb-1 ${titleColor}`}>{title}</span>
-                <p className={`text-sm ${descriptionColor}`}>
-                    {description}
-                </p>
+                <IconComponent className={`w-8 h-8 mb-3 transition-colors ${iconColor}`} />
+                <span className={`text-md font-semibold ${titleColor}`}>{title}</span>
             </div>
         );
     };
@@ -1000,15 +995,14 @@ const DatasetTypeSelector: React.FC<{ theme: Theme; }> = ({ theme }) => {
                 </h2>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                 {options.map((option) => (
                     <DatasetOption
                         key={option.id}
                         icon={option.icon}
                         title={option.title}
-                        description={option.description}
-                        isSelected={selectedDataset === option.id}
-                        onClick={() => setSelectedDataset(option.id)}
+                        isSelected={selectedType === option.id}
+                        onClick={() => setSelectedType(option.id)}
                         theme={theme}
                     />
                 ))}
@@ -1019,41 +1013,68 @@ const DatasetTypeSelector: React.FC<{ theme: Theme; }> = ({ theme }) => {
 
 const DatasetsPageContent: React.FC<{
   datasets: Dataset[];
-  searchTerm: string;
-  setSearchTerm: (term: string) => void;
   theme: Theme;
 }> = ({
   datasets,
-  searchTerm,
-  setSearchTerm,
   theme,
 }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedType, setSelectedType] = useState('View All');
+
   const filteredDatasets = useMemo(() => {
-    if (!searchTerm) return datasets;
-    const lowerCaseSearchTerm = searchTerm.toLowerCase();
-    return datasets.filter(ds =>
-      ds.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-      ds.description.toLowerCase().includes(lowerCaseSearchTerm) ||
-      ds.owner.toLowerCase().includes(lowerCaseSearchTerm)
-    );
-  }, [datasets, searchTerm]);
+    let filtered = datasets;
+
+    if (selectedType !== 'View All') {
+      const typeMapping: Record<string, DatasetType> = {
+        'Structured Data': DatasetType.DATABASE,
+        'Images & Video': DatasetType.STATIC, // Assuming this maps to static for now
+        'Language': DatasetType.FILE,
+        'Time Series': DatasetType.STREAM,
+      };
+      
+      const filterType = Object.values(DatasetType).find(dt => selectedType.toLowerCase().includes(dt.toLowerCase()))
+
+      if (filterType) {
+         filtered = filtered.filter(ds => ds.type === filterType);
+      }
+    }
+
+    if (searchTerm) {
+      const lowerCaseSearchTerm = searchTerm.toLowerCase();
+      filtered = filtered.filter(ds =>
+        ds.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+        ds.description.toLowerCase().includes(lowerCaseSearchTerm) ||
+        ds.owner.toLowerCase().includes(lowerCaseSearchTerm)
+      );
+    }
+    
+    return filtered;
+  }, [datasets, searchTerm, selectedType]);
+
+  const searchSectionRef = useRef<HTMLDivElement>(null);
+
+  const handleSearchClick = () => {
+    searchSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
-    <div className={`flex-1 overflow-y-auto ${theme.sectionBg} ${theme.text}`}>
-      <HeroSection theme={theme} />
+    <div className={`flex-1 overflow-y-auto ${theme.sectionBg || 'bg-black'} ${theme.text}`}>
+      <HeroSection theme={theme} onSearch={handleSearchClick} />
       
-      <DatasetTypeSelector theme={theme} />
+      <DatasetTypeSelector theme={theme} selectedType={selectedType} setSelectedType={setSelectedType} />
 
-      <div className={`max-w-7xl mx-auto px-8 py-16 ${theme.neutralBg}`}>
-        <div className="relative mb-8 max-w-2xl mx-auto">
-          <Icon name="Search" className={`w-5 h-5 text-zinc-400 absolute top-1/2 left-3 -translate-y-1/2 ${theme.text === 'text-zinc-900' ? 'text-zinc-500' : 'text-zinc-400'}`} />
-          <input
-            type="text"
-            placeholder="Search for a dataset"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className={`w-full pl-10 pr-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all ${theme.searchBg} ${theme.searchBorder} ${theme.text === 'text-zinc-900' ? 'text-zinc-900 placeholder-zinc-500 border-zinc-300' : 'text-white placeholder-zinc-400 border-[#2A497A]'}`}
-          />
+      <div ref={searchSectionRef} className={`max-w-7xl mx-auto px-8 py-16 ${theme.neutralBg}`}>
+        <div className="mb-8">
+            <div className="relative w-full max-w-md">
+                <Icon name="Search" className="w-5 h-5 absolute top-1/2 left-4 transform -translate-y-1/2 text-zinc-400" />
+                <input
+                    placeholder="Filter current results..."
+                    className="w-full pl-12 pr-4 py-3 text-base rounded-xl border-2 transition-colors duration-300 focus:outline-none focus:ring-2 bg-zinc-800/80 border-zinc-700 focus:ring-blue-500 text-white"
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -1062,7 +1083,7 @@ const DatasetsPageContent: React.FC<{
               <DatasetCard key={ds.id} dataset={ds} theme={theme} />
             ))
           ) : (
-            <div className="lg:col-span-3 text-center py-10 text-zinc-400">No datasets found matching your search.</div>
+            <div className="lg:col-span-3 text-center py-10 text-zinc-400">No datasets found.</div>
           )}
         </div>
       </div>
@@ -1075,18 +1096,14 @@ const DatasetsPageContent: React.FC<{
 const App: React.FC = () => {
   const [activePage, setActivePage] = useState<Page>(Page.DASHBOARD);
   const [datasets, setDatasets] = useState<Dataset[]>(MOCK_DATASETS);
-  const [searchTerm, setSearchTerm] = useState<string>(''); 
   const [timeRange, setTimeRange] = useState<TimeRange>(TimeRange.MONTH);
   const [activeKpi, setActiveKpi] = useState<KpiKey>(KpiKey.REQUESTS);
-  const [activeThemeKey, setActiveThemeKey] = useState<ThemeKey>(ThemeKey.OCEAN);
-  const [filter, setFilter] = useState<Dataset['status'] | 'All'>('All');
-  const [sort, setSort] = useState<SortState>({ key: 'lastUpdate', asc: false }); 
+  const [activeThemeKey, setActiveThemeKey] = useState<ThemeKey>(ThemeKey.SUNSET);
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalTitle, setModalTitle] = useState<string>('');
-  const [modalChartType, setModalChartType] = useState<ChartType>('line');
-  const [modalChartData, setModalChartData] = useState<ChartData | DonutDataItem[] | {}>({}); 
-  const [modalChartOptions, setModalChartOptions] = useState<ChartOptions | {}>({});
+  const [modalChartType, setModalChartType] = useState<'line' | 'pie'>('line');
+  const [modalKpi, setModalKpi] = useState<KpiKey | undefined>();
 
   const currentTheme = THEMES[activeThemeKey];
 
@@ -1096,107 +1113,19 @@ const App: React.FC = () => {
     setActiveThemeKey(keys[(idx + 1) % keys.length]);
   }, [activeThemeKey]);
 
-  const handleDatasetSort = useCallback((key: keyof Dataset) => {
-    setSort(prevSort => ({
-      key,
-      asc: prevSort.key === key ? !prevSort.asc : false,
-    }));
-  }, []);
 
-  const getLabels = useCallback((range: TimeRange): string[] => {
-    switch (range) {
-      case TimeRange.MONTH: return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      case TimeRange.WEEK: return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-      case TimeRange.DAY: return ['00:00', '02:00', '04:00', '06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'];
-    }
-  }, []);
-
-  const openChartModal = useCallback((chartType: ChartType, title: string, kpi?: KpiKey) => {
+  const openChartModal = useCallback((chartType: 'line' | 'pie', title: string, kpi?: KpiKey) => {
     setModalTitle(title);
     setModalChartType(chartType);
-
-    if (chartType === 'line' && kpi) {
-      let modalDatasets: ChartData<'line'>['datasets'] = [];
-      let modalOptions: ChartOptions<'line'> = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { display: false }, ticks: { color: currentTheme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa' } },
-          y: { grid: { display: false }, ticks: { color: currentTheme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa', callback: (v: any) => v.toLocaleString() } }
-        }
-      };
-
-      if (kpi === KpiKey.TRENDING) {
-        const trendingData = (CHART_DATA[KpiKey.TRENDING] as TrendingChartSeries | undefined)?.[timeRange];
-        if (trendingData) {
-          modalDatasets = trendingData.map(series => ({
-            label: series.label,
-            data: series.data,
-            borderColor: series.color,
-            backgroundColor: 'transparent',
-            borderWidth: 2.5,
-            pointRadius: 3, 
-            pointHoverRadius: 6,
-            fill: false,
-            tension: 0.2
-          }));
-        }
-        modalOptions = {
-          ...modalOptions,
-          plugins: {
-            legend: {
-              display: true,
-              position: 'bottom', 
-              labels: { color: currentTheme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa' }
-            }
-          },
-          scales: {
-            x: { grid: { display: false }, ticks: { color: currentTheme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa' } },
-            y: {
-              grid: { display: false },
-              ticks: { color: currentTheme.text === 'text-zinc-900' ? '#52525b' : '#a1a1aa', stepSize: 0.1 },
-              beginAtZero: true,
-              min: 0,
-              max: 1,
-            }
-          }
-        };
-      } else {
-        const dataForChart = (CHART_DATA[kpi] as BaseChartSeries | undefined)?.[timeRange];
-        modalDatasets = [{
-          label: kpi === KpiKey.REQUESTS ? 'Requests' : kpi === KpiKey.LATENCY ? 'Latency (ms)' : 'Users',
-          data: dataForChart || [],
-          borderColor: kpi === KpiKey.REQUESTS ? '#22d3ee' : kpi === KpiKey.LATENCY ? '#2dd4bf' : '#fb923c',
-          backgroundColor: 'transparent',
-          borderWidth: 2.5,
-          pointRadius: 3, 
-            pointHoverRadius: 6,
-          fill: false,
-          tension: 0.2
-        }];
-      }
-
-      setModalChartData({
-        labels: getLabels(timeRange).slice(0, (modalDatasets[0]?.data.length || 0)),
-        datasets: modalDatasets
-      });
-      setModalChartOptions(modalOptions);
-
-    } else if (chartType === 'pie') {
-      setModalChartData(DONUT_DATA); 
-      setModalChartOptions({}); 
-    }
+    setModalKpi(kpi);
     setIsModalOpen(true);
-  }, [timeRange, getLabels, currentTheme]);
+  }, []);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
-    setModalChartData({});
-    setModalChartOptions({});
   }, []);
 
-  const renderMainContent = useMemo(() => {
+  const renderMainContent = () => {
     switch (activePage) {
       case Page.DASHBOARD:
         return (
@@ -1215,8 +1144,6 @@ const App: React.FC = () => {
         return (
           <DatasetsPageContent
             datasets={datasets}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
             theme={currentTheme}
           />
         );
@@ -1232,7 +1159,7 @@ const App: React.FC = () => {
       default:
         return null;
     }
-  }, [activePage, datasets, activeKpi, setActiveKpi, timeRange, setTimeRange, currentTheme, openChartModal, searchTerm, setSearchTerm, filter, setFilter, sort, handleDatasetSort, setActivePage]);
+  };
 
   return (
     <div className={`flex h-screen overflow-hidden font-sans ${currentTheme.app} ${currentTheme.text}`}>
@@ -1244,7 +1171,7 @@ const App: React.FC = () => {
           theme={currentTheme}
         />
         <main className="flex-1 overflow-y-auto">
-          {renderMainContent}
+          {renderMainContent()}
         </main>
       </div>
 
@@ -1253,8 +1180,8 @@ const App: React.FC = () => {
           isOpen={isModalOpen}
           onClose={closeModal}
           title={modalTitle}
-          chartType={modalChartType as 'line' | 'pie'}
-          kpi={modalTitle === 'Datasets by Category' ? undefined : activeKpi}
+          chartType={modalChartType}
+          kpi={modalKpi}
           timeRange={timeRange}
           theme={currentTheme}
         />

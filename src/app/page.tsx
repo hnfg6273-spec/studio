@@ -387,20 +387,6 @@ const Topbar: React.FC<{ cycleTheme: () => void; theme: Theme; activePage: Page;
         </h1>
       </div>
 
-      <div className="flex flex-1 max-w-md items-center space-x-4">
-        <div className="relative w-full">
-          <Icon name="Search" className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400" />
-          <Input 
-            placeholder="Search..."
-            className="w-full pl-10 pr-4 py-2 rounded-lg bg-zinc-800/80 border-zinc-700 text-white placeholder-zinc-400"
-          />
-        </div>
-        <Button variant="outline" className="flex items-center space-x-2 bg-zinc-800/80 border-zinc-700 text-zinc-300 hover:bg-zinc-700 hover:text-white">
-          <Icon name="Filter" className="w-4 h-4" />
-          <span>Filter</span>
-        </Button>
-      </div>
-
       <div className="flex items-center space-x-5">
         <button
           onClick={cycleTheme}

@@ -2,6 +2,8 @@
 import React from 'react';
 import { Page, Theme } from '@/lib/types';
 import Icon from './Icon';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
 
 interface TopbarProps {
   cycleTheme: () => void;
@@ -20,6 +22,7 @@ const Topbar: React.FC<TopbarProps> = ({ cycleTheme, theme, activePage }) => {
             ? 'Dashboard'
             : activePage.charAt(0).toUpperCase() + activePage.slice(1)}
         </h1>
+        
       </div>
       <div className="flex items-center space-x-5">
         <button

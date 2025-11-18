@@ -385,19 +385,6 @@ const Topbar: React.FC<{ cycleTheme: () => void; theme: Theme; activePage: Page;
             ? 'Dashboard'
             : activePage.charAt(0).toUpperCase() + activePage.slice(1)}
         </h1>
-        <div className="hidden md:flex items-center space-x-4">
-          <div className="relative">
-            <Icon name="Search" className="w-5 h-5 text-zinc-400 absolute top-1/2 left-3 transform -translate-y-1/2" />
-            <Input
-              placeholder="Search..."
-              className="w-full pl-10 pr-4 py-2 rounded-lg bg-zinc-800/80 border-zinc-700 text-white placeholder-zinc-400"
-            />
-          </div>
-          <Button variant="outline" className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white">
-            <Icon name="Filter" className="w-4 h-4 mr-2" />
-            Filter
-          </Button>
-        </div>
       </div>
 
       <div className="flex items-center space-x-5">
@@ -864,7 +851,7 @@ const HeroSection: React.FC<{ theme: Theme, onSearch: () => void }> = ({ theme, 
   const imageUrl = "https://i.postimg.cc/wMKCXy1V/Gemini-Generated-Image-vdgi6yvdgi6yvdgi-Photoroom-removebg-preview.png";
 
   return (
-    <section className={`relative flex items-center justify-center text-gray-100 w-full py-24 md:py-32 ${theme.heroBg || 'bg-slate-900'}`}>
+    <section className={`relative flex items-center justify-center text-gray-100 w-full py-24 md:py-32 ${theme.heroBg || (isDark ? 'bg-slate-900' : 'bg-gray-100')}`}>
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-transparent"></div>
         <div className="relative z-10 w-full grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-7xl mx-auto px-4 md:px-6">
             <div className="text-center md:text-left">

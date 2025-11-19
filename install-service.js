@@ -5,7 +5,7 @@ const service = new Service({
   name: 'InsightBoard',
   description: 'The InsightBoard Next.js application.',
   script: path.join(__dirname, 'node_modules', 'next', 'dist', 'bin', 'next'),
-  args: ['start', '-p', '9002'],
+  args: ['start', '-H', '172.16.20.30', '-p', '8083'],
   nodeOptions: ['--experimental-modules'],
   env: {
     name: 'NODE_ENV',

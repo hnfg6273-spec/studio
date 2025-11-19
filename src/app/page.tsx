@@ -346,7 +346,7 @@ const Sidebar: React.FC<{ activePage: Page; setActivePage: (page: Page) => void;
       onBlur={() => setIsExpanded(false)}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
-      tabIndex={0} 
+      tabIndex={0}
     >
       <div
         className={`w-full flex items-center mb-4 ${

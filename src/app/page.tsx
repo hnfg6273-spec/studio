@@ -380,7 +380,7 @@ const Sidebar: React.FC<{ activePage: Page; setActivePage: (page: Page) => void;
               theme.sidebarHover
             }`}
           >
-            <div className={`p-1 rounded-md ${activePage === item.page ? theme.sidebarActive : ''}`}>
+            <div className={`p-2 rounded-md ${activePage === item.page ? theme.sidebarActive : ''}`}>
               <Icon name={item.icon} className={`w-6 h-6 ${activePage === item.page ? 'text-white' : 'text-zinc-400'}`} />
             </div>
             {isExpanded && <span className="text-white">{item.name}</span>}
@@ -1213,3 +1213,5 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+    

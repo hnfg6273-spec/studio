@@ -331,39 +331,79 @@ const Modal: React.FC<{
 
 // components/Sidebar.tsx
 const Sidebar: React.FC<{ activePage: Page; setActivePage: (page: Page) => void; theme: Theme; }> = ({ activePage, setActivePage, theme }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   return (
     <nav
-      className={`w-20 flex flex-col items-center py-6 space-y-8 border-r shadow-lg z-20 ${theme.sidebar} ${theme.sidebarBorder}`}
+      className={`flex flex-col items-center py-6 space-y-8 border-r shadow-lg z-20 ${
+        theme.sidebar
+      } ${
+        theme.sidebarBorder
+      } transition-all duration-300 ${
+        isExpanded ? 'w-64 items-start px-4' : 'w-20 items-center'
+      }`}
+      onFocus={() => setIsExpanded(true)}
+      onBlur={() => setIsExpanded(false)}
+      onMouseEnter={() => setIsExpanded(true)}
+      onMouseLeave={() => setIsExpanded(false)}
+      tabIndex={0} 
     >
       <div
-        className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg ${theme.sidebarActive.replace(
-          ' text-white',
-          ''
-        )}`}
+        className={`w-full flex items-center mb-4 ${
+          isExpanded ? 'justify-start' : 'justify-center'
+        }`}
       >
-        <Icon name="Blocks" className="w-6 h-6 text-white" />
+        <div
+          className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg ${theme.sidebarActive.replace(
+            ' text-white',
+            ''
+          )}`}
+        >
+          <Icon name="Blocks" className="w-6 h-6 text-white" />
+        </div>
+        {isExpanded && (
+          <span className="ml-4 text-lg font-bold text-white">
+            InsightBoard
+          </span>
+        )}
       </div>
-      <div className="flex flex-col space-y-6">
+      <div
+        className={`flex flex-col space-y-4 w-full ${
+          isExpanded ? 'items-start' : 'items-center'
+        }`}
+      >
         {NAV_ITEMS.map((item) => (
           <button
             key={item.page}
             onClick={() => setActivePage(item.page)}
-            className={`p-3 rounded-xl transition-all duration-200 relative group ${
-              activePage === item.page ? theme.sidebarActive : theme.sidebarHover
+            className={`flex items-center space-x-4 p-3 rounded-xl transition-all duration-200 w-full ${
+              theme.sidebarHover
             }`}
           >
-            <Icon name={item.icon} className="w-6 h-6 text-zinc-400" />
+            <div className={`p-1 rounded-md ${activePage === item.page ? theme.sidebarActive : ''}`}>
+              <Icon name={item.icon} className={`w-6 h-6 ${activePage === item.page ? 'text-white' : 'text-zinc-400'}`} />
+            </div>
+            {isExpanded && <span className="text-white">{item.name}</span>}
           </button>
         ))}
       </div>
-      <div className="mt-auto flex flex-col space-y-6">
-        <button className="p-3 rounded-xl relative group text-zinc-400">
+      <div className="mt-auto flex flex-col space-y-6 w-full">
+        <button
+          className={`flex items-center space-x-4 p-3 rounded-xl transition-all duration-200 w-full text-zinc-400 ${
+            isExpanded ? 'justify-start' : 'justify-center'
+          } ${theme.sidebarHover}`}
+        >
           <Icon name="HelpCircle" className="w-6 h-6" />
+          {isExpanded && <span>Help</span>}
         </button>
-        <button className="p-3 rounded-xl relative group text-zinc-400">
+        <button
+          className={`flex items-center space-x-4 p-3 rounded-xl transition-all duration-200 w-full text-zinc-400 ${
+            isExpanded ? 'justify-start' : 'justify-center'
+          } ${theme.sidebarHover}`}
+        >
           <Icon name="LogOut" className="w-6 h-6" />
+          {isExpanded && <span>Log Out</span>}
         </button>
-        
       </div>
     </nav>
   );
